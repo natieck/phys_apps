@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operating guide ]</p>
+
+    <h2>&#9632; Select Time and Acceleration Columns</h2>
+
+    <p style="margin-left:1rem;">
+      After loading a CSV file, select the time column and acceleration columns from the displayed table data. Initially, the leftmost column of the CSV data is selected as the time column, but if another column contains time data, select it from the dropdown menu. Once the time column is selected, the dropdown menu for the acceleration columns will display labels of the other data columns. Select the desired acceleration columns from this list and click the "Confirm" button. If you change the time column after selecting the acceleration columns, you will need to reselect the acceleration columns.
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">Select menus on a PC</span><br />
+      <img src="image/select_time_acc1.png" style="width:90%;max-width:720px;border:1px solid #444444;"/><br />
+    </div>
+
+    <div class="lfig">
+      <img src="image/select_time_acc2.png" style="width:100%;max-width:180px;border:1px solid #444444;"/>
+    </div>
+
+    <p>
+      Up to three acceleration columns can be selected simultaneously. When using this app on a PC, multiple items can be selected by holding the Shift or Ctrl key while clicking the items.
+    </p>
+
+    <br style="clear:both;" />
+    
+    <div class="lfig">
+      <span class="emph2">Select menus on a Mobile Device</span><br />
+      <img src="image/select_time_acc3.png" style="width:80%;max-width:320px;border:1px solid #444444;"/><br />
+      <img src="image/select_time_acc4.png" style="width:80%;max-width:240px;border:1px solid #444444;"/>
+    </div>
+
+    <br />
+
+    <p>
+      When using this app on a mobile device such as a smartphone or tablet, pressing the selector (labeled "0 selected") will display a checklist of data items. You can check multiple acceleration columns (up to three) in this list. After returning by pressing "OK," make sure to press the "Confirm" button.
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      After selecting the time column and acceleration columns and clicking the "Confirm" button, a graph with time on the horizontal axis and acceleration on the vertical axis will be displayed, as shown below.
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data3.png" style="width:80%;max-width:580px;border:1px solid #444444;"/><br />
+    </div>
+
+    <p style="margin-left:1rem;">
+      Proceed to <a href="setting_time_domain.html">Set the Time Domain for Analysis</a>.
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

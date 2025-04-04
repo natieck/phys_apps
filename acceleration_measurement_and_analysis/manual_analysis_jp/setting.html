@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a class="no_link">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a class="no_link">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; 各種設定</h2>
+
+    <ol>
+      <li><span class="emph1" id="unit_setting" style="padding-top:5rem;margin-top:-5rem;">単位の設定</span>
+        <p>
+          本アプリを開いて，最初にCSVファイルを読み込むと，データテーブルが表示され，その下に＜単位の設定＞の行が現れる．単位の設定では，長さの単位（デフォルト：meter（メートル））と時間の単位（デフォルト：second（秒））を設定できる．長さの単位は，mm（ミリメートル），cm（センチメートル），m（メートル），km（キロメートル）から，時間の単位は，ms（ミリ秒），s（秒），min（分），h（時間）から選択する．ここで設定した単位を基に，グラフのラベルで表示される位置・速度・加速度の単位が決まる．デフォルトでは，それぞれ，m，m/s，m/s<sup>2</sup> となる．
+        </p>
+        <div class="cfig">
+          <img src="image/unit_setting.png" style="width:70%;max-width:440px;border:1px solid #444444;"/>
+        </div>
+      </li>
+      <br />
+      <li><span class="emph1" id="marker_line_setting" style="padding-top:5rem;margin-top:-5rem;">グラフのマーカー・線の設定</span><br />
+        <p>
+          本アプリを開いて，最初にCSVファイルを読み込むと，＜単位の設定＞の下に「&#9654; グラフのマーカー・線の設定」の行が表示されるので，その行をクリックすると，モードとサイズ・幅の設定エリアが現れる（もう一度クリックすると閉じる）．
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting.png" style="width:70%;max-width:410px;border:1px solid #444444;"/>
+        </div>
+        <p>
+          モードでは，「マーカー」，「線」，「マーカー＋線」から選択し，それぞれグラフを表示すると下図のようになる（「マーカー」，「線」，「マーカー＋線」の順）．
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting1.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting2.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting3.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+        </div>
+        <p>
+          サイズ・幅の設定スライダーでは，マーカーのサイズや線幅を設定でき，マーカーについて，スライダーの左端（最も小さい）に設定した場合と右端（最も大きい）に設定した場合の図を下に示す．
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting4.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting5.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+        </div>
+        <p>
+          同様に，線幅についても，サイズ・幅の設定スライダーの左端の（最も小さい）場合と右端の（最も大きい）場合の図を下に示す．
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting6.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting7.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+        </div>
+      </li>
+    </ol>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

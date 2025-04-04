@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operation Guide ]</p>
+
+    <h2>&#9632; Coordinate Conversion via Principal Component Analysis</h2>
+
+    <p style="margin-left:1rem;">
+      Perform principal component analysis (PCA) on 2D or 3D data and convert the coordinate axes to align with the directions of the principal components, which are more suitable for analyzing the motion of the object. In PCA, the axis is aligned with the direction of greatest data variance (distribution), which becomes the first principal component axis. The second principal component axis is orthogonal to the first and aligns with the next greatest variance direction. Similarly, the third principal component, fourth principal component, and so on are determined.
+    </p>
+
+    <p style="margin-left:1rem;">
+      As an example, for the projectile motion data shown below, perform PCA on the horizontal position data components (<span class="mathit">x</span> and <span class="mathit">y</span> components) of the object and convert the coordinate axes (<span class="mathit">x</span> axis and <span class="mathit">y</span> axis).
+    </p>
+
+    <div class="cfig">
+      <img src="image/projectile_acc_vel_pos1.png" style="width:100%;max-width:880px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="lfig">
+      <br />
+      <img src="image/coordinate_conversion_by_pca1.png" style="width:90%;max-width:510px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      By clicking the “&#9654; Conversion of coordinate axes by principal component analysis” row at the bottom of this app, the PCA settings panel will appear. First, select the data (acceleration, velocity, or position) to be used for PCA, and then choose two or three components of the data. If only one component is selected (e.g., a single acceleration component), the motion is treated as one-dimensional, and "Conversion of coordinate axes by PCA" will not be displayed. Next, select the time range (start time and end time) for the data to be used in PCA. Here, PCA is performed on the data for the time range of projectile motion (<span class="mathit">t</span> = 3.37 s to 4.455 s).
+    </p>
+
+    <br style="clear:both;" />
+
+    <div class="lfig">
+      <img src="image/coordinate_conversion_by_pca2.png" style="width:90%;max-width:440px;border:1px solid #444444;"/>
+    </div>
+    
+    <p style="margin-left:1rem;">
+      After configuring the settings, click the "Select" button. The PCA results will be displayed as shown in the figure, and a graph of the data transformed to the new coordinate axes will be plotted below it. The first principal component and second principal component are ordered by decreasing eigenvalues. The principal component loadings represent the unit vector components indicating the direction of the principal component axes in the original coordinate system. As shown in the graph of the converted coordinates, the value of the second principal component during the projectile motion is nearly zero, and the first principal component axis aligns with the horizontal direction of the projectile motion. In other words, when PCA is applied to position data of linear motion, the direction of the line becomes the direction of the first principal component.
+    </p>
+
+    <p style="margin-left:1rem;">
+      By pressing the "Convert coordinate axes of output data" button below the graph of the converted coordinates, the acceleration, velocity, and position output data will be converted to the new coordinate system. The data in the new coordinate system will be obtained, and the graphs of acceleration, velocity, and position will be updated accordingly.
+    </p>
+
+    <br style="clear:both;" />
+
+    <div class="cfig">
+      <span class="emph2">Acceleration, velocity, and position graphs in the converted coordinate system</span><br />
+      <img src="image/projectile_acc_vel_pos2.png" style="width:100%;max-width:880px;border:1px solid #444444;"/>
+    </div>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>

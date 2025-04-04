@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：解析例</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【解析例】</p>
+
+    <h2>&#9632; 水平な粗い面を滑る運動（1次元の運動）</h2>
+
+    <p style="margin-left:1rem;">
+      2次元または3次元のデータに対して主成分分析を行い，得られた主成分の方向に座標軸をとることによって，物体の運動を調べるのに適した座標軸に変換する．主成分分析では，多変量のデータに対してデータの分布が最も散らばっている（分散が最も大きい）方向に軸を取り，これを第1主成分の軸とする．第1主成分の軸に直交して，次に分散が大きくなる方向が第2主成分の軸となる．以下同様に，第3主成分，第4主成分，・・・の軸が定まる．
+    </p>
+
+    <div class="cfig">
+      <img src="image/sliding_on_horizontal_plane1.png" style="width:80%;max-width:480px;border:1px solid #444444;"/>
+    </div>
+
+
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

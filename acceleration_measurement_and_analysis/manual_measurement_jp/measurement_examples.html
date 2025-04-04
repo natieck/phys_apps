@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度測定アプリの使い方：測定例</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_measurement_app.png" /></div><div id="title">加速度測定アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="screen_structure.html">画面構成</a></li>
+      <li><a href="operation.html">操作方法</a></li>
+      <li><a class="no_link">測定例</a></li>
+      <li><a href="rotation_correction.html">回転補正について</a></li>
+      <li><a href="search">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="screen_structure.html">画面構成</a></li>
+        <li><a href="operation.html">操作方法</a></li>
+        <li><a class="no_link">測定例</a></li>
+        <li><a href="rotation_correction.html">回転補正について</a></li>
+        <li><a href="search">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>&#9632; 測定例</h2>
+
+    <ul>
+      <li><span style="font-weight:bold;" id="projectile">放物運動</span><br />
+        <p>
+          スマートフォンを斜方投射したときの測定画面と，測定画面において赤点線で挟まれた時間領域の加速度のグラフ（上：デバイスに固定された座標系での加速度，下：静止座標系での加速度）を示す．
+        </p>
+        <div class="lfig">
+          <span class="emph1">測定画面</span><br />
+          <img src="image/example_projectile1.png" width="250" />
+        </div>
+        <div class="lfig">
+          <br />
+          <span class="emph1">加速度のグラフ</span><br />
+          <img src="image/example_projectile2.png" width="300" /><br />
+        </div>
+        <br style="clear:both;" />
+        <p>
+          放物運動の前後で加速度が急激に変化しているのは，投射したときの力による加速度とキャッチしたときの衝撃による加速度を表している．
+        </p>
+        <p>
+          空気の影響などを無視すると，地表付近で放物運動している物体には鉛直下向きに一定の重力加速度が生じる．測定画面のオイラー角のデータから分かるように，放物運動している間，スマートフォンは回転している．そのため，デバイス固定の座標系では鉛直方向が時々刻々変化し，デバイス固定の座標系での加速度の$x$,$y$,$z$成分は有限な値で変化している．しかし，静止座標系での加速度は$z$成分（鉛直方向成分）のみがほぼ一定の値(おおよそ$-9.8\ {\rm m/s^2}$)を示し，$x$,$y$成分の値はほぼゼロとなっている．
+        </p>
+      </li>
+      <li><span style="font-weight:bold;" id="rotation">回転運動</span><br />
+        <div class="lfig">
+          <img src="image/rotating_circular_table.png" width="240" />
+        </div>
+        <p>
+          図に示すような回転台に，デバイス固定の$x$軸と$y$軸がそれぞれ動径方向と接線方向を向くようにスマートフォンを固定して回転運動させる．静止状態から力を加えて回転を開始し，数回転してから停止させるまでの測定画面と，測定画面において赤点線で挟まれた時間領域の加速度の$xy$成分（水平方向成分）のグラフ（上：デバイスに固定された座標系での加速度，下：静止座標系での加速度）を示す．
+        </p>
+        
+        <br style="clear:both;" /><br />
+
+        <div class="lfig">
+          <span class="emph1">測定画面</span><br />
+          <img src="image/example_rotation1.png" width="250" />
+        </div>
+        <div class="lfig">
+          <br />
+          <span class="emph1">加速度のグラフ</span><br />
+          <img src="image/example_rotation2.png" width="320" /><br />
+        </div>
+        <br style="clear:both;" />
+        <p>
+          デバイス固定の座標系における加速度の$x$成分は向心加速度，$y$成分は接線加速度に対応している．回転台の摩擦により回転は徐々に減衰していくため，接線方向に負の加速度が生じている．また，向心加速度の大きさは徐々に減少している様子が分かる．静止座標系における加速度の$x$, $y$成分は，互いに位相が$\pi/2$ずれた正弦曲線（Sinカーブ）を示しており，回転運動でよく知られた加速度の様子を表している．ただし，摩擦による減衰のため加速度は徐々に減少している．
+        </p>
+    </ul>
+
+  </main>
+
+</body>
+</html>

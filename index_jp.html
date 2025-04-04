@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>物理教育用アプリ</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link href="style.css" rel="stylesheet" type="text/css" />
+<script src="qrcode.min.js" charset="utf-8"></script>
+<style>
+	li {
+	  margin-bottom: 0.5rem;
+	}
+</style>
+</head>
+<body>
+<div class="main">
+
+<div style="background-color:#3ccdb8;padding:0 1rem;">
+<h1 style="color:white;">
+物理教育用アプリ
+</h1>
+<p style="position:absolute;top:1.5rem;right:1.5rem;"><span style="font-size:small;"><a href="index.html">English</a></span></p>
+</div>
+
+<div style="text-align:center;"><span class="emph">このページのアプリはどなたでも無料で自由にご利用いただけます！</span></div>
+
+<div class="appbox">
+	<div class="icon">
+		<a href="acceleration_measurement_and_analysis/acceleration_measurement_app.html?lang=1"><img src="image/icon_measurement_app.png" width="120" /></a>
+	</div>
+	<span style="font-weight:bold;"><a href="acceleration_measurement_and_analysis/acceleration_measurement_app.html?lang=1">加速度測定Webアプリ</a></span>
+	<p style="margin-left: 1rem;">
+		スマートフォンで加速度を測定するアプリです．Webアプリなのでアクセスするだけで使用できます（インストール不要）．加速度センサが搭載されたスマートフォンやタブレットなどでご利用ください．
+		<span style="color:red;font-size:small;">※ バージョン 12.2 ～ 13 の iOS には対応していません．</span>
+	</p>
+	<p style="margin-left: 1rem;">
+		<a href="acceleration_measurement_and_analysis/manual_measurement_jp/">マニュアル</a>
+	</p>
+</div>
+
+<div class="appbox">
+	<div class="icon">
+		<a href="acceleration_measurement_and_analysis/acceleration_data_analysis_app_jp.html"><img src="image/icon_analysis_app.png" width="120" /></a>
+	</div>
+	<span style="font-weight:bold;"><a href="acceleration_measurement_and_analysis/acceleration_data_analysis_app_jp.html">加速度データ解析Webアプリ</a></span>
+	<p style="margin-left: 1rem;">
+		上の加速度測定Webアプリで測定した加速度データ（または他の加速度測定アプリで測定したCSV形式のデータ）を解析するアプリです．数値積分により加速度データから速度や位置を求めて，グラフ化します．Webアプリなのでアクセスするだけで使用できます（インストール不要）．
+	</p>
+	<p style="margin-left: 1rem;">
+		<a href="acceleration_measurement_and_analysis/manual_analysis_jp/">マニュアル</a>
+	</p>
+</div>
+
+<div class="appbox">
+	<div class="icon">
+		<a href="digital_level/digital_level_app.html?lang=1"><img src="image/icon_digital_level_app.png" width="120" /></a>
+	</div>
+	<span style="font-weight:bold;"><a href="digital_level/digital_level_app.html?lang=1">デジタル水準器（角度計）アプリ</a></span>
+	<p style="margin-left: 1rem;">
+		スマートフォンの置かれた面の傾き角度を測定するアプリです．Webアプリなのでアクセスするだけで使用できます（インストール不要）．
+	</p>
+	<p style="margin-left: 1rem;">
+		<a href="digital_level/manual_digital_level_jp/">マニュアル</a>
+	</p>
+</div>
+
+<br style="clear:both;"/><br />
+
+<div style="text-align:center;"><span style="font-weight:bold;color:#3ccdb8;">このページのQRコード</span>
+<table style="margin:0 auto;padding:10px;border:2px solid #3ccdb8;border-radius:10px;"><tr><td><div id="qrcode"></div></td></tr></table>
+</div>
+
+<script>
+const currentUrl = window.location.href;
+let qrcode = new QRCode("qrcode",{width:160, height:160});
+qrcode.makeCode(currentUrl);
+</script>
+
+<hr />
+<p style="text-align:center;"><a href="terms_of_service_jp.html" target="_blank">利用規約</a></p>
+
+</div>
+</body>
+</html>

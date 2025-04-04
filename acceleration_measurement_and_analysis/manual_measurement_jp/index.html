@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度測定アプリの使い方</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <script src="../qrcode.min.js" charset="utf-8"></script>
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_measurement_app.png" /></div><div id="title">加速度測定アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a class="no_link">トップページ</a></li>
+      <li><a href="screen_structure.html">画面構成</a></li>
+      <li><a href="operation.html">操作方法</a></li>
+      <li><a href="measurement_examples.html">測定例</a></li>
+      <li><a href="rotation_correction.html">回転補正について</a></li>
+      <li><a href="search">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a class="no_link">トップページ</a></li>
+        <li><a href="screen_structure.html">画面構成</a></li>
+        <li><a href="operation.html">操作方法</a></li>
+        <li><a href="measurement_examples.html">測定例</a></li>
+        <li><a href="rotation_correction.html">回転補正について</a></li>
+        <li><a href="search">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>&#9632; トップページ</h2>
+
+    <p style="margin-left:1rem;">
+    <a href="../acceleration_measurement_app.html?lang=1">回転補正機能付き<sup>※</sup>加速度測定Webアプリ</a>の操作マニュアル<br />
+    <span style="margin-left:2rem;color:red;font-size:small">※ 回転補正機能：加速度とオイラー角を同時に取得し，静止座標系の加速度に変換する機能【<a href="rotation_correction.html">詳細</a>】</span>
+    </p>
+
+    <div style="margin-left:3rem;float:left;text-align:center;"><span class="emph2">測定アプリのQRコード</span>
+      <table style="margin:0 auto;padding:10px;border:2px solid #3ccdb8;border-radius:10px;"><tr><td><div id="qrcode"></div></td></tr></table>
+    </div>
+
+    <script>
+      const appUrl = "https://w3e.kanazawa-it.ac.jp/math/physics/category/experiment/mobile_device/acceleration_measurement_and_analysis/acceleration_measurement_app.html?lang=1";
+      let qrcode = new QRCode("qrcode",{width:160, height:160});
+      qrcode.makeCode(appUrl);
+    </script>
+
+    <div style="padding-top:1rem;float:left;">
+      <span style="margin-left:2rem;font-weight:bold;">目次</span>
+      <ul>
+        <li style="padding-bottom:0.3rem;"><a href="screen_structure.html">画面構成</a></li>
+        <li style="padding-bottom:0.3rem;"><a href="operation.html">操作方法</a></li>
+        <li style="padding-bottom:0.3rem;"><a href="measurement_examples.html">測定例</a></li>
+        <li style="padding-bottom:0.3rem;"><a href="rotation_correction.html">回転補正について</a></li>
+      </ul>
+    </div>
+
+    <br style="clear:both;" /><br />
+
+    <h3>&#9632; 概要</h3>
+    <p style="margin-left:1rem;">
+    本アプリは，デバイスに生じる加速度とデバイスの方位角（オイラー角）を同時に取得し，デバイスに固定された座標系での加速度から静止座標系での加速度へ変換する機能（回転補正機能）を搭載した加速度測定Webアプリである．静止座標系での加速度を得ることができるので，2次元や3次元の運動の測定と解析が容易となる．Webブラウザ上で動作するWebアプリのためインストールは不要である．
+    </p>
+    <br />
+
+    <h3>&#9632; 動作環境</h3>
+    <ul>
+      <li>
+        <span style="font-weight:bold;">スマートフォン・タブレット</span><br />
+        <dl>
+          <dt>&#9670; Android：どのバージョンでも利用可能（できるだけ新しい方が良い）．</dt>
+          <dd>動作確認済みのブラウザ：Chrome, Edge, Firefox</dd>
+        </dl>
+        <dl>
+          <dt>&#9670; iPhone・iPad：iOS 12.2 以前，及び，iOS 13 以降</dt>
+          <dd>
+            動作確認済みのブラウザ：Safari<br />
+            <span style="color:red;">iOS 12.2 ～ 13 のバージョンではブラウザから加速度センサへのアクセス不可</span>
+          </dd>
+        </dl>
+        <span style="color:#247b6e;">※ 上記以外でも，JavaScriptが有効で加速度センサにアクセス可能なブラウザ搭載の端末であれば動作する．</span>
+      </li>
+      <br />
+      <li>
+          <span style="font-weight:bold;">加速度センサ搭載ノートパソコン</span><br />
+          加速度センサが搭載されている 2-in-1 などのノートPCで，Javascriptを有効にしたブラウザがインストールされていれば利用可能．<br />
+          OS は Windows, MacOS, Linux のいずれでも可．
+      </li>
+    </ul>
+    <dl style="margin-left:1rem;">
+      <dt><span style="font-weight:bold;">【使用ライブラリ】</span></dt>
+      <dd><a href="https://katex.org/">KaTeX</a>：Web上で数式を表示するためのオープンソースのJavaScriptライブラリ（MITライセンス）</dd>
+    </dl>
+
+    <br />
+
+    <h3>&#9632; 利用規約</h3>
+    <ul>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">著作権について</span><br />
+      本サイトで公開しているコンテンツの著作権は本サイト管理者に帰属しており，日本国著作権法及び国際条約により保護されています．本サイトのコンテンツを非営利目的で個人利用する場合や教育機関で利用する場合，本サイト管理者に許諾を得る必要も引用元を提示する必要もありません．
+      </li>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">リンクについて</span><br />
+      本サイトへのリンクは原則フリーです．リンクするに当たり本サイト管理者の許諾を得る必要も引用元を提示する必要もありません．
+      </li>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">免責事項</span><br />
+      本サイトで公開された情報は最新のものではない可能性があり，その正確性や完全性に関していかなる保証をするものではありません．利用者が本サイトの情報を利用することで発生したトラブルや不利益に対して，本サイト管理者は一切の責任を負いません．
+      </li>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">その他</span><br />
+      本サイトの内容を予告なく変更または削除する場合があります．
+      </li>
+    </ul>
+
+    <hr />
+    <p style="text-align:right;"><a href="../../index_jp.html">物理教育用アプリトップページ</a></p>
+
+  </main>
+
+</body>
+</html>

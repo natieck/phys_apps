@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operation.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operation.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; 数値積分</h2>
+
+    <p style="margin-left:1rem;">
+      本アプリでは，<a href="trapezoidal_rule.html">台形公式を用いた数値積分</a>により，加速度データから速度データ，及び速度データから位置データを求める．
+    </p>
+
+    <p style="margin-left:1rem;">
+      例として，加速度データを読み込み「<a href="setting_time_domain.html">分析に使用する時間領域の設定</a>」を行った後，下図のように成分ごとの加速度グラフが得られたとする（放物運動の加速度の$x$,$y$,$z$成分）．グラフのすぐ上の「&#9654; 加速度データ」をクリックすると，指定した時間領域の加速度データのテーブルが表示される（もう一度クリックするとテーブルが閉じる）．
+    </p>
+
+    <div class="cfig">
+      <img src="image/projectile_motion_acceleration.png" style="width:100%;max-width:840px;border:1px solid #444444;"/>
+    </div>
+    
+    <p style="margin-left:1rem;">
+      加速度$\vec{\bm{a}}$から速度$\vec{\bm{v}}$を求める式は
+      $$\vec{\bm{v}}(t)=\int_{t_0}^{t}\!\vec{\bm{a}}\,dt+\vec{\bm{v}}_0$$
+      であるので，数値積分を実行する前に初期速度$\vec{\bm{v}}_0$（時刻 $t=t_0$ のときの速度 $\vec{\bm{v}}(t_0)$ ）を設定する必要がある．
+    </p>
+
+    <p style="margin-left:1rem;">
+      加速度データの平滑化（<a href="fourier_smoothing.html">フーリエ変換による平滑化</a>，<a href="least-square_smoothing.html">最小二乗近似による平滑化</a>）を実行した場合，数値積分する加速度データとして「元のデータ」「平滑化データ」「差分データ」のいずれかから選択できる．
+    </p>
+
+    <div class="lfig">
+      <img src="image/integral_of_acceleration1.png" style="width:90%;max-width:320px;border:1px solid #444444;"/>
+    </div>
+
+    <p>
+      初期速度の設定欄では，分析に使用する時間領域で設定した開始時刻での初期速度 $\vec{\bm{v}}(t_0)$ ）を成分ごとに入力する．一般に，初期速度の値が既に得られていることは少ないので，静止状態から測定を開始して，初期速度をゼロに設定すればよい（デフォルトで 0.0 が入力されている）．
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      初期速度の設定後，「速度の計算（数値積分）」ボタンを押すと，分析に使用する時間領域において，加速度データを数値積分して速度データを求め，下図のように速度のグラフを成分ごとに表示する．グラフのすぐ上の「&#9654; 速度データ」をクリックすると，数値積分で得られた速度データのテーブルが表示される（もう一度クリックするとテーブルが閉じる）．
+    </p>
+
+    <div class="cfig">
+      <img src="image/projectile_motion_velocity.png" style="width:100%;max-width:840px;border:1px solid #444444;"/>
+    </div>
+    
+    <p style="margin-left:1rem;">
+      速度$\vec{\bm{v}}$から位置$\vec{\bm{r}}$を求める式は
+      $$\vec{\bm{r}}(t)=\int_{t_0}^{t}\!\vec{\bm{v}}\,dt+\vec{\bm{r}}_0$$
+      であるので，数値積分を実行する前に初期位置$\vec{\bm{r}}_0$（時刻 $t=t_0$ のときの位置 $\vec{\bm{r}}(t_0)$ ）を設定する必要がある．
+    </p>
+
+    <p style="margin-left:1rem;">
+      速度データの平滑化（<a href="fourier_smoothing.html">フーリエ変換による平滑化</a>，<a href="least-square_smoothing.html">最小二乗近似による平滑化</a>）を実行した場合，数値積分する速度データとして「元のデータ」「平滑化データ」「差分データ」のいずれかから選択できる．
+    </p>
+
+    <div class="lfig">
+      <img src="image/integral_of_velocity1.png" style="width:90%;max-width:320px;border:1px solid #444444;"/>
+    </div>
+
+    <p>
+      初期位置の設定欄では，分析に使用する時間領域で設定した開始時刻での初期位置 $\vec{\bm{v}}(t_0)$ ）を成分ごとに入力する（デフォルトでは 0.0 が入力されており，開始時刻での位置が原点となる）．図では，放物運動でスマートフォンを投げた瞬間（時刻3.37秒）での位置が原点となるように初期位置を設定している．
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      初期位置の設定後，「位置の計算（数値積分）」ボタンを押すと，分析に使用する時間領域において，速度データを数値積分して位置データを求め，下図のように位置のグラフを成分ごとに表示する．グラフのすぐ上の「&#9654; 位置データ」をクリックすると，数値積分で得られた位置データのテーブルが表示される（もう一度クリックするとテーブルが閉じる）．
+    </p>
+
+    <div class="cfig">
+      <img src="image/projectile_motion_position.png" style="width:100%;max-width:840px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      数値積分により位置データまで得られれば，<a href="output_data.html">加速度・速度・位置のデータ出力</a>に進む．複数成分を解析（加速度列の選択で複数の列を選択）している場合，データ出力に進むと複数の成分を重ねてプロットした加速度・速度・位置のグラフが得られる．
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

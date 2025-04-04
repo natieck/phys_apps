@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operating guide ]</p>
+
+    <h2>&#9632; Read CSV Data</h2>
+
+    <p style="margin-left:1rem;">
+      When you open this app, you will see a file upload screen as shown below. Click the "Choose File" button to upload a CSV file containing acceleration data. If the first row of the CSV file represents labels for each column, check the "Labels in the first row" option.
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data1.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      Once the CSV file is loaded, the data is displayed in a table as shown below. Here, as an example, the <span class="emph1">acceleration data of projectile motion</span> measured using <a href="../manual_measurement/index.html">Acceleration Measurement App</a> is shown.
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data2.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      If the first row of the CSV file is not labels but numerical data, uncheck the "Labels in the first row" option before loading the file. In this case, the labels for each column will automatically be named "item#" (where # is the column number), as shown below.
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data5.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;color:red;">
+      Additionally, if you measure acceleration data using the <a href="../manual_measurement/index.html">Acceleration Measurement App</a> and then open this app on your smartphone or tablet by pressing the "Analyze Data" button in the measurement app, the measured acceleration data will be preloaded. This allows you to proceed directly with the analysis without the need to upload the data.
+    </p>
+
+    <p style="margin-left:1rem;">
+      After loading the CSV data, set the units for length and time in the numerical data if necessary. Clicking on the "&#9654; Graph Marker and Line Settings" row allows you to change the mode and size settings for graph markers and lines for plotting the data later (<a href="setting.html">Settings</a>).
+    </p>
+
+    <p style="margin-left:1rem;">
+      Once the necessary settings are complete, proceed to <a href="select_time_acceleration.html">Select Time and Acceleration Columns</a>.
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

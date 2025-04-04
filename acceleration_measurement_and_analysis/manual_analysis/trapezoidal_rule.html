@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trapezoidal rule for numerical integration</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating method</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating method</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+  
+    <h3>Trapezoidal rule for numerical integration</h3>
+    <div class="rfig">
+      <img src="image/trapezoidal_rule.png" width="320" /><br />
+      Trapezoidal rule
+    </div>
+    <p style="margin-left:1rem;">
+      If the acceleration of an object is obtained as numerical data, its velocity is computed approximately by numerical integration. This analysis application employs the trapezoidal rule for numerical integration. For a function $y=f(x)$, given $n+1$ points $(x_i,\,f(x_i))$ in the interval $[a,b]$ ($i=0$ to $n$, $x_0=a$, $x_n=b$), numerical integration using the trapezoidal rule gives the following. The area of the $i$-th subinterval $[x_{i-1},\,x_i]$, where the interval $[a,b]$ is divided into $n$ parts, is obtained from the trapezoidal area formula as,
+      $$S_i=\frac{1}{2}\left\lbrace f(x_{i-1})+f(x_i)\right\rbrace\Delta x_i\ \ \ \ \ \ (i=1\sim n),$$
+      where $\Delta x_i=x_i-x_{i-1}$ indicates the width of the subinterval $[x_{i-1},\,x_i]$. Thus, if the subinterval width $\Delta x_i$ is sufficiently small, the integral over the interval $[a,b]$ can be approximated as
+      $$\int_{a}^{b}f(x)dx\approx S_1+S_2+\cdots+S_n=\sum_{i=1}^{n}S_i.$$
+    </p>
+
+  </main>
+
+</body>
+</html>
+
+
+

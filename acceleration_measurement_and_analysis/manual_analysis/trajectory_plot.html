@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operation Guide ]</p>
+
+    <h2>&#9632; Trajectory Plot</h2>
+
+    <p style="margin-left:1rem;">
+      After <a href="output_data.html">outputting acceleration, velocity, and position data</a>, you can plot the trajectory of motion using the position data. Select the time range (start time and end time) for the trajectory plot, and click the "Select" button. The trajectory of motion from the selected start time to the end time will be displayed. If two components are selected for acceleration, a 2D trajectory in a plane will be plotted. If three components are selected, a 3D trajectory in space will be plotted. However, if only one component is selected, the trajectory will not be displayed.
+    </p>
+
+    <p class="emph2">&#9679; Trajectory of Circular Motion (2D)</p>
+
+    <div class="lfig">
+      <img src="image/circular_motion_position2.png" style="width:340px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      When the position graph of an object undergoing circular motion is obtained as shown in the figure (blue line: $x$ component of position, orange line: $y$ component of position), plotting the trajectory based on the position data from 10 seconds to 15 seconds yields the graph shown below. The black dot on the trajectory (red line) represents the position of the object, while the blue arrow and green arrow originating from the black dot represent the velocity vector and acceleration vector, respectively.
+    </p>
+
+    <br style="clear:both;" />
+
+    <div class="cfig">
+      <img src="image/trajectory_plot1.png" style="width:80%;max-width:512px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="rfig">
+      <img src="image/trajectory_animation1.gif" style="width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      When you press the "Start" button located below the trajectory plot, the motion along the trajectory is displayed as an animation. You can adjust the speed of the animation using the slider to the right of the button. The "Velocity vector" and "Acceleration vector" checkboxes below the "Start" button allow you to toggle the display of these vectors on and off. Additionally, the slider on the right enables you to adjust the length of these vectors.
+    </p>
+
+    <br style="clear:both;" />
+
+    <p class="emph2">&#9679; Trajectory of Projectile Motion (3D)</p>
+
+    <div class="lfig">
+      <img src="image/projectile_motion_position2.png" style="width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      When the position graph of an object undergoing projectile motion is obtained as shown in the figure (blue line: $x$ component of position, orange line: $y$ component of position, green line: $z$ component of position), plotting the trajectory for the position data from 1.6 seconds to 4.6 seconds yields the graph shown below.
+    </p>
+
+    <br style="clear:both;" />
+
+    <div class="cfig">
+      <img src="image/trajectory_plot2.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="rfig">
+      <img src="image/trajectory_animation2.gif" style="width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      Press the "Start" button below the trajectory plot to display an animation of the motion along the trajectory. The slider to the right of the button can be used to adjust the animation speed. The blue arrow and green arrow originating from the moving black dot represent the velocity vector and acceleration vector, respectively. The "Velocity vector" and "Acceleration vector" checkboxes below the "Start" button allow you to toggle the display of these vectors on and off. Additionally, the slider on the right enables you to adjust the length of these vectors.
+    </p>
+
+    <br style="clear:both;" />
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>

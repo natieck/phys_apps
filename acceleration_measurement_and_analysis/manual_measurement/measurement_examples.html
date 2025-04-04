@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Measurement App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_measurement_app.png" /></div><div id="title">Manual for Acceleration Measurement App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="screen_structure.html">Screen structure</a></li>
+      <li><a href="operation.html">Operating method</a></li>
+      <li><a class="no_link">Measurement examples</a></li>
+      <li><a href="rotation_correction.html">Rotation correction</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="screen_structure.html">Screen structure</a></li>
+        <li><a href="operation.html">Operating method</a></li>
+        <li><a class="no_link">Measurement examples</a></li>
+        <li><a href="rotation_correction.html">Rotation correction</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>&#9632; Examples of measurement data</h2>
+
+    <ul>
+      <li><span style="font-weight:bold;" id="projectile">Projectile motion</span><br />
+        <p>
+          The following figures show the measurement screen when a smartphone is obliquely projected, and the graph of accelerations in the time region between the red dotted lines in the measurement screen (top: accelerations in the coordinate system fixed to the device, bottom: accelerations in the stationary coordinate system).
+        </p>
+        <div class="lfig">
+          <span class="emph1">Measurement screen</span><br />
+          <img src="image/example_projectile1.png" width="250" />
+        </div>
+        <div class="lfig">
+          <br />
+          <span class="emph1">Graph of acceleration</span><br />
+          <img src="image/example_projectile2.png" width="300" /><br />
+        </div>
+        <br style="clear:both;" />
+        <p>
+          The large accelerations before and after the projectile motion represent the acceleration due to the force of the projectile and the acceleration due to the impact when the device is caught.
+        </p>
+        <p>
+          Neglecting the effect of air and other factors, an object in projectile motion near the earth's surface experiences a constant gravitational acceleration in a vertical downward direction. As seen from the Euler angle data on the measurement screen, the smartphone is rotating during the projectile motion. Therefore, the acceleration in the device-fixed coordinate system is changing in response to the vertical direction changing from moment to moment in this system. However, in the stationary coordinate system, only the <span class="mathit">z</span> component (vertical component) of the acceleration has a nearly constant value (approximately -9.8 m/s<sup>2</sup>), and the <span class="mathit">x</span> and <span class="mathit">y</span> components have nearly zero values.
+        </p>
+      </li>
+      <li><span style="font-weight:bold;" id="rotation">Circular motion</span><br />
+        <div class="lfig">
+          <img src="image/rotating_circular_table.png" width="240" />
+        </div>
+        <p>
+          A smartphone is fixed to a rotating circular table as shown in the figure so that the device-fixed <span class="mathit">x</span> axis and <span class="mathit">y</span> axis face the radial and tangential directions, respectively, and is subjected to rotational motion. The following figures show the <span class="mathit">x</span> and <span class="mathit">y</span> components (horizontal components) of accelerations (top: acceleration in the coordinate system fixed to the device, bottom: acceleration in the stationary coordinate system) in the time region between the red dotted lines in the measurement screen.
+        </p>
+        
+        <br style="clear:both;" /><br />
+
+        <div class="lfig">
+          <span class="emph1">Measurement screen</span><br />
+          <img src="image/example_rotation1.png" width="250" />
+        </div>
+        <div class="lfig">
+          <br />
+          <span class="emph1">Graph of acceleration</span><br />
+          <img src="image/example_rotation2.png" width="320" /><br />
+        </div>
+        <br style="clear:both;" />
+        <p>
+          The <span class="mathit">x</span> component of the acceleration in the device-fixed coordinate system corresponds to the centripetal acceleration and the <span class="mathit">y</span> component to the tangential acceleration. The rotation is gradually damped by the friction of the rotating table, resulting in a negative acceleration in the tangential direction. The magnitude of the centripetal acceleration also shows a gradual decrease. The <span class="mathit">x</span> and <span class="mathit">y</span> components of acceleration in the stationary coordinate system show sinusoidal curves that are $\pi/2$ out of phase with each other, representing the well-known acceleration in circular motion. However, the acceleration is gradually decreasing due to damping by friction.
+        </p>
+    </ul>
+
+  </main>
+
+</body>
+</html>

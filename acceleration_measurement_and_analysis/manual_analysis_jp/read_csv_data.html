@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; CSVデータの読込</h2>
+
+    <p style="margin-left:1rem;">
+      本アプリを開くと下図のようにファイルアップロード画面となる．「ファイルを選択」ボタンを押して，加速度データを含むCSVファイルをアップロードする．その際，CSVファイルの先頭行が各列のデータを表すラベルになっていれば，「先頭行をラベルとする」にチェックを入れる．
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data1.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      CSVファイルが読み込まれると下図のようにCSVデータがテーブルで表示される．ここでは，例として，<a href="../manual_measurement_jp/index.html">加速度測定アプリ</a>で測定した<span class="emph1">放物運動の加速度データ</span>を示している．
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data2.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      CSVファイルの先頭行がラベルではなく，数値データとなっていれば，「先頭行をラベルとする」のチェックを外してからファイルを読み込む．この場合，下図のように各列のラベルは自動的に「item#」となる（#は列番号）．
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data5.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;color:red;">
+      また，<a href="../manual_measurement_jp/index.html">加速度測定アプリ</a>で加速度データを測定後，測定アプリの「データの解析」ボタンを押して，スマートフォンやタブレット上で本アプリを開いた場合は，測定した加速度データを読み込んだ状態で開くので，データ保存・読込をすることなく直接解析に進むことができる．
+    </p>
+  
+    <p style="margin-left:1rem;">
+      CSVデータの読み込み後，必要であれば，数値データにおける長さの単位と時間の単位を設定する．また，「&#9654; グラフのマーカー・線の設定」の行をクリックすると，後でデータをグラフ化する際のグラフのマーカー・線のモードやサイズの設定を変更することができる（<a href="setting.html">各種設定</a>）．
+    </p>
+
+    <p style="margin-left:1rem;">
+      各種設定が済めば，<a href="select_time_acceleration.html">時刻列と加速度列の選択</a>に進む．
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

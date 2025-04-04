@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; 最小二乗近似によるデータの平滑化</h2>
+
+    <p style="margin-left:1rem;">
+      本アプリでは，データの平滑化（ノイズ除去）の方法として，<a href="fourier_smoothing.html">フーリエ変換による方法</a>と最小二乗近似による方法を用意している．
+    </p>
+
+    <p style="margin-left:1rem;">
+      ここでは，例として，下図のような加速度データが得られたとして，最小二乗近似を用いて平滑化<sup> <a href="#reference">1)</a> </sup>する方法を説明する．
+    </p>
+
+    <div class="cfig">
+      <img src="image/pre-smoothed_data.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <br style="clear:both;" />
+
+    <div class="lfig">
+      <img src="image/least-square_smoothing1.png" style="width:80%;max-width:300px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      最小二乗近似による平滑化では，平滑化フィルタ窓内にあるデータに対して，最小二乗法を用いて多項式関数でフィッティングし，フィルタ幅の中央における関数値をその点の平滑化されたデータの値とする．フィルタ窓をデータの左端から右端にずらしていきながら，同様のフィッティングを行って，平滑化されたデータを得る．この方法は，測定データの時間刻み幅が常に一定であれば，Savitzky-Golay平滑化<sup> <a href="#reference">2)</a> </sup>と同じである．
+    </p>
+
+    <br style="clear:both;" />
+
+    <div class="rfig">
+      <br />
+      <img src="image/least-square_smoothing2.png" style="width:90%;max-width:460px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      加速度データを読み込み，「<a href="setting_time_domain.html">分析に使用する時間領域の設定</a>」を行うと，加速度データのグラフが表示され，その下に「加速度データの平滑化」のエリアが現れる．「&#9654; 最小二乗近似による平滑化」の行をクリックすると，最小二乗近似の設定欄が現れる．平滑フィルタの幅をスライダーもしくは数値の入力により設定し，近似する多項式の次数を入力する．データの両端はフィルタ幅がとれないので，自動調整するにチェックを入れておく（チェックを外すと両端が元データからずれる）．設定後，「最小二乗近似による平滑化」ボタンを押すと，平滑化された加速度のグラフが，元の加速度のグラフに重ねて，下図のように表示される（平滑フィルタ幅を0.2，近似する多項式の次数を3に設定）．
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">平滑フィルタ幅0.2，多項式の次数3の場合の平滑化</span><br />
+      <img src="image/least-square_smoothing_width0.2_order3.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+    
+    <p style="margin-left:1rem;">
+      ここで，オレンジ線(smth_awx)が平滑化されたデータであり，緑線(diff_awx)は差分データ（元のデータから平滑化されたデータを引いたもの）を示す．平滑化されたデータのグラフ（オレンジ線）を見ると，細かい振動成分（ノイズ）が元のデータから除去されていることが分かる．
+    </p>
+
+    <p style="margin-left:1rem;">
+      多項式の次数は3のまま変えずに平滑化フィルタの幅を0.5，1.0と増やした場合のグラフを順に以下に示す．急激に変化しているデータに対してフィルタ幅をあまり大きくすると，次数の低い多項式では近似できないことが分かる．
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">平滑フィルタ幅0.5，多項式の次数3の場合の平滑化</span><br />
+      <img src="image/least-square_smoothing_width0.5_order3.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+      <br />
+      <span class="emph2">平滑フィルタ幅1.0，多項式の次数3の場合の平滑化</span><br />
+      <img src="image/least-square_smoothing_width1.0_order3.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      また，平滑化フィルタの幅を0.2，多項式の次数を0にした場合のグラフを以下に示す．次数が0の多項式とは定数のことであり，この場合，定数の値はフィルタ窓内のデータの平均値となる．
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">平滑フィルタ幅0.2，多項式の次数0の場合の平滑化</span><br />
+      <img src="image/least-square_smoothing_width0.2_order0.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="lfig">
+      <br />
+      <img src="image/select_acceleration_for_integral.png" style="width:90%;max-width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      加速度データの平滑化を行うと，「数値積分する加速度データの選択」の欄が現れ，速度を求めるために数値積分する加速度として，「元のデータ」「平滑化データ」「差分データ」のいずれかを選択できるようになる．また，「平滑化のクリア」ボタンを押すと平滑化データと差分データのグラフを消去する．
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      速度や位置のデータについても，最小二乗近似による平滑化を同様に行うことができる．
+    </p>
+
+    <hr />
+
+    <p>
+      <span style="font-weight:bold;" id="reference">【参照】</span>
+      <ol>
+        <li>
+          Peter A. Gorry, General Least-Squares Smoothing and Differentiation of Nonuniformly Spaced Data by the Convolution Method, Analytical Chemistry 63, 534-536 (1991).
+        </li>
+        <li>
+          Abraham. Savitzky and M. J. E. Golay, Smoothing And differentiation of Data by Simplified Least Squares Procedures, Analytical Chemistry 36, 1627-1639 (1964).
+        </li>
+      </ol>
+      
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

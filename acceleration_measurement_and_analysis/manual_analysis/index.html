@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <script src="../qrcode.min.js" charset="utf-8"></script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a class="no_link">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a class="no_link">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2 id="pagetop" style="padding-top:5rem;margin-top:-5rem;">&#9632; Home</h2>
+
+    <p style="margin-left:1rem;">
+      Operation manual for <a href="../acceleration_data_analysis_app.html">Acceleration Data Analysis Web App</a>
+    </p>
+
+    <div style="margin-left:3rem;float:left;text-align:center;"><span class="emph2">QR code of App</span>
+      <table style="margin:0 auto;padding:10px;border:2px solid #3ccdb8;border-radius:10px;"><tr><td><div id="qrcode"></div></td></tr></table>
+    </div>
+
+    <script>
+      const appUrl = "https://w3e.kanazawa-it.ac.jp/math/physics/category/experiment/mobile_device/acceleration_measurement_and_analysis/acceleration_data_analysis_app_jp.html";
+      let qrcode = new QRCode("qrcode",{width:160, height:160});
+      qrcode.makeCode(appUrl);
+    </script>
+
+    <div style="padding-top:1rem;float:left;">
+      <span style="margin-left:2rem;font-weight:bold;">Contents</span>
+      <ul>
+        <li style="padding-bottom:0.3rem;"><a href="analysis_flow.html">Analysis flow</a></li>
+        <li style="padding-bottom:0.3rem;"><a href="operating_guide.html">Operating guide</a></li>
+        <li style="padding-bottom:0.3rem;"><a href="analysis_examples.html">Analysis examples</a></li>
+        <li style="padding-bottom:0.3rem;"><a href="setting.html">Setting</a></li>
+      </ul>
+    </div>
+
+    <br style="clear:both;" /><br />
+
+    <h3>&#9632; Overview</h3>
+    <p style="margin-left:1rem;">
+      This application is an acceleration data analysis web app that calculates velocity and position through numerical integration of acceleration data measured by tools such as <a href="../manual_measurement/index.html">Acceleration measurement Web App</a>, and visualizes the results as graphs. It features data smoothing (noise removal) and coordinate axis transformation using principal component analysis (PCA). Since it can read acceleration data saved in CSV format, it is capable of analyzing acceleration data measured by various acceleration measurement apps.  This is a web application that runs in a web browser and does not require installation.
+    </p>
+    <br />
+
+    <h3>&#9632; System requirements</h3>
+    <ul>
+      <li>
+          <span style="font-weight:bold;">PC with web browsers</span><br />
+          Available if a Javascript-enabled browser is installed.<br />
+          As for OS, Windows, MacOS, or Linux are supported.<br />
+          Browsers that have been tested: Chrome, Edge, Firefox, Safari
+      </li>
+      <br />
+      <li>
+        <span style="font-weight:bold;">Smart phone / Tablet</span><br />
+        <dl>
+          <dt>&#9670; Android : Available in any version (newer is better)</dt>
+          <dd>Browsers that have been tested: Chrome, Edge, Firefox</dd>
+        </dl>
+        <dl>
+          <dt>&#9670; iPhone / iPad : Available in any version (newer is better)</dt>
+          <dd>
+            Browsers that have been tested: Safari<br />
+          </dd>
+        </dl>
+      </li>
+    </ul>
+    <dl style="margin-left:1rem;">
+      <dt><span style="font-weight:bold;">Library used in app</span></dt>
+      <dd style="margin-left:2rem;">
+        The following JavaScript open source libraries are used:<br />
+        <a href="https://mathjs.org/">math.js</a> (ver.14.0.0): Mathematical function library (Apache 2.0 license). Used for computing various mathematical functions and Fourier transforms.<br />
+        <a href="https://www.npmjs.com/package/pca-js">pca.js</a> (ver.1.0.2): Principal component analysis library (MIT license). Used in coordinate axis transformation by principal component analysis.<br />
+        <a href="https://plotly.com/javascript/">Plotly.js</a> (ver.2.35.2): Graphing library (MIT license). Used for graph drawing.
+      </dd>
+    </dl>
+
+    <br />
+
+    <h3>&#9632; Terms of service</h3>
+    <ul>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">Copyright</span><br />
+        The copyright for the content published on this website belongs to the website administrator and is protected by the Copyright Act of Japan and international treaties. When using the content of this website for non-profit personal purposes or in educational institutions, there is no need to obtain permission from the website administrator nor to indicate the source.
+      </li>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">Linking to the Site</span><br />
+        In principle, linking to this website is free. There is no need to obtain permission from the website administrator nor to indicate the source when linking.
+      </li>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">Disclaimer</span><br />
+        The information published on this website may not be up-to-date, and no guarantees are made regarding its accuracy or completeness. The website administrator assumes no responsibility for any troubles or disadvantages arising from the use of information on this website by users.
+      </li>
+      <li style="padding-bottom:0.5rem;"><span style="font-weight:bold;">Others</span><br />
+        The content of this website may be changed or deleted without notice.
+      </li>
+    </ul>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+    <p style="text-align:right;"><a href="../../index.html">Physics Education Apps</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

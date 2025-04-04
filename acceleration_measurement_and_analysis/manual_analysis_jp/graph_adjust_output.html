@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; グラフの調整・出力</h2>
+
+    <p style="margin-left:1rem;">
+      本アプリのグラフは，フリーのチャート作成JavaScriptライブラリ <a href="https://plotly.com/javascript/">Plotly.js</a> (ver.2.35.2) を用いて描画している．PCで本アプリを開いている場合，表示されたグラフ上にマウスカーソルをもっていくと，下図のようにグラフの右上にグラフオプションのボタンが現れる（スマートフォンで本アプリを開いている場合，ボタンは常に表示されている）．
+    </p>
+
+    <div class="cfig">
+      <img src="image/graph_adjust_output1.png" style="width:90%;max-width:500px;"/><br />
+      <span class="emph2">グラフオプションのボタン</span><br />
+      <img src="image/graph_menu_buttons.png" style="width:80%;max-width:400px;border:1px solid #444444;"/>
+    </div>
+
+    <br />
+    <style>
+      td {
+        padding:10px;
+        vertical-align: top;
+      }
+    </style>
+    <table style="margin:0 auto;width:90%;">
+      <tr><th colspan="2">【ボタンの機能の説明】</th></tr>
+      <tr>
+        <td><img src="image/graph_menu_button1.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【カメラボタン】</span>グラフをpng形式で画像として保存する．カメラボタンをクリックすると，ブラウザで設定しているダウンロードフォルダに「newplot.png」というファイル名で保存される．
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button2.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【ズームモードボタン」</span>ズームモードに切り替える（ズームモードとパンモードがあり，デフォルトはズームモードである）．ズームモードにおいて，下図のようにグラフの一部の領域を選択すると，その部分が拡大されてグラフ領域全体に表示される．<br />
+          <div class="cfig">
+            <div style="text-align:center;float:left;margin-right:1rem;">
+              <span class="emph2">ズームする範囲を選択する</span><br />
+              <img src="image/graph_zoom1.png" style="border:1px solid #444444;"/>
+            </div>
+            <div style="text-align:center;float:left;">
+              <span class="emph2">選択した範囲が拡大される</span><br />
+              <img src="image/graph_zoom2.png" style="border:1px solid #444444;"/>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button3.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【パンモードボタン】</span>パンモードに切り替える（ズームモードとパンモードがあり，デフォルトはズームモードである）．パンモードにおいて，下図のようにグラフ上でクリックしながらマウスを動かすと，グラフの表示範囲が移動する．<br />
+          <div class="cfig"><img src="image/graph_pan.gif" style="border:1px solid #444444;"/></div>
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button4.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【ズームインボタン】</span>ボタンを押すごとに，表示されているグラフの中心に向かってズームインしていく．
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button5.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【ズームアウトボタン】</span>ボタンを押すごとに，表示されているグラフの中心からズームアウトしていく．
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button6.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【オートスケールボタン】</span>すべてのデータを表示するようにレイアウトを変更する．
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button7.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【リセットボタン】</span>最初に表示したレイアウトに戻る．本アプリで表示されるグラフにおいては，オートスケールボタンとリセットボタンは全く同じ働きをする．
+        </td>
+      </tr>
+    </table>
+
+    <br />
+
+    <h3>&#9679; グラフ領域のサイズの変更</h3>
+
+    <p style="margin-left:1rem;">
+      下図のように，グラフ領域の枠の右下をクリックしながらマウスを動かすと，グラフ領域のサイズを変更することができる．サイズを変更すると，右下に横幅と縦幅のサイズが赤字で小さく表示される．
+    </p>
+
+    <div class="cfig"><img src="image/change_graph_size.gif" style="border:1px solid #444444;"/></div>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

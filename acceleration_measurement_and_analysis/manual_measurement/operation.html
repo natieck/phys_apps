@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Measurement App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_measurement_app.png" /></div><div id="title">Manual for Acceleration Measurement App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="screen_structure.html">Screen structure</a></li>
+      <li><a class="no_link">Operating method</a></li>
+      <li><a href="measurement_examples.html">Measurement examples</a></li>
+      <li><a href="rotation_correction.html">Rotation correction</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="screen_structure.html">Screen structure</a></li>
+        <li><a class="no_link">Operating method</a></li>
+        <li><a href="measurement_examples.html">Measurement examples</a></li>
+        <li><a href="rotation_correction.html">Rotation correction</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>&#9632; How to operate</h2>
+
+    <ol>
+      <li>
+        <span class="emph1">Setting of sampling rate</span><br />
+        <div class="rfig">
+          <img src="image/operation1.png" width="300" />
+        </div>
+        <div>
+          Use the slider bar to set the sampling rate within the range of 10 Hz to 100 Hz. In the case of 50 Hz, data is measured 50 times per second (time step &Delta;<span class="mathit">t</span> = $\frac{1000}{50}$ = 20 ms). The sampling rate must be set before activating the sensor.
+        </div>
+        <br style="clear:both;" />
+      </li>
+      <li>
+        <span class="emph1">Sensor activation</span><br />
+        <div class="rfig">
+          <img src="image/operation2.png" width="300" />
+        </div>
+        <div>
+          When the sensor 'On/Off' button displays 'On', the sensor is in a diactivated state, and the measurement 'Start' and 'Stop' buttons are disabled (cannot be pressed). In this state, pressing the sensor 'On' button activates the sensor, the button label changes to 'Off', and the measurement 'Start' button becomes enabled. Once the sensor is activated, the graphs of temporal changes of Euler angles and accelerations are displayed (data is not yet being recorded in this state). If the sensor 'Off' button is pressed while the sensor is active, the sensor is diactivated and the measurement 'Start' button is disabled. The sampling rate cannot be changed while the sensor is active.
+        </div>
+        <div class="cfig" style="clear:both;">
+          <span class="emph2">Screen during sensor activation</span><br />
+          <img src="image/operation3.png" width="340" />
+        </div>
+      </li>
+      <li>
+        <span class="emph1">Starting measurement</span>
+        <div>
+          When the measurement 'Start' button is pressed while the sensor is active, the measurement begins and data is recorded. In this state, the measurement 'Start' button and the sensor 'Off' button are disabled, while the measurement 'Stop' button becomes enabled. Once the measurement starts, the value of time <span class="mathit">t</span> increases with the passage of time. The time increases approximately by increments of the time step &Delta;<span class="mathit">t</span>, but there may be some errors depending on the accuracy of the sensor.
+        </div>
+        <div class="cfig">
+          <span class="emph2">Screen during data measurement</span><br />
+          <img src="image/operation4.png" width="340" />
+        </div>
+      </li>
+      <li>
+        <span class="emph1">Stopping measurement</span>
+        <div>
+          When the measurement 'Stop' button is pressed during data measurement, the measurement ends, the measurement 'Stop' button is disabled, and the measurement 'Start' button and sensor 'Off' button become enabled. Note that in this state, pressing the measurement 'Start' button will erase the recorded data and start a new measurement. When the measurement is finished and data has been recorded, it is possible to download the data or access the data analysis application.
+        </div>
+      </li>
+      <li>
+        <span class="emph1">Download data</span>
+        <div>
+          Scrolling down the measurement app screen, there are 'Download data as CSV' button and 'Analyze data' button at the bottom, and these buttons become active when the measurement is finished.
+        </div>
+        <div class="cfig">
+          <span class="emph2">Bottom of screen</span><br />
+          <img src="image/operation5.png" width="330" />
+        </div>
+        <div>
+          When you press the 'Download Data as CSV' button, a save destination selection dialog will appear, allowing you to specify the file name and save location to save the measurement data in CSV format (the default file name will be 'sensor + date and time.csv').
+        </div>
+        <div class="cfig">
+          <span class="emph2">Save destination selection dialog</span><br />
+          <img src="image/operation6.png" width="300" />
+        </div>
+        <div>
+          The first row of the data saved in CSV format is the label row. The columns of the data are as follows: the first column is the time column (label: time[s]), the 2nd to 4th columns are the Euler angles <span class="mathit">&alpha;</span>, <span class="mathit">&beta;</span>, and <span class="mathit">&gamma;</span> (labels: ar[rad], br[rad], gr[rad]), the 5th to 7th columns are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of the acceleration in the device-fixed coordinate system (labels: ax[m/s^2], ay[m/s^2], az[m/s^2]), and the 8th to 10th columns are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of the acceleration in the stationary coordinate system (labels: awx[m/s^2], awy[m/s^2], awz[m/s^2]).
+        </div>
+        <div class="sfig" style="padding: 0.5rem 0;">
+          <span class="emph2">Example of measurement data</span><br />
+          <img src="image/csv_data.png" />
+        </div>
+        <div>
+          If you send the downloaded measurement data to your PC using the file sharing on your smartphone, you can analyze the data on your PC.
+        </div>
+      </li>
+      <li>
+        <span class="emph1">Data analysis</span>
+        <div>
+          After completing the measurement, pressing the 'Analyze Data' button at the bottom of the measurement app screen will take you to <a href="../manual_analysis">Acceleration Analysis App</a>, where you can immediately analyze the measurement data.
+        </div>
+        <div class="cfig">
+          <span class="emph2">Acceleration Analysis App screen on PC</span><br />
+          <img src="image/analysis_app_screen.png" style="width: 80%;border:1px solid #666;"/>
+        </div>
+      </li>
+      <li>
+        <span class="emph1">Language selection</span>
+        <div class="rfig">
+          <img src="image/operation7.png" width="300" />
+        </div>
+        <div>
+          You can switch the display language of the app by selecting either English (EN) or Japanese (JP) from the language selection menu at the top of the measurement app screen (currently, only English and Japanese are available).
+        </div>
+        <br style="clear:both;" />
+    </ol>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; 分析に使用する時間領域の設定</h2>
+
+    <div class="lfig">
+      <img src="image/setting_time_domain1.png" style="width:90%;max-width:380px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      時刻列と加速度列を選択後，選択した加速度データのグラフを確認し，分析に使用する時間領域を設定する．
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      下図の加速度のグラフにおいて，時刻1.6秒から4.6秒の間の加速度データを分析に使用する場合，時間領域の設定で開始時刻に1.6を，終了時刻に4.6を選択する．
+    </p>
+
+    <div class="cfig">
+      <img src="image/setting_time_domain2.png" style="width:80%;max-width:480px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      開始時刻と終了時刻を選択後，右の「決定」ボタンを押すと，設定した時間領域の加速度のグラフが成分ごとに改めて表示される．加速度グラフの上にある「&#9654; 加速度データ」をクリックすると，設定した時間領域の加速度データテーブルが現れる（もう一度クリックすると閉じる）．
+    </p>
+
+    <div class="cfig">
+      <img src="image/read_data4.png" style="width:90%;max-width:640px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      必要に応じて，加速度の<a href="zero_adjust.html">ゼロ調整</a>（加速度データ全体をシフトしてゼロとなる位置を調整する）や加速度データの平滑化（<a href="fourier_smoothing.html">フーリエ変換による平滑化</a>，<a href="least-square_smoothing.html">最小二乗近似による平滑化</a>）を行う．<a href="numerical_integration.html">数値積分</a>により加速度データから速度データを求めるには，初期速度を成分ごとに設定し「速度の計算（数値積分）」を押す．
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

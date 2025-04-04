@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Digital Level</title>
+    <style>
+      .flexbox1{
+        display: flex;
+        flex-direction: column;
+      }
+      .flexbox2{
+        display: flex;
+        flex-direction: row;
+      }
+      .cellbox{
+        padding: 0.5em;
+      }
+      @media (orientation: landscape){
+        .flexbox1{
+          display: flex;
+          flex-direction: row;
+        }
+        .flexbox2{
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flexbox1">
+      <div>
+        <p>
+          <span id="str1" style="font-weight:bold;"></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <select id="lang_select">
+            <option value=0>EN</option>
+            <option value=1>JP</option>
+          </select>
+        </p>
+        <div class="flexbox2" style="margin-left: 1em;">
+          <div class="cellbox"><button id="sensor_button" onclick="sensor_click(this);"></button></div>
+          <div class="cellbox">
+            <span id="str2"></span>&nbsp;
+            <span id="angle_from_horizontal" style="width: 4em; display: inline-block; text-align: center; border: 1px solid black; padding: 2px; font-size: large;">0.00&#0176;</span>
+          </div>
+          <div class="cellbox"><button id="zero_adjustment" onclick="za_click(this)" disabled></button></div>
+        </div>
+      </div>
+      <div id="level_div" style="border: 1px solid #aaa; border-radius: 10px; overflow: hidden; margin: 0 auto;">
+        <canvas id="level_canvas"></canvas>
+      </div>
+    </div>
+
+    <script>
+      let br, gr, br0 = 0, gr0 = 0;  // Euler angles : beta around x axis and gamma around y axis 
+      let ax, ay, az, awx, awy, awz;  // x, y, z components of acceleration including gravity
+      let iosflg = 0;  // iOS flag (0: not iOS, 1: iOS)
+      let sensorflg = 0;  // Sensor flag (0: sensor is not running, 1: sensor is running)
+      let zaflg = 0;  // Zero adjustment flag (0: zero unlock, 1: zero lock)
+      let cwidth;  // canvas width
+      let cnt = 0;  // counter
+      const ncnt = 10;  // maximum number of counter (Angle information is updated every ncnt counts)
+      const radius = 20.5;  // radius of a bubble
+      const degtorad = Math.PI/180, radtodeg = 180/Math.PI;  // for angular unit conversion
+      const bgclr = ["#88ff44","#4488ff","#ff8844"];  // background colors
+
+      let lang;          // language index (0:English, 1:Japanese)
+      const term=[
+        ['Digital Level','デジタル水準器（角度計）'],
+        ['Angle','角度']
+      ];
+      const ntrm = term.length;
+      const bterm = [
+        ['sensor_button','Start','スタート','Stop','ストップ'],
+        ['zero_adjustment','Zero lock','ゼロ点調整','Zero unlock','ゼロ点解除'],
+      ];
+
+      const params = new URLSearchParams(location.search);
+      lang = Number(params.get("lang"));
+
+      document.getElementById("lang_select").options[lang].selected = true;
+      document.getElementById("lang_select").addEventListener("change",lang_select_change);
+
+      function lang_select_change(){
+        lang = Number(document.getElementById("lang_select").value);
+        for(let i = 0; i < ntrm; i++)document.getElementById(`str${i+1}`).innerHTML = term[i][lang];
+        document.getElementById(`${bterm[0][0]}`).innerHTML = bterm[0][sensorflg*2+lang+1]; // sensor button
+        document.getElementById(`${bterm[1][0]}`).innerHTML = bterm[1][zaflg*2+lang+1]; // zero adjustment button
+      }
+
+      lang_select_change();
+
+      cwidth = Math.round(0.80*document.documentElement.clientWidth);
+      if(cwidth === undefined)cwidth = 301;else if(cwidth > document.documentElement.clientHeight)cwidth = document.documentElement.clientHeight;
+      if(!cwidth%2)cwidth--;
+
+      const za_button = document.getElementById('zero_adjustment');
+
+      const canvas = document.getElementById('level_canvas');
+      canvas.width = cwidth;
+      canvas.height = cwidth;
+      const level_div = document.getElementById('level_div');
+      level_div.style.width = `${cwidth-1}px`;
+      level_div.style.height = `${cwidth-1}px`;
+      let cx = (canvas.width-1)/2, cy = (canvas.height-1)/2;
+      let ctx = canvas.getContext('2d');
+      level_draw(cx,cy,0,0,0,0,1);
+
+      function sensor_click(button){
+        sensorflg = 1-sensorflg;
+        if(sensorflg){
+          button.innerHTML = bterm[0][lang+3];
+          if(DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function'){
+            // for iOS 13 or later
+            // Get permission
+            DeviceOrientationEvent.requestPermission()
+            .then(permissionState => {
+              if (permissionState === 'granted') {
+                // Add devicemotion to event listeners if permission is granted
+                window.addEventListener("deviceorientation",ori_sensor,false);
+              }else{
+                // Processing if a permit is not granted
+                alert('DeviceOrientationEvent is not permitted.');
+              }
+            })
+            .catch(console.error) // Case that permission could not be obtained due to non-https communication, etc
+          }else{
+            // Browsers other than the above
+            window.addEventListener("deviceorientation",ori_sensor,false);
+          }
+          if(DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function'){
+            // for iOS 13 or later
+            // Get permission
+            DeviceMotionEvent.requestPermission().then(permissionState => {
+              if (permissionState === 'granted') {
+                // Add devicemotion to event listeners if permission is granted
+                iosflg = 1;
+                window.addEventListener("devicemotion",acc_sensor,false);
+              }else{
+                // Processing if a permit is not granted
+                alert('DeviceMotionEvent is not permitted.');
+              }
+            }).catch(console.error) // Case that permission could not be obtained due to non-https communication, etc
+          }else{
+            // Browsers other than the above
+            window.addEventListener("devicemotion",acc_sensor,false);
+          }
+          za_button.removeAttribute('disabled'); // Release disabled state of Zero adjustment button
+        }else{
+          button.innerHTML = bterm[0][lang+1];
+          window.removeEventListener("deviceorientation",ori_sensor,false);
+          window.removeEventListener("devicemotion",acc_sensor,false);
+          za_button.setAttribute('disabled', true); // Change Zero adjustment to disabled
+        }
+      }
+
+      function ori_sensor(ev){
+        br = (ev.beta || 0)*degtorad;
+        gr = (ev.gamma || 0)*degtorad;
+      }
+      function acc_sensor(ev){
+        if(++cnt > ncnt){
+          cnt = 0;
+          const acc=ev.accelerationIncludingGravity;
+          if(iosflg){
+            // Reverse the sign for iOS
+            awx = -acc.x || 0;
+            awy = -acc.y || 0;
+            awz = -acc.z || 0;
+          }else{
+            awx = acc.x || 0;
+            awy = acc.y || 0;
+            awz = acc.z || 0;
+          }
+          if(zaflg)[ax,ay,az] = transform_acc(awx,awy,awz,br0,gr0);
+          else{
+            ax = awx; ay = awy; az = awz;
+          }
+          let orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+          if(orientation === null || orientation === undefined){
+            if("orientation" in window){
+              if(window.orientation === 0)orientation = "portrait-primary";
+              else if(window.orientation === 90)orientation = "landscape-primary";
+              else if(window.orientation === -90)orientation = "landscape-secondary";
+              else orientation = "portrait-secondary";
+            }else orientation = "portrait-primary";
+          }
+
+          let w, x, y, x0, y0, x1, y1;
+          let flg;
+          let grad;
+          let theta = Math.acos(az/Math.sqrt(ax*ax+ay*ay+az*az))*radtodeg;
+	        if(theta>90)theta = 180-theta;
+
+          if(orientation === "portrait-primary"){
+
+            if(ax){
+              grad = -ay/ax;
+              if(Math.abs(grad) < cy/cx){
+                theta *= Math.sign(ax);
+                x = cx*theta/45;
+                y = x*grad;
+                x0 = 0;
+                x1 = cx*2;
+                y0 = -cx*grad+cy;
+                y1 = cx*grad+cy;
+                if(x>cx){w=cx/x;x=cx;y*=w;}else if(x<-cx){w=-cx/x;x=-cx;y*=w;}
+	            }else{
+                theta *= Math.sign(ay);
+                y = -cy*theta/45;
+                x = y/grad;
+                x0 = -cy/grad+cx;
+                x1 = cy/grad+cx;
+                y0 = 0;
+                y1 = cy*2;
+                if(y>cy){w=cy/y;x*=w;y=cy;}else if(y<-cy){w=-cy/y;x*=w;y=-cy;}
+              }
+            }else if(ay){
+              grad = null;
+              theta *= -Math.sign(ay);
+              x = 0;
+              y = -cy*theta/45;
+              x0 = x1 = cx;
+              y0 = 0;
+              y1 = cy*2;
+              if(y>cy)y=cy;else if(y<-cy)y=-cy;
+            }else{
+              grad = 0;
+              x = y = 0;
+              x0 = y0 = x1 = y1 = 0;
+            }
+
+          }else if(orientation === "landscape-primary"){
+
+            if(ay){
+              grad = ax/ay;
+              if(Math.abs(grad) < cy/cx){
+                theta *= Math.sign(ay);
+                x = -cx*theta/45;
+                y = x*grad;
+                x0 = 0;
+                x1 = cx*2;
+                y0 = -cx*grad+cy;
+                y1 = cx*grad+cy;
+                if(x>cx){w=cx/x;x=cx;y*=w;}else if(x<-cx){w=-cx/x;x=-cx;y*=w;}
+	            }else{
+                theta *= Math.sign(ax);
+                y = -cy*theta/45;
+                x = y/grad;
+                x0 = -cy/grad+cx;
+                x1 = cy/grad+cx;
+                y0 = 0;
+                y1 = cy*2;
+                if(y>cy){w=cy/y;x*=w;y=cy;}else if(y<-cy){w=-cy/y;x*=w;y=-cy;}
+              }
+            }else if(ax){
+              grad = null;
+              theta *= Math.sign(ax);
+              x = 0;
+              y = -cy*theta/45;
+              x0 = x1 = cx;
+              y0 = 0;
+              y1 = cy*2;
+              if(y>cy)y=cy;else if(y<-cy)y=-cy;
+            }else{
+              grad = 0;
+              x = y = 0;
+              x0 = y0 = x1 = y1 = 0;
+            }
+
+          }else if(orientation === "portrait-secondary"){
+
+            if(ax){
+              grad = -ay/ax;
+              if(Math.abs(grad) < cy/cx){
+                theta *= -Math.sign(ax);
+                x = cx*theta/45;
+                y = x*grad;
+                x0 = 0;
+                x1 = cx*2;
+                y0 = -cx*grad+cy;
+                y1 = cx*grad+cy;
+                if(x>cx){w=cx/x;x=cx;y*=w;}else if(x<-cx){w=-cx/x;x=-cx;y*=w;}
+	            }else{
+                theta *= -Math.sign(ay);
+                y = -cy*theta/45;
+                x = y/grad;
+                x0 = -cy/grad+cx;
+                x1 = cy/grad+cx;
+                y0 = 0;
+                y1 = cy*2;
+                if(y>cy){w=cy/y;x*=w;y=cy;}else if(y<-cy){w=-cy/y;x*=w;y=-cy;}
+              }
+            }else if(ay){
+              grad = null;
+              theta *= -Math.sign(ay);
+              y = -cy*theta/45;
+              x = 0;
+              x0 = x1 = cx;
+              y0 = 0;
+              y1 = cy*2;
+              if(y>cy)y=cy;else if(y<-cy)y=-cy;
+            }else{
+              grad = 0;
+              x = y = 0;
+              x0 = y0 = x1 = y1 = 0;
+            }
+
+          }else{
+
+            if(ay){
+              grad = ax/ay;
+              if(Math.abs(grad) < cy/cx){
+                theta *= Math.sign(ay);
+                x = cx*theta/45;
+                y = x*grad;
+                x0 = 0;
+                x1 = cx*2;
+                y0 = -cx*grad+cy;
+                y1 = cx*grad+cy;
+                if(x>cx){w=cx/x;x=cx;y*=w;}else if(x<-cx){w=-cx/x;x=-cx;y*=w;}
+	            }else{
+                theta *= -Math.sign(ax);
+                y = -cy*theta/45;
+                x = y/grad;
+                x0 = -cy/grad+cx;
+                x1 = cy/grad+cx;
+                y0 = 0;
+                y1 = cy*2;
+                if(y>cy){w=cy/y;x*=w;y=cy;}else if(y<-cy){w=-cy/y;x*=w;y=-cy;}
+              }
+            }else if(ax){
+              grad = null;
+              theta *= -Math.sign(ax);
+              x = 0;
+              y = -cy*theta/45;
+              x0 = x1 = cx;
+              y0 = 0;
+              y1 = cy*2;
+              if(y>cy)y=cy;else if(y<-cy)y=-cy;
+            }else{
+              grad = 0;
+              x = y = 0;
+              x0 = y0 = x1 = y1 = 0;
+            }
+
+          }
+
+          if(Math.sqrt(x*x+y*y) > radius+5)flg = 1;else flg = 0;
+          x += cx;
+          y += cy;
+
+          document.getElementById('angle_from_horizontal').innerHTML=`${theta.toFixed(2)}&#0176;`;
+          level_draw(x,y,x0,y0,x1,y1,flg);
+        }
+      }
+
+      // Rotational Transformation of acceleration [ Order of Euler angles : Rz(0)*Rx(beta)*Ry(gamma)]
+      function transform_acc(acx,acy,acz,ebr,egr){
+        let csb = Math.cos(ebr);
+        let snb = Math.sin(ebr);
+        let csg = Math.cos(egr);
+        let sng = Math.sin(egr);
+        let wx = csg*acx+sng*acz;
+        let wy = snb*sng*acx+csb*acy-csg*snb*acz;
+        let wz = -csb*sng*acx+snb*acy+csb*csg*acz;
+        return [wx,wy,wz];
+      }
+
+      function level_draw(x,y,x0,y0,x1,y1,flg){
+        ctx.fillStyle = bgclr[(!flg?2:zaflg)];
+        ctx.fillRect(0,0,canvas.width-1,canvas.height-1);
+
+        ctx.strokeStyle = "#99bb44";
+        ctx.fillStyle = "#ffffdd";
+        ctx.beginPath();
+        ctx.setLineDash([]);
+        ctx.arc(x, y, radius, 0, Math.PI*2);
+        ctx.fill();
+        ctx.moveTo(x-radius+1,y);
+        ctx.lineTo(x+radius-1,y);
+        ctx.moveTo(x,y-radius+1);
+        ctx.lineTo(x,y+radius-1);
+        ctx.stroke();
+
+        if(flg){
+          ctx.strokeStyle = "#88aaff";
+          ctx.beginPath();
+          ctx.setLineDash([5, 5]);
+          ctx.moveTo(x0,y0);
+          ctx.lineTo(x1,y1);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#22aa44';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 5, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      function za_click(button){
+        zaflg = 1-zaflg;
+        if(zaflg){
+          button.innerHTML = bterm[1][lang+3];
+          br0 = br;
+          gr0 = gr;
+        }else{
+          button.innerHTML = bterm[1][lang+1];
+          br0 = gr0 = 0;
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Acceleration Data Analysis App</title>
+    <script src="math.min.js" charset="utf-8"></script>
+    <script src="pca.min.js" charset="utf-8"></script>
+    <script src="plotly-2.35.2.min.js" charset="utf-8"></script>
+    <script src="general_least-squares_smoothing.js" charset="utf-8"></script>
+  </head>
+<body>
+
+<style type="text/css">
+	.tborder {border: 1px #000000 solid; border-collapse: collapse; margin: auto; font-size: small;}
+	.tborder th {border: 1px #000000 solid; border-collapse: collapse; text-align: center; background-color:#66aaff; padding: 0 10px}
+	.tborder td {border: 1px #000000 solid; border-collapse: collapse; text-align: right; padding: 0 10px}
+  .plotly_graph {
+    border: 1px #888888 solid;
+    resize: both;
+    overflow: hidden;
+    position: static;
+  }
+  .whsize {
+    width: 64px;
+    height: 16px;
+    line-height:80%;
+    position: absolute;
+  }
+  @keyframes fadeOut {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+  }
+  .fade-out {
+    animation: fadeOut 3s forwards;
+  }
+</style>
+
+<a name="pagetop"></a>
+
+<h2>Acceleration Data Analysis App.</h2>
+
+<span style="font-weight:bold;">&#9679; Upload CSV file of acceleration data</span>
+<div style="margin-left:1em;">
+<input type="file" id="file_input" accept="text/csv" />
+&nbsp;&nbsp;
+<label><input type="checkbox" id="check_label" checked />Labels in the first row</label>
+</div>
+
+<br />
+
+<details open id="data_details" style="margin-left:1em;display:none;">
+  <summary>Read data</summary>
+  <span id="sensor_data_download"></span>
+  <div style="overflow:auto;white-space:nowrap;height:300px;">
+    <table id="data_table" class="tborder"></table>
+  </div>
+  <p style="margin-left:1em;">&lt;Unit setting&gt;&nbsp;&nbsp;Unit of length:
+    <select id="length_unit" onchange="unit_change()">
+      <option value="km">kilometer</option>
+      <option value="m" selected>meter</option>
+      <option value="cm">centimeter</option>
+      <option value="mm">millimeter</option>
+    </select>
+    &nbsp;&nbsp;Unit of time:
+    <select id="time_unit" onchange="unit_change()">
+      <option value="h">hour</option>
+      <option value="min">minute</option>
+      <option value="s" selected>second</option>
+      <option value="ms">millisecond</option>
+    </select>
+  </p>
+</details>
+
+<br />
+
+<div id="time_acc_items" style="display:none;">
+  <details>
+    <summary><span style="font-weight:bold;">Graph marker and line settings</span></summary>
+    &nbsp;&nbsp;Mode:
+    <select id="plot_mode" onchange="plot_mode_change()">
+      <option value="markers">Marker</option>
+      <option value="lines" selected>Line</option>
+      <option value="lines+markers">Marker + Line</option>
+    </select>
+    &nbsp;&nbsp;&nbsp;&nbsp;Size and Width: Small&nbsp;<input type="range" value="2" min="0" max="8" id="plot_size" onchange="plot_size_change()" />&nbsp;Large
+  </details>
+  <br />
+  <span style="font-weight:bold;">&#9679; Selection of time and acceleration columns</span>
+  <div style="margin-left:1em;">
+    Time column:&nbsp;<select id="time_select"></select>&nbsp;&nbsp;<span style="color:red;font-size:smaller">If you change the time column, re-select the acceleration columns.</span>
+    <br />
+    &#x21E9; Acceleration columns (Multiple selections allowed, up to 3)&nbsp;&nbsp;<span id="message_acc_select" style="color:red;font-size:smaller"></span><br />
+    <select id="acc_select" multiple></select>&nbsp;&nbsp;<button onclick="select_time_acc();">Confirm</button>&nbsp;&nbsp;
+    <span id="message_time_acc_items"></span>
+  </div>
+  <br />
+</div>
+
+<div id="time_range" style="display:none;">
+  <div id="data_graph" class="plotly_graph"><div class="whsize"></div></div>
+  <br />
+  <span style="font-weight:bold;">&#9679; Setting of time domain to be used for analysis</span>
+  <div style="margin-left:1em;">
+    Start time<select id="start_time_select"></select>&nbsp;&nbsp;
+    End time<select id="end_time_select"></select>&nbsp;&nbsp;
+    <button onclick="select_time_range();">Select</button>&nbsp;&nbsp;
+    <span id="message_time_range"></span>
+  </div>
+  <br />
+</div>
+
+<details id="acc_details" style="margin-left:1em;display:none;">
+  <summary>Acceleration data</summary>
+  &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="download_acc_data();">Download</button>&nbsp;&nbsp;
+  <span style="color:red;font-size:smaller">as CSV file</span>
+  <div id="acc_area" style="overflow:auto;white-space:nowrap;height:300px;">
+    <table id="acc_table" class="tborder"></table>
+  </div>
+</details>
+
+<div id="acc_graph" style="margin-left:1em;display:none;">
+  <div id="acc_graph0" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+  <div id="acc_graph1" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+  <div id="acc_graph2" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+</div>
+
+<br style="clear:both;"/><br />
+
+<div id="acc_smoothing" style="display:none;">
+  <details id="acc_zero_adjust">
+    <summary><span style="font-weight:bold;">Zero adjustment for acceleration</span></summary>
+    <div id="acc_zero_adjust_area" style="margin-left:1em;"></div>
+  </details>
+  <br />
+
+  <span style="font-weight:bold;">&#9679; Smoothing of acceleration data</span>
+
+  <details id="acc_fourier_transformation" style="margin-left:1em;">
+    <summary><span style="font-weight:bold;">Smoothing by Fourier transform</span></summary>
+    <div style="margin-left:1em;">
+      <button onclick="acc_fft();">Fourier transform</button>
+      <label><input type="checkbox" id="check_acc_fft_flag" checked />Time step is not constant</label>
+      (Number of time decompositions:<input id="acc_fft_div" type="range" /><span id="acc_fft_ndiv_value"></span>)
+      <div id="acc_fft_graph" style="display:none;" class="plotly_graph"><div class="whsize"></div></div>
+    </div>
+    <div id="acc_inverse_fourier_transformation" style="margin-left:1em;display:none;">
+      <button onclick="acc_ifft_smoothing();">Smoothing by inverse Fourier transform</button>&nbsp;
+      Cutoff frequency: <input id="acc_ifft_cut_freq" type="range" /><span id="acc_ifft_cut_freq_value"></span>
+    </div>
+    <br />
+  </details>
+
+  <details id="acc_least_square_smoothing" style="margin-left:1em;">
+    <summary><span style="font-weight:bold;">Smoothing by least squares approximation</span></summary>
+    <div style="margin-left:1em;">
+      Width of smoothing filter: <input id="acc_filter_width" type="range" />&nbsp;&nbsp;<input type="number" id="acc_filter_width_value" step="0.1" />
+      &nbsp;&nbsp;<span id="message_acc_least_square_smoothing"></span><br />
+      Degree of polynomial to be approximated: <input type="number" id="acc_polynomial_order" value="3" min="0" max="10" /><br />
+      <label><input type="checkbox" id="check_acc_flag" checked />Automatic width adjustment at the beginning and end of data where filter width cannot be applied.</label><br />
+      <button onclick="acc_least_square_smoothing();">Smoothing by least squares approximation</button>
+    </div>
+    <br />
+  </details>
+
+  <div id="acc_for_integral_items" style="margin-left:1em;display:none;">
+    <br />
+    <span style="font-weight:bold;">Selection of acceleration data for numerical integration</span>
+    &nbsp;&nbsp;<button onclick="clear_acc_smoothing();">Clear smoothing</button>
+    <br />
+    <form id="acc_for_integral_radio_select">
+      <label><input type="radio" name="acc_radio" value="0" checked />Original data</label>
+      <label><input type="radio" name="acc_radio" value="1" />Smoothed data</label>
+      <label><input type="radio" name="acc_radio" value="2" />Difference data</label>
+    </form>
+  </div>
+
+</div>
+
+<br />
+
+<div id="set_initial_velocity" style="display:none;"></div>
+
+<br />
+
+<details id="vel_details" style="margin-left:1em;display:none;">
+  <summary>Velocity data</summary>
+  &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="download_vel_data();">Download</button>&nbsp;&nbsp;
+  <span style="color:red;font-size:smaller">as CSV file</span>
+  <div id="vel_area" style="overflow:auto;white-space:nowrap;height:300px;">
+    <table id="vel_table" class="tborder"></table>
+  </div>
+</details>
+
+<div id="vel_graph" style="margin-left:1em;display:none;">
+  <div id="vel_graph0" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+  <div id="vel_graph1" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+  <div id="vel_graph2" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+</div>
+
+<br style="clear:both;"/><br />
+
+<div id="vel_smoothing" style="display:none;">
+  <details id="vel_zero_adjust">
+    <summary><span style="font-weight:bold;">Zero adjustment for velocity</span></summary>
+    <div id="vel_zero_adjust_area" style="margin-left:1em;"></div>
+  </details>
+  <br />
+
+  <span style="font-weight:bold;">&#9679; Smoothing of velocity data</span>
+
+  <details id="vel_fourier_transformation" style="margin-left:1em;">
+    <summary><span style="font-weight:bold;">Smoothing by Fourier transform</span></summary>
+    <div style="margin-left:1em;">
+      <button onclick="vel_fft();">Fourier transform</button>
+      <label><input type="checkbox" id="check_vel_fft_flag" checked />Time step is not constant</label>
+      (Number of time decompositions:<input id="vel_fft_div" type="range" /><span id="vel_fft_ndiv_value"></span>)
+      <div id="vel_fft_graph" style="display:none;" class="plotly_graph"><div class="whsize"></div></div>
+    </div>
+    <div id="vel_inverse_fourier_transformation" style="margin-left:1em;display:none;">
+      <button onclick="vel_ifft_smoothing();">Smoothing by inverse Fourier transform</button>&nbsp;
+      Cutoff frequency: <input id="vel_ifft_cut_freq" type="range" /><span id="vel_ifft_cut_freq_value"></span>
+    </div>
+    <br />
+  </details>
+
+  <details id="vel_least_square_smoothing" style="margin-left:1em;">
+    <summary><span style="font-weight:bold;">Smoothing by least squares approximation</span></summary>
+    <div style="margin-left:1em;">
+      Width of smoothing filter: <input id="vel_filter_width" type="range" />&nbsp;&nbsp;<input type="number" id="vel_filter_width_value" step="0.1" />
+      &nbsp;&nbsp;<span id="message_vel_least_square_smoothing"></span><br />
+      Degree of polynomial to be approximated: <input type="number" id="vel_polynomial_order" min="0" max="10" /><br />
+      <label><input type="checkbox" id="check_vel_flag" />Automatic width adjustment at the beginning and end of data where filter width cannot be applied.</label><br />
+      <button onclick="vel_least_square_smoothing();">Smoothing by least squares approximation</button>
+    </div>
+    <br />
+  </details>
+
+  <div id="vel_for_integral_items" style="margin-left:1em;display:none;">
+    <br />
+    <span style="font-weight:bold;">Selection of velocity data for numerical integration</span>
+    &nbsp;&nbsp;<button onclick="clear_vel_smoothing();">Clear smoothing</button>
+    <br />
+    <form id="vel_for_integral_radio_select">
+      <label><input type="radio" name="vel_radio" value="0" checked />Original data</label>
+      <label><input type="radio" name="vel_radio" value="1" />Smoothed data</label>
+      <label><input type="radio" name="vel_radio" value="2" />Difference data</label>
+    </form>
+  </div>
+
+</div>
+
+<br />
+
+<div id="set_initial_position" style="display:none;"></div>
+
+<br />
+
+<details id="pos_details" style="margin-left:1em;display:none;">
+  <summary>Position data</summary>
+  &nbsp;&nbsp;&nbsp;&nbsp;<button onclick="download_pos_data();">Download</button>&nbsp;&nbsp;
+  <span style="color:red;font-size:smaller">as CSV file</span>
+  <div id="pos_area" style="overflow:auto;white-space:nowrap;height:300px;">
+    <table id="pos_table" class="tborder"></table>
+  </div>
+</details>
+
+<div id="pos_graph" style="margin-left:1em;display:none;">
+  <div id="pos_graph0" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+  <div id="pos_graph1" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+  <div id="pos_graph2" style="float:left;display:none;" class="plotly_graph"><div class="whsize"></div></div>
+</div>
+
+<br style="clear:both;"/><br />
+
+<div id="pos_smoothing" style="display:none;">
+  <details id="pos_zero_adjust">
+    <summary><span style="font-weight:bold;">Zero adjustment for position</span></summary>
+    <div id="pos_zero_adjust_area" style="margin-left:1em;"></div>
+  </details>
+  <br />
+
+  <span style="font-weight:bold;">&#9679; Smoothing of position data</span>
+
+  <details id="pos_fourier_transformation" style="margin-left:1em;">
+    <summary><span style="font-weight:bold;">Smoothing by Fourier transform</span></summary>
+    <div style="margin-left:1em;">
+      <button onclick="pos_fft();">Fourier transform</button>
+      <label><input type="checkbox" id="check_pos_fft_flag" checked />Time step is not constant</label>
+      (Number of time decompositions:<input id="pos_fft_div" type="range" /><span id="pos_fft_ndiv_value"></span>)
+      <div id="pos_fft_graph" style="display:none;" class="plotly_graph"><div class="whsize"></div></div>
+    </div>
+    <div id="pos_inverse_fourier_transformation" style="margin-left:1em;display:none;">
+      <button onclick="pos_ifft_smoothing();">Smoothing by inverse Fourier transform</button>&nbsp;
+      Cutoff frequency: <input id="pos_ifft_cut_freq" type="range" /><span id="pos_ifft_cut_freq_value"></span>
+    </div>
+    <br />
+  </details>
+
+  <details id="pos_least_square_smoothing" style="margin-left:1em;">
+    <summary><span style="font-weight:bold;">Smoothing by least squares approximation</span></summary>
+    <div style="margin-left:1em;">
+      Width of smoothing filter: <input id="pos_filter_width" type="range" />&nbsp;&nbsp;<input type="number" id="pos_filter_width_value" step="0.1" />
+      &nbsp;&nbsp;<span id="message_pos_least_square_smoothing"></span><br />
+      Degree of polynomial to be approximated: <input type="number" id="pos_polynomial_order" /><br />
+      <label><input type="checkbox" id="check_pos_flag" />Automatic width adjustment at the beginning and end of data where filter width cannot be applied.</label><br />
+      <button onclick="pos_least_square_smoothing();">Smoothing by least squares approximation</button>
+    </div>
+    <br />
+  </details>
+
+  <div id="pos_for_output_items" style="margin-left:1em;display:none;">
+    <br />
+    <span style="font-weight:bold;">Selection of position data to be output</span>
+    &nbsp;&nbsp;<button onclick="clear_pos_smoothing();">Clear smoothing</button>
+    <br />
+    <form id="pos_for_output_radio_select">
+      <label><input type="radio" name="pos_radio" value="0" checked />Original data</label>
+      <label><input type="radio" name="pos_radio" value="1" />Smoothed data</label>
+      <label><input type="radio" name="pos_radio" value="2" />Difference data</label>
+    </form>
+  </div>
+
+</div>
+
+<br />
+
+<div id="acc_vel_pos_output" style="display:none;">
+  <span style="font-weight:bold;">&#9679; Acceleration, velocity and position data output</span>
+  &nbsp;&nbsp;<button onclick="merge_acc_vel_pos_data();">Output</button><span id="data_download"></span><br /><br />
+  <div id="acc_vel_pos_area" style="margin-left:1em;overflow:auto;white-space:nowrap;display:none;">
+    <table id="acc_vel_pos_table" class="tborder"></table>
+  </div>
+  <br />
+  <div id="acc_vel_pos_graph" style="margin-left:1em;display:none;">
+    <div id="tacc_graph" style="float:left;" class="plotly_graph"><div class="whsize"></div></div>
+    <div id="tvel_graph" style="float:left;" class="plotly_graph"><div class="whsize"></div></div>
+    <div id="tpos_graph" style="float:left;" class="plotly_graph"><div class="whsize"></div></div>
+  </div>
+</div>
+
+<br style="clear:both;" /><br />
+
+<div id="trajectory" style="display:none;">
+  <span style="font-weight:bold;">&#9679; Trajectory plot</span><br />
+  <div style="margin-left:1em;">
+    <span style="font-weight:bold;">Selection of time domain</span><br />
+    <div style="margin-left:1em;">
+      Start time<select id="trjc_start_time_select"></select>&nbsp;&nbsp;
+      End time<select id="trjc_end_time_select"></select>&nbsp;&nbsp;
+      <button onclick="plot_trajectory();">Select</button>
+      &nbsp;&nbsp;<span id="message_trjc_time_range"></span>
+    </div>
+    <div id="trajectory_plot" style="display:none;" class="plotly_graph"><div class="whsize"></div></div>
+    <div id="message_trajectory"></div>
+  </div>
+</div>
+
+<br />
+
+<details id="axis_conversion_with_pca" style="display:none;">
+  <summary><span style="font-weight:bold;">Conversion of coordinate axes by principal component analysis</span></summary>
+  <div style="margin-left:1em;">
+    <span style="font-weight:bold;">Selection of data columns for principal component analysis (more than 2 and less than 3)</span>
+    <div style="margin-left:1em;">
+      <form id="pca_data_radio_select">
+        <label><input type="radio" name="motion_data" value="acc" checked />Acceleration</label>
+        <label><input type="radio" name="motion_data" value="vel" />Velocity</label>
+        <label><input type="radio" name="motion_data" value="pos" />Position</label>
+      </form>
+      <select id="pca_data_select" multiple></select>
+      <span id="message_pca_data_select"></span><br />
+    </div>
+    <span style="font-weight:bold;">Selection of time domain</span><br />
+    <div style="margin-left:1em;">
+      Start time<select id="pca_start_time_select"></select>&nbsp;&nbsp;
+      End time<select id="pca_end_time_select"></select>&nbsp;&nbsp;
+      <button onclick="calc_pca();">Select</button>
+      &nbsp;&nbsp;<span id="message_pca_time_range"></span>
+    </div>
+  </div>
+</div>
+
+<div id="pca_result" style="margin-left:1em;display:none;">
+  <div id="pca_coeff"></div>
+  <div id="pca_graph" class="plotly_graph"><div class="whsize"></div></div>
+  <button onclick="all_axis_conversion();">Convert coordinate axes of output data</button>
+</div>
+
+</div>
+
+</details>
+
+<hr />
+<p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+<script>
+  let data;  // Read data
+  let nrow,ncol;  // Number of rows and columns of read data
+  let time_index;  // Time column number
+  let nacc=0;  // Number of acceleration data
+  let nuacc=0,nuvel=0,nupos=0;  // Number of acceleration, velocity, and position data in smoothing process
+  let npca=0;  // Number of principal component analysis data
+  let acc_rv,vel_rv,pos_rv;  // Value of radio button selected for acceleration, velocity, and position data in smoothing process
+  let acc_index=[];  // Selection option number for acceleration data
+  let iacc_index=[],ivel_index=[];  // Selection option number for acceleration and velocity data to be integrated
+  let pca_index=[];  // Selection option number for principal component analysis data
+  let time0_data,acc0_data=[];  // Time data，Acceleration data
+  let time_data=[];  // Time data with specified time domain 
+  let acc_data=[],unif_acc_data=[];  // Acceleration data integrated with smoothed data, Difference data in specified time domain
+  let vel_data=[],unif_vel_data=[];  // Velocity data integrated with smoothed data, Difference data in specified time domain
+  let pos_data=[],unif_pos_data=[];  // Position data integrated with smoothed data, Difference data in specified time domain
+  let acc_vel_pos_data=[]; // Integrated data of acceleration, velocity and position data
+  let trjc_data=[],trjc_vel=[],trjc_acc=[];  // Trajectory data, velocity data, acceleration data for trajectory
+  let acc_fft_data=[];  // Fourier transform data for acceleration
+  let vel_fft_data=[];  // Fourier transform data for velocity
+  let pos_fft_data=[];  // Fourier transform data for position
+  let ntwidth;  // Number of time data with specified time domain
+  let pcares;  // Result of principal component analysis (eigenvalues and eigenvectors)
+  let step=0,dstep=1;  // Step number of trajectory plot
+  let vec_len=10;  // Base length of velocity and acceleration vectors for trajectory plot
+  let stopflag=0;  // Stop flag of trajectory animation
+  let width1,width2,height1,height2;  // width and height for graph plot
+  let trjc_start_time_index,aid,dtt;  // Start time index of trajectory, animation ID
+  let time_unit, acc_unit,vel_unit,pos_unit;  // Text of unit for time, acceleration, velocity and position
+  let plot_mode='lines';  // Mode of marker and line for graph plot
+  let marker_size,line_width;  // marker size and line width
+  const zero_adjust_val={acc:[0,0,0],vel:[0,0,0],pos:[0,0,0]};  // Values of zero adjustment
+  const dev_type=device_judgement();  // Type of device
+  const cstr=['1st','2nd','3rd'];  // strings for PCA
+  const trjc_elem=document.getElementById('trajectory_plot');  // element of div for trajectory plot
+  let tpdata,pdata;  // trajectory data for plotly.js
+  let vel_arw,acc_arw,vel_cone,acc_cone;  // velocity and acceleration arrow layouts, velocity and acceleration cones
+  const conescale=0.05;  // scale of cone for velocity and acceleration 3d-vectors
+
+  // Detection of running device
+  function device_judgement(){
+    if(window.matchMedia){
+        if(window.matchMedia('(max-device-width: 768px)').matches){
+            return 'phone';
+        }else if(window.matchMedia("(any-hover:hover)").matches){
+            return 'pc';
+        }else{
+            return 'tablet';
+        }
+    }else{
+        return 'unknown';
+    }
+  }
+
+  // Display different messages for smartphones and PCs in acceleration selection option.
+  if(dev_type==='phone'){
+    let bw=document.documentElement.clientWidth;
+    width1=width2=bw;
+    height1=height2=math.round(0.75*bw);
+    document.getElementById('message_acc_select').innerHTML='Be sure to press the "Select" button after making your selection.'
+  }else{
+    width1=600;height1=math.round(0.75*width1);
+    width2=480;height2=math.round(0.75*width2);
+    document.getElementById('message_acc_select').innerHTML='Hold down the Shift or Ctrl key while clicking on an item to make multiple selections.'
+  }
+
+  unit_change();       // Setting of unit
+  plot_mode_change();  // Mode setting of marker and line for graph plot
+  plot_size_change();  // Size setting of marker and line for graph plot
+
+  // Read acceleration CSV data acquired by the sensor app in the Web storage (sessionStorage) if available.
+  const data_str=sessionStorage.getItem('acceleration_data');
+  sessionStorage.removeItem('acceleration_data');
+  if(data_str!=null){
+    processData(data_str);
+    let insertElement='&nbsp;&nbsp;&nbsp;&nbsp;<button onclick="download_sensor_data();">Download</button>';
+    insertElement+='&nbsp;&nbsp;<span style="color:red;font-size:smaller">as CSV file</span>';
+    document.getElementById('sensor_data_download').innerHTML=insertElement;
+  }
+
+  // Once the file is selected, the data will be read.
+  document.getElementById('file_input').addEventListener('change',function(event){
+    const file=event.target.files[0];
+    readFile(file);
+    document.getElementById('sensor_data_download').innerHTML='';
+  });
+
+  // If the div area where a graph is plotted is resized, the plot size is changed according to the area size.
+  const elems = document.querySelectorAll('.plotly_graph');
+  elems.forEach(elem => {
+    new ResizeObserver((entries) => {
+      if(entries[0].target.classList.contains('js-plotly-plot')){
+        const x = entries[0].target.getBoundingClientRect().left + window.pageXOffset;
+        const y = entries[0].target.getBoundingClientRect().top + window.pageYOffset;
+        const w = entries[0].contentBoxSize ? entries[0].contentBoxSize[0].inlineSize : entries[0].contentRect.width;
+        const h = entries[0].contentBoxSize ? entries[0].contentBoxSize[0].blockSize : entries[0].contentRect.height;
+        Plotly.relayout(entries[0].target,{autosize: true});
+        const d = entries[0].target.querySelector('.whsize');
+        d.innerHTML = `<span style="font-size:x-small;color:#ff8888;" class="fade-out">${w} x ${h}</span>`;
+        d.style.left = `${x+w-70}px`;
+        d.style.top = `${y+h-20}px`;
+      }
+    }).observe(elem);
+  });
+
+  // Function to read a file using the FileReader API
+  function readFile(file){
+      const reader=new FileReader();
+
+      // When loading is complete, proceed to processing CSV data.
+      reader.onload=function(event){
+          const csvData=event.target.result;
+          processData(csvData);
+      };
+
+      // Read file as text
+      reader.readAsText(file);
+  }
+
+  // Functions to process CSV data
+  function processData(csvData){
+    let i;
+
+    // Split CSV data by rows
+    const rows=csvData.split('\n');
+
+    // Each row is divided by comma and stored in a 2-dimensional data array
+    data=rows.map(row => row.split(','));
+
+    // If the number of data in the last row of 2D array data is less than the number of data in the first row, delete the last row.
+    nrow=data.length;
+    ncol=data[0].length;
+    if(data[nrow-1].length<ncol){
+      data.pop();
+      nrow--;
+    }
+
+    // If there is a "\r" (CR: carriage return) in the new line code of each line of stored data, delete it.
+    for(i=0;i<nrow;i++)data[i][ncol-1]=data[i][ncol-1].replace(/\r/g,'');
+
+    // If the first line of data is not a label, it is labeled item#.
+    if(document.getElementById('check_label').checked==false){
+      let label=[];
+      for(i=1;i<=ncol;i++)label.push('item'+String(i));
+      data.splice(0,0,label);
+    }
+
+    clear_area(0);  // Clear display
+
+    // Option generation when selecting time and acceleration columns
+    let insertElement1='';
+    let insertElement2='';
+    let insertElement3='';
+    time_index=0;
+    data.forEach((element,index) => {
+      if(index==0){
+        insertElement1='<tr style="position:sticky;top:0px;"><th>No.</th>';
+        element.forEach((childElement,num) => {
+          insertElement1+=`<th>${childElement}</th>`;
+          if(num!=parseInt(time_index)){
+            insertElement2+=`<option value="${num}">${childElement}</option>`;
+            insertElement3+=`<option value="${num}">${childElement}</option>`;
+          }
+          else insertElement2=`<option value="${num}" selected>${childElement}</option>`;
+        });
+        insertElement1+='</tr>';
+      }else{
+        insertElement1+=`<tr><td>${index}</td>`;
+        element.forEach((childElement) => {
+          insertElement1+=`<td>${childElement}</td>`;
+        });
+        insertElement1+='</tr>';
+     }
+    });
+    document.getElementById('data_table').innerHTML=insertElement1;
+    document.getElementById('time_select').innerHTML=insertElement2;
+    document.getElementById('time_select').addEventListener('change',time_select_change);
+    document.getElementById('acc_select').innerHTML=insertElement3;
+    document.getElementById('data_details').style.display='block';
+    document.getElementById('time_acc_items').style.display='block';
+  }
+
+  // Change of Unit
+  function unit_change(){
+    let length_unit=document.getElementById('length_unit').value;
+    time_unit=document.getElementById('time_unit').value;
+    pos_unit='['+length_unit+']';
+    vel_unit='['+length_unit+'/'+time_unit+']';
+    acc_unit='['+length_unit+'/'+time_unit+'<sup>2</sup>'+']';
+  }
+
+  // Change of the mode of marker and line for graph plot
+  function plot_mode_change(){
+    plot_mode=document.getElementById('plot_mode').value;
+  }
+
+  // Change of the size of marker and the width of line for graph plot
+  function plot_size_change(){
+    const val=Number(document.getElementById('plot_size').value);
+    marker_size=val+1;
+    line_width=math.floor(val/3)+1;
+  }
+
+  // Change of time column
+  function time_select_change(){
+    time_index=document.getElementById('time_select').value;
+    let insertElement='';
+    data[0].forEach((element,index) => {
+      if(index!=parseInt(time_index)){
+        insertElement+=`<option value="${index}">${element}</option>`;
+      }
+    });
+    document.getElementById('acc_select').innerHTML=insertElement;
+  }
+
+  // Processing when selecting time and acceleration columns
+  function select_time_acc(){
+    let i,j;
+
+    clear_area(1);
+
+    nacc=0;
+    acc_index.length=0;
+    acc_data.length=0;
+    for(let option of document.getElementById('acc_select').options){
+      if(option.selected){
+        acc_index.push(option.value);
+        nacc++;
+      }
+    }
+
+    if(nacc<1||nacc>3){
+      document.getElementById('time_range').style.display='none';
+      document.getElementById('message_time_acc_items').innerHTML='Select at least one column and no more than three columns for acceleration!';
+      return;
+    }
+    document.getElementById('message_time_acc_items').innerHTML='';
+
+    time0_data=data.map(item => item[time_index]);
+    for(i=0;i<nacc;i++)acc0_data[i]=data.map(item => item[acc_index[i]]);
+
+    if(!document.getElementById('data_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('data_graph').style.width=`${width1}px`;
+      document.getElementById('data_graph').style.height=`${height1}px`;
+    }
+    plot_graph(time0_data,acc0_data,0,nacc-1,'Selected acceleration data','Acceleration'+acc_unit,'data_graph');
+
+    let insertElement='';
+    time0_data.forEach((element,index) => {
+      if(index>0){
+        insertElement+=`<option value="${index}">${element}</option>`;
+      }
+    });
+    document.getElementById('start_time_select').innerHTML=insertElement;
+    document.getElementById('end_time_select').innerHTML=insertElement;
+    document.getElementById('end_time_select').options[nrow-2].selected=true;
+    document.getElementById('time_range').style.display='block';
+  }
+
+  // Processing when selecting time rang
+  function select_time_range(){
+    let i,j;
+    let w;
+
+    clear_area(2);
+
+    const start_time_index=Number(document.getElementById('start_time_select').value);
+    const end_time_index=Number(document.getElementById('end_time_select').value);
+    ntwidth=end_time_index-start_time_index+1;
+    let ts=time0_data[start_time_index];
+    let te=time0_data[end_time_index];
+    if(te-ts<0){
+      document.getElementById('message_time_range').innerHTML='End time should be set to a time later than start time!';
+      return;
+    }
+    document.getElementById('message_time_range').innerHTML='';
+
+    time_data=time0_data.slice(start_time_index,end_time_index+1);
+    time_data.splice(0,0,time0_data[0]);
+    for(j=1;j<=ntwidth;j++)time_data[j]=Number(time_data[j]);
+    for(i=0;i<nacc;i++){
+      acc_data[i]=acc0_data[i].slice(start_time_index,end_time_index+1);
+      acc_data[i].splice(0,0,acc0_data[i][0]);
+      for(j=1;j<=ntwidth;j++)acc_data[i][j]=Number(acc_data[i][j]);
+    }
+    nuacc=nacc;
+    unif_acc_data=copyMatrix(acc_data);
+
+    let insertElement=make_table(time_data,acc_data,nacc);
+    document.getElementById('acc_table').innerHTML=insertElement;
+    document.getElementById('acc_details').style.display='block';
+
+    plot_graph_all('acc',width2,height2);
+    document.getElementById('acc_graph').style.display='block';
+  
+    set_fft_zero_adjust(acc_data,nacc,'acc');
+
+    const acc_fileter_width=document.getElementById('acc_filter_width');
+    acc_filter_width.min=(te-ts)/ntwidth;
+    acc_filter_width.max=te-ts;
+    acc_filter_width.step='any';
+    acc_filter_width.value=0.5*(te-ts)*(ntwidth+1)/ntwidth;
+    acc_filter_width.addEventListener('input',function(){filter_width_change('acc');});
+    filter_width_change('acc');
+    document.getElementById('acc_smoothing').style.display='block';
+    document.getElementsByName('acc_radio')[0].checked=true;
+    document.getElementById('acc_for_integral_items').style.display='none';
+
+    insertElement=`<span style="font-weight:bold;">&#9679; Setting of initial velocity (velocity at the start time = ${time_data[1]} ${time_unit})</span><br />`;
+    insertElement+='<div style="margin-left:1em;">';
+    for(i=0;i<nacc;i++)insertElement+=`${cstr[i]} component: <input type="number" id="inivel${i+1}" value="0.0" step="0.1" /><br />`;
+    insertElement+='<button onclick="calc_velocity();">Calculate velocity (numerical integration)</button>';
+    insertElement+='</div>';
+    document.getElementById('set_initial_velocity').innerHTML=insertElement;
+    document.getElementById('set_initial_velocity').style.display='block';
+
+    const pca_chckbtn=document.getElementById('pca_data_radio_select');
+    pca_chckbtn.addEventListener('change',function(){pca_check_button_change(pca_chckbtn.motion_data.value);});
+    insertElement='';
+    for(i=0;i<nuacc;i++)insertElement+=`<option value="${i}">${unif_acc_data[i][0]}</option>`;
+    document.getElementById('pca_data_select').innerHTML=insertElement;
+
+    insertElement='';
+    time_data.forEach((element,index) => {
+      if(index>0){
+        insertElement+=`<option value="${index}">${element}</option>`;
+      }
+    });
+    document.getElementById('pca_start_time_select').innerHTML=insertElement;
+    document.getElementById('pca_end_time_select').innerHTML=insertElement;
+    document.getElementById('pca_end_time_select').options[ntwidth-2].selected=true;
+    if(nacc>1)document.getElementById('axis_conversion_with_pca').style.display='block';
+  }
+
+  // Calculation of the average of data used for zero adjustment
+  function calc_zero_adjust_average(str,num){
+    if(str==='vel')document.getElementById(`vel_zero_adjust_value${num}`).value=calc_average(vel_data[num]);
+    else if(str==='pos')document.getElementById(`pos_zero_adjust_value${num}`).value=calc_average(pos_data[num]);
+    else document.getElementById(`acc_zero_adjust_value${num}`).value=calc_average(acc_data[num]);
+  }
+
+  // Zero adjustment for acceleration
+  function acc_zero_adjust(){
+    let i,j,k=0;
+    let val=[];
+    for(i=0;i<nacc;i++)if(document.getElementById(`acc_zero_adjust_check${i}`).checked==true){
+      val[i]=Number(document.getElementById(`acc_zero_adjust_value${i}`).value);
+      for(j=1;j<=ntwidth;j++)unif_acc_data[i][j]-=val[i]-zero_adjust_val['acc'][i];
+      if(nuacc>nacc)for(j=1;j<=ntwidth;j++)unif_acc_data[i+nacc][j]-=val[i]-zero_adjust_val['acc'][i];
+      zero_adjust_val['acc'][i]=val[i];
+      k++;
+    }
+    if(k){
+      plot_graph_all('acc',width2,height2);
+      document.getElementById('message_acc_zero_adjust').innerHTML='';
+    }else document.getElementById('message_acc_zero_adjust').innerHTML='Be sure to check one of the boxes.';
+  }
+
+  // Zero adjustment for velocity
+  function vel_zero_adjust(){
+    let i,j,k=0;
+    let val=[];
+    for(i=0;i<nacc;i++)if(document.getElementById(`vel_zero_adjust_check${i}`).checked==true){
+      val[i]=Number(document.getElementById(`vel_zero_adjust_value${i}`).value);
+      for(j=1;j<=ntwidth;j++)unif_vel_data[i][j]-=val[i]-zero_adjust_val['vel'][i];
+      if(nuvel>nacc)for(j=1;j<=ntwidth;j++)unif_vel_data[i+nacc][j]-=val[i]-zero_adjust_val['vel'][i];
+      zero_adjust_val['vel'][i]=val[i];
+      k++;
+    }
+    if(k){
+      plot_graph_all('vel',width2,height2);
+      document.getElementById('message_vel_zero_adjust').innerHTML='';
+    }else document.getElementById('message_vel_zero_adjust').innerHTML='Be sure to check one of the boxes.';
+  }
+
+  //Zero adjustment for position
+  function pos_zero_adjust(){
+    let i,j,k=0;
+    let val=[];
+    for(i=0;i<nacc;i++)if(document.getElementById(`pos_zero_adjust_check${i}`).checked==true){
+      val[i]=Number(document.getElementById(`pos_zero_adjust_value${i}`).value);
+      for(j=1;j<=ntwidth;j++)unif_pos_data[i][j]-=val[i]-zero_adjust_val['pos'][i];
+      if(nupos>nacc)for(j=1;j<=ntwidth;j++)unif_pos_data[i+nacc][j]-=val[i]-zero_adjust_val['pos'][i];
+      zero_adjust_val['pos'][i]=val[i];
+      k++;
+    }
+    if(k){
+      plot_graph_all('pos',width2,height2);
+      document.getElementById('message_pos_zero_adjust').innerHTML='';
+    }else document.getElementById('message_pos_zero_adjust').innerHTML='Be sure to check one of the boxes.';
+  }
+
+  // Cancellation of zero adjustment for acceleration
+  function cancel_acc_zero_adjust(){
+    let i,j,k=0;
+
+    for(i=0;i<nacc;i++){
+      for(j=1;j<=ntwidth;j++)unif_acc_data[i][j]+=zero_adjust_val['acc'][i];
+      if(nuacc>nacc)for(j=1;j<=ntwidth;j++)unif_acc_data[i+nacc][j]+=zero_adjust_val['acc'][i];
+      document.getElementById(`acc_zero_adjust_check${i}`).checked=false;
+      document.getElementById(`acc_zero_adjust_value${i}`).value=0.0;
+      zero_adjust_val['acc'][i]=0.0;
+      k++;
+    }
+    if(k){
+      plot_graph_all('acc',width2,height2);
+      document.getElementById('message_acc_zero_adjust').innerHTML='';
+    }
+  }
+
+  // Cancellation of zero adjustment for velocity
+  function cancel_vel_zero_adjust(){
+    let i,j,k=0;
+
+    for(i=0;i<nacc;i++){
+      for(j=1;j<=ntwidth;j++)unif_vel_data[i][j]+=zero_adjust_val['vel'][i];
+      if(nuvel>nacc)for(j=1;j<=ntwidth;j++)unif_vel_data[i+nacc][j]+=zero_adjust_val['vel'][i];
+      document.getElementById(`vel_zero_adjust_check${i}`).checked=false;
+      document.getElementById(`vel_zero_adjust_value${i}`).value=0.0;
+      zero_adjust_val['vel'][i]=0.0;
+      k++;
+    }
+    if(k){
+      plot_graph_all('vel',width2,height2);
+      document.getElementById('message_vel_zero_adjust').innerHTML='';
+    }
+  }
+
+  // Cancellation of zero adjustment for position
+  function cancel_pos_zero_adjust(){
+    let i,j,k=0;
+
+    for(i=0;i<nacc;i++){
+      for(j=1;j<=ntwidth;j++)unif_pos_data[i][j]+=zero_adjust_val['pos'][i];
+      if(nupos>nacc)for(j=1;j<=ntwidth;j++)unif_pos_data[i+nacc][j]+=zero_adjust_val['pos'][i];
+      document.getElementById(`pos_zero_adjust_check${i}`).checked=false;
+      document.getElementById(`pos_zero_adjust_value${i}`).value=0.0;
+      zero_adjust_val['pos'][i]=0.0;
+      k++;
+    }
+    if(k){
+      plot_graph_all('pos',width2,height2);
+      document.getElementById('message_pos_zero_adjust').innerHTML='';
+    }
+  }
+
+  // Display ofr the number of time decompositions of Fourier transform
+  function show_fft_ndiv(str){
+    document.getElementById(`${str}_fft_ndiv_value`).innerHTML=document.getElementById(`${str}_fft_div`).value;
+  }
+
+  // Display of cutoff frequency for inverse Fourier transform
+  function show_ifft_cut_freq(str){
+    let val=Number(document.getElementById(`${str}_ifft_cut_freq`).value);
+    document.getElementById(`${str}_ifft_cut_freq_value`).innerHTML=val.toFixed(3);
+  }
+
+  // Fourier transform of acceleration
+  function acc_fft(){
+    let i,ndiv=ntwidth;
+    let df=1.0/(time_data[ntwidth]-time_data[1]);
+    let dflg=0;
+    let amps=[]; // amplitude spectrum
+
+    if(document.getElementById(`check_acc_fft_flag`).checked==true){
+      dflg=1;
+      ndiv=Number(document.getElementById(`acc_fft_div`).value);
+    }
+
+    acc_fft_data=fourier_transformation(time_data,unif_acc_data,nacc,ntwidth,ndiv,dflg);
+    let nf=acc_fft_data[0].length;
+    let freq=make_frequency(nf,df);
+    for(i=0;i<nacc;i++){
+      amps[i]=[];
+      amps[i][0]=acc_data[i][0];
+      for(j=0;j<nf;j++)amps[i][j+1]=math.abs(acc_fft_data[i][j]);
+    }
+    freq.splice(0,0,'Frequency[Hz]');
+
+    if(!document.getElementById('acc_fft_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('acc_fft_graph').style.width=`${width2}px`;
+      document.getElementById('acc_fft_graph').style.height=`${height2}px`;
+    }
+    plot_graph(freq,amps,0,nacc-1,'Fourier transform of acceleration (amplitude spectrum)','Intensity'+acc_unit,'acc_fft_graph');
+    document.getElementById('acc_fft_graph').style.display='block';
+
+    const ifft_cut_freq=document.getElementById('acc_ifft_cut_freq');
+    ifft_cut_freq.min=df;
+    ifft_cut_freq.max=0.5*nf*df;
+    ifft_cut_freq.step=`${df}`;
+    ifft_cut_freq.value=nf*df;
+    show_ifft_cut_freq('acc');
+    ifft_cut_freq.addEventListener('input',function(){show_ifft_cut_freq('acc');});
+    document.getElementById('acc_inverse_fourier_transformation').style.display='block';
+  }
+
+  // Fourier transform of velocity
+  function vel_fft(){
+    let i,ndiv=ntwidth;
+    let df=1.0/(time_data[ntwidth]-time_data[1]);
+    let dflg=0;
+    let amps=[]; // amplitude spectrum
+
+    if(document.getElementById(`check_vel_fft_flag`).checked==true){
+      dflg=1;
+      ndiv=Number(document.getElementById(`vel_fft_div`).value);
+    }
+
+    vel_fft_data=fourier_transformation(time_data,unif_vel_data,nacc,ntwidth,ndiv,dflg);
+    let nf=vel_fft_data[0].length;
+    let freq=make_frequency(nf,df);
+    for(i=0;i<nacc;i++){
+      amps[i]=[];
+      amps[i][0]=vel_data[i][0];
+      for(j=0;j<nf;j++)amps[i][j+1]=math.abs(vel_fft_data[i][j]);
+    }
+    freq.splice(0,0,'Frequency[Hz]');
+
+    if(!document.getElementById('vel_fft_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('vel_fft_graph').style.width=`${width2}px`;
+      document.getElementById('vel_fft_graph').style.height=`${height2}px`;
+    }
+    plot_graph(freq,amps,0,nacc-1,'Fourier transform of velocity (amplitude spectrum)','Intensity'+vel_unit,'vel_fft_graph');
+    document.getElementById('vel_fft_graph').style.display='block';
+
+    const ifft_cut_freq=document.getElementById('vel_ifft_cut_freq');
+    ifft_cut_freq.min=df;
+    ifft_cut_freq.max=0.5*nf*df;
+    ifft_cut_freq.step=`${df}`;
+    ifft_cut_freq.value=nf*df;
+    show_ifft_cut_freq('vel');
+    ifft_cut_freq.addEventListener('input',function(){show_ifft_cut_freq('vel');});
+    document.getElementById('vel_inverse_fourier_transformation').style.display='block';
+  }
+
+  // Fourier transform for position
+  function pos_fft(){
+    let i,ndiv=ntwidth;
+    let df=1.0/(time_data[ntwidth]-time_data[1]);
+    let dflg=0;
+    let amps=[]; // amplitude spectrum
+
+    if(document.getElementById(`check_pos_fft_flag`).checked==true){
+      dflg=1;
+      ndiv=Number(document.getElementById(`pos_fft_div`).value);
+    }
+
+    pos_fft_data=fourier_transformation(time_data,unif_pos_data,nacc,ntwidth,ndiv,dflg);
+    let nf=pos_fft_data[0].length;
+    let freq=make_frequency(nf,df);
+    for(i=0;i<nacc;i++){
+      amps[i]=[];
+      amps[i][0]=pos_data[i][0];
+      for(j=0;j<nf;j++)amps[i][j+1]=math.abs(pos_fft_data[i][j]);
+    }
+    freq.splice(0,0,'Frequency[Hz]');
+
+    if(!document.getElementById('pos_fft_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('pos_fft_graph').style.width=`${width2}px`;
+      document.getElementById('pos_fft_graph').style.height=`${height2}px`;
+    }
+    plot_graph(freq,amps,0,nacc-1,'Fourier transform of position (amplitude spectrum)','Intensity'+pos_unit,'pos_fft_graph');
+    document.getElementById('pos_fft_graph').style.display='block';
+
+    const ifft_cut_freq=document.getElementById('pos_ifft_cut_freq');
+    ifft_cut_freq.min=df;
+    ifft_cut_freq.max=0.5*nf*df;
+    ifft_cut_freq.step=`${df}`;
+    ifft_cut_freq.value=nf*df;
+    show_ifft_cut_freq('pos');
+    ifft_cut_freq.addEventListener('input',function(){show_ifft_cut_freq('pos');});
+    document.getElementById('pos_inverse_fourier_transformation').style.display='block';
+  }
+
+  // Smoothing of acceleration by inverse Fourier transform
+  function acc_ifft_smoothing(){
+    let i,j;
+    let dflg=0;
+    let nf=acc_fft_data[0].length;
+    let idx=math.round((time_data[ntwidth]-time_data[1])*Number(document.getElementById('acc_ifft_cut_freq').value))+1;
+    let fft_data=[];
+
+    if(document.getElementById(`check_acc_fft_flag`).checked==true)dflg=1;
+
+    for(i=0;i<nacc;i++){
+      fft_data[i]=[];
+      for(j=0;j<nf;j++){
+        fft_data[i][j]=math.complex(0,0);
+        fft_data[i][j].re=acc_fft_data[i][j].re;
+        fft_data[i][j].im=acc_fft_data[i][j].im;
+      }
+    }
+
+    if(nuacc>nacc)for(let i=0;i<nacc*2;i++)unif_acc_data.pop();
+    nuacc=nacc*3;
+    unif_acc_data=inverse_fourier_transformation(time_data,unif_acc_data,fft_data,nacc,nf,idx,'acc');
+    document.getElementById('acc_for_integral_items').style.display='block';
+    if(document.getElementById('pca_data_radio_select').motion_data.value==='acc')insert_item_select(unif_acc_data,nuacc,'pca_data_select');
+    plot_graph_all('acc',width2,height2);
+  }
+
+  // Smoothing of velocity by inverse Fourier transform
+  function vel_ifft_smoothing(){
+    let i,j;
+    let dflg=0;
+    let nf=vel_fft_data[0].length;
+    let idx=math.round((time_data[ntwidth]-time_data[1])*Number(document.getElementById('vel_ifft_cut_freq').value))+1;
+    let fft_data=[];
+
+    if(document.getElementById(`check_vel_fft_flag`).checked==true)dflg=1;
+
+    for(i=0;i<nacc;i++){
+      fft_data[i]=[];
+      for(j=0;j<nf;j++){
+        fft_data[i][j]=math.complex(0,0);
+        fft_data[i][j].re=vel_fft_data[i][j].re;
+        fft_data[i][j].im=vel_fft_data[i][j].im;
+      }
+    }
+
+    if(nuvel>nacc)for(let i=0;i<nacc*2;i++)unif_vel_data.pop();
+    nuvel=nacc*3;
+    unif_vel_data=inverse_fourier_transformation(time_data,unif_vel_data,fft_data,nacc,nf,idx,'vel');
+    document.getElementById('vel_for_integral_items').style.display='block';
+    if(document.getElementById('pca_data_radio_select').motion_data.value==='vel')insert_item_select(unif_vel_data,nuvel,'pca_data_select');
+    plot_graph_all('vel',width2,height2);
+  }
+
+  // Smoothing of position by inverse Fourier transform
+  function pos_ifft_smoothing(){
+    let i,j;
+    let dflg=0;
+    let nf=pos_fft_data[0].length;
+    let idx=math.round((time_data[ntwidth]-time_data[1])*Number(document.getElementById('pos_ifft_cut_freq').value))+1;
+    let fft_data=[];
+
+    if(document.getElementById(`check_pos_fft_flag`).checked==true)dflg=1;
+
+    for(i=0;i<nacc;i++){
+      fft_data[i]=[];
+      for(j=0;j<nf;j++){
+        fft_data[i][j]=math.complex(0,0);
+        fft_data[i][j].re=pos_fft_data[i][j].re;
+        fft_data[i][j].im=pos_fft_data[i][j].im;
+      }
+    }
+
+    if(nupos>nacc)for(let i=0;i<nacc*2;i++)unif_pos_data.pop();
+    nupos=nacc*3;
+    unif_pos_data=inverse_fourier_transformation(time_data,unif_pos_data,fft_data,nacc,nf,idx,'pos');
+    document.getElementById('pos_for_output_items').style.display='block';
+    if(document.getElementById('pca_data_radio_select').motion_data.value==='pos')insert_item_select(unif_pos_data,nupos,'pca_data_select');
+    plot_graph_all('pos',width2,height2);
+  }
+
+  // Smoothing of acceleration by least squares approximation
+  function acc_least_square_smoothing(){
+    if(nuacc>nacc)for(let i=0;i<nacc*2;i++)unif_acc_data.pop();
+    nuacc=nacc*3;
+    unif_acc_data=least_square_smoothing(time_data,nacc,unif_acc_data,ntwidth,'acc');
+    document.getElementById('acc_for_integral_items').style.display='block';
+    if(document.getElementById('pca_data_radio_select').motion_data.value==='acc')insert_item_select(unif_acc_data,nuacc,'pca_data_select');
+    plot_graph_all('acc',width2,height2);
+  }
+
+  // Smoothing of velocity by least squares approximation
+  function vel_least_square_smoothing(){
+    if(nuvel>nacc)for(let i=0;i<nacc*2;i++)unif_vel_data.pop();
+    nuvel=nacc*3;
+    unif_vel_data=least_square_smoothing(time_data,nacc,unif_vel_data,ntwidth,'vel');
+    document.getElementById('vel_for_integral_items').style.display='block';
+    if(document.getElementById('pca_data_radio_select').motion_data.value==='vel')insert_item_select(unif_vel_data,nuvel,'pca_data_select');
+    plot_graph_all('vel',width2,height2);
+  }
+
+  // Smoothing of position by least squares approximation
+  function pos_least_square_smoothing(){
+    if(nupos>nacc)for(let i=0;i<nacc*2;i++)unif_pos_data.pop();
+    nupos=nacc*3;
+    unif_pos_data=least_square_smoothing(time_data,nacc,unif_pos_data,ntwidth,'pos');
+    document.getElementById('pos_for_output_items').style.display='block';
+    if(document.getElementById('pca_data_radio_select').motion_data.value==='pos')insert_item_select(unif_pos_data,nupos,'pca_data_select');
+    plot_graph_all('pos',width2,height2);
+  }
+
+  // Clear acceleration smoothing
+  function clear_acc_smoothing(){
+    if(nuacc>nacc){
+      nuacc/=3;
+      for(let i=0;i<nacc*2;i++)unif_acc_data.pop();
+    }
+    clear_proc('acc',unif_acc_data,1);
+  }
+
+  // Clear velocity smoothing
+  function clear_vel_smoothing(){
+    if(nuvel>nacc){
+      nuvel/=3;
+      for(let i=0;i<nacc*2;i++)unif_vel_data.pop();
+    }
+    clear_proc('vel',unif_vel_data,1);
+  }
+
+  // Clear position smoothing
+  function clear_pos_smoothing(){
+    if(nupos>nacc){
+      nupos/=3;
+      for(let i=0;i<nacc*2;i++)unif_pos_data.pop();
+    }
+    clear_proc('pos',unif_pos_data,0);
+  }
+
+  // Common processing when clearing smoothing (deletion of smoothing data from data tables, graphs, and data subject to principal component analysis)
+  function clear_proc(str,ydata,flg){
+    if(flg)document.getElementById(`${str}_for_integral_items`).style.display='none';
+    else document.getElementById('pos_for_output_items').style.display='none';
+    document.getElementsByName(`${str}_radio`)[0].checked=true;
+    if(document.getElementById('pca_data_radio_select').motion_data.value===str)insert_item_select(ydata,nacc,'pca_data_select');
+    let insertElement=make_table(time_data,ydata,nacc);
+    document.getElementById(`${str}_table`).innerHTML=insertElement;
+    plot_graph_all(str,width2,height2);
+  }
+
+  // Calculation of velocity by numerical integration of acceleration
+  function calc_velocity(){
+    let i,n;
+
+    clear_area(3);
+
+    acc_rv=Number(document.getElementById('acc_for_integral_radio_select').acc_radio.value);
+    for(i=0;i<nacc;i++)iacc_index[i]=i+acc_rv*nacc;
+    vel_data=numerical_integration(time_data,unif_acc_data,nacc,iacc_index,ntwidth,'vel',vel_unit);
+    nuvel=nacc;
+    unif_vel_data=copyMatrix(vel_data);
+
+    plot_graph_all('vel',width2,height2); 
+    document.getElementById('vel_graph').style.display='block';
+
+    document.getElementsByName('vel_radio')[0].checked=true;
+    document.getElementById('vel_for_integral_items').style.display='none';
+
+    let insertElement=`<span style="font-weight:bold;">&#9679; Setting of initial position (position at the start time = ${time_data[1]} ${time_unit})</span><br />`;
+    insertElement+='<div style="margin-left:1em;">';
+    for(i=0;i<nacc;i++)insertElement+=`${cstr[i]} component: <input type="number" id="inipos${i+1}" value="0.0" step="0.1" /><br />`;
+    insertElement+='<button onclick="calc_position();">Calculate position (numerical integration)</button>';
+    insertElement+='</div>';
+    document.getElementById('set_initial_position').innerHTML=insertElement;
+    document.getElementById('set_initial_position').style.display='block';
+  }
+
+  // Calculation of velocity by numerical integration of velocity
+  function calc_position(){
+    let i;
+
+    clear_area(4);
+
+    vel_rv=Number(document.getElementById('vel_for_integral_radio_select').vel_radio.value);
+    for(i=0;i<nacc;i++)ivel_index[i]=i+vel_rv*nacc;
+    pos_data=numerical_integration(time_data,unif_vel_data,nacc,ivel_index,ntwidth,'pos',pos_unit);
+    nupos=nacc;
+    unif_pos_data=copyMatrix(pos_data);
+
+    plot_graph_all('pos',width2,height2); 
+    document.getElementById('pos_graph').style.display='block';
+
+    document.getElementsByName('pos_radio')[0].checked=true;
+    document.getElementById('pos_for_output_items').style.display='none';
+    document.getElementById('acc_vel_pos_output').style.display='block';
+
+    let insertElement='';
+    time_data.forEach((element,index) => {
+      if(index>0){
+        insertElement+=`<option value="${index}">${element}</option>`;
+      }
+    });
+    document.getElementById('trjc_start_time_select').innerHTML=insertElement;
+    document.getElementById('trjc_end_time_select').innerHTML=insertElement;
+    document.getElementById('trjc_end_time_select').options[ntwidth-2].selected=true;
+  }
+
+  // Calculation of the arithmetic mean of data
+  function calc_average(data){
+    let i,n=data.length;
+    let w=0.0;
+    for(i=1;i<n;i++)w+=data[i];
+    return w/n;
+  }
+
+  // Creation of data tables
+  function make_table(xdata,ydata,ny){
+    let i;
+    let insertElement='';
+    xdata.forEach((element,index) => {
+      if(index==0){
+        insertElement+=`<tr style="position:sticky;top:0px;"><th>No.</th><th>${element}</th>`;
+        for(i=0;i<ny;i++)insertElement+=`<th>${ydata[i][0]}</th>`;
+        insertElement+='</tr>';
+      }else{
+        insertElement+=`<tr><td>${index}</td><td>${element}</td>`;
+        for(i=0;i<ny;i++)insertElement+=`<td>${ydata[i][index].toFixed(5)}</td>`;
+        insertElement+='</tr>';
+      }
+    });
+    return insertElement;
+  }
+
+  // Plotting of graph
+  function plot_graph(xdata,ydata,is,ie,title,ylabel,cmps,width,height){
+    let trace,layout,resp;
+    let plot_data=[];
+    if(is<1)is=0;
+    for(let i=is;i<=ie;i++){
+      trace={
+        x: xdata.slice(1),
+        y: ydata[i].slice(1),
+        mode: plot_mode,
+        marker: {size: marker_size},
+        line: {width: line_width},
+        name: ydata[i][0].replace('^2','<sup>2</sup>')
+      };
+      plot_data.push(trace);
+    }
+    if(width===undefined||height===undefined){
+      layout={
+        title: title,
+        xaxis: {title: xdata[0]},
+        yaxis: {title: ylabel},
+        autosize: true
+      };
+      resp={responsive: true};
+    }else{
+      layout={
+        title: title,
+        xaxis: {title: xdata[0]},
+        yaxis: {title: ylabel},
+        autosize: false,
+        width: width,
+        height: height
+      };
+      resp={responsive: false};
+    }
+    Plotly.newPlot(cmps,plot_data,layout,resp);
+  }
+
+  // Plotting graphs of all components of acceleration/velocity/position at once
+  function plot_graph_all(str,width,height){
+    let i,j,elem;
+    const gdata=[];
+    if(str==='vel'){
+      if(nuvel>nacc){
+        for(i=0;i<3;i++)gdata[i]=[];
+        for(i=0;i<nacc;i++){
+          for(j=0;j<=ntwidth;j++)gdata[0][j]=unif_vel_data[i][j];
+          for(j=0;j<=ntwidth;j++)gdata[1][j]=unif_vel_data[i+nacc][j];
+          for(j=0;j<=ntwidth;j++)gdata[2][j]=unif_vel_data[i+nacc*2][j];
+          elem = document.getElementById(`vel_graph${i}`);
+          elem.style.display='block';
+          if(!elem.classList.contains('js-plotly-plot')){
+            elem.style.width=`${width}px`;
+            elem.style.height=`${height}px`;
+          }
+          plot_graph(time_data,gdata,0,2,`${cstr[i]} component of velocity (${unif_vel_data[i][0]})<br />smoothing(smth), difference(diff)`,`v<sub>${i+1}</sub>`+vel_unit,`vel_graph${i}`);
+        }
+      }else{
+        for(i=0;i<nacc;i++){
+          elem = document.getElementById(`vel_graph${i}`);
+          elem.style.display='block';
+          if(!elem.classList.contains('js-plotly-plot')){
+            elem.style.width=`${width}px`;
+            elem.style.height=`${height}px`;
+          }
+          plot_graph(time_data,unif_vel_data,i,i,`${cstr[i]} component of velocity (${unif_vel_data[i][0]})`,`v<sub>${i+1}</sub>`+vel_unit,`vel_graph${i}`);
+        }
+      }
+    }else if(str==='pos'){
+      if(nupos>nacc){
+        for(i=0;i<3;i++)gdata[i]=[];
+        for(i=0;i<nacc;i++){
+          for(j=0;j<=ntwidth;j++)gdata[0][j]=unif_pos_data[i][j];
+          for(j=0;j<=ntwidth;j++)gdata[1][j]=unif_pos_data[i+nacc][j];
+          for(j=0;j<=ntwidth;j++)gdata[2][j]=unif_pos_data[i+nacc*2][j];
+          elem = document.getElementById(`pos_graph${i}`);
+          elem.style.display='block';
+          if(!elem.classList.contains('js-plotly-plot')){
+            elem.style.width=`${width}px`;
+            elem.style.height=`${height}px`;
+          }
+          plot_graph(time_data,gdata,0,2,`${cstr[i]} component of position (${unif_pos_data[i][0]})<br />smoothing(smth), difference(diff)`,`r<sub>${i+1}</sub>`+pos_unit,`pos_graph${i}`);
+        }
+      }else{
+        for(i=0;i<nacc;i++){
+          elem = document.getElementById(`pos_graph${i}`);
+          elem.style.display='block';
+          if(!elem.classList.contains('js-plotly-plot')){
+            elem.style.width=`${width}px`;
+            elem.style.height=`${height}px`;
+          }
+          plot_graph(time_data,unif_pos_data,i,i,`${cstr[i]} component of position (${unif_pos_data[i][0]})`,`r<sub>${i+1}</sub>`+pos_unit,`pos_graph${i}`);
+        }
+      }
+    }else{
+      if(nuacc>nacc){
+        for(i=0;i<3;i++)gdata[i]=[];
+        for(i=0;i<nacc;i++){
+          for(j=0;j<=ntwidth;j++)gdata[0][j]=unif_acc_data[i][j];
+          for(j=0;j<=ntwidth;j++)gdata[1][j]=unif_acc_data[i+nacc][j];
+          for(j=0;j<=ntwidth;j++)gdata[2][j]=unif_acc_data[i+nacc*2][j];
+          elem = document.getElementById(`acc_graph${i}`);
+          elem.style.display='block';
+          if(!elem.classList.contains('js-plotly-plot')){
+            elem.style.width=`${width}px`;
+            elem.style.height=`${height}px`;
+          }
+          plot_graph(time_data,gdata,0,2,`${cstr[i]} component of acceleration (${unif_acc_data[i][0].replace('^2','<sup>2</sup>')})<br />smoothing(smth), difference(diff)`,`a<sub>${i+1}</sub>`+acc_unit,`acc_graph${i}`);
+        }
+      }else{
+        for(i=0;i<nacc;i++){
+          elem = document.getElementById(`acc_graph${i}`);
+          elem.style.display='block';
+          if(!elem.classList.contains('js-plotly-plot')){
+            elem.style.width=`${width}px`;
+            elem.style.height=`${height}px`;
+          }
+          plot_graph(time_data,unif_acc_data,i,i,`${cstr[i]} component of acceleration (${unif_acc_data[i][0].replace('^2','<sup>2</sup>')})`,`a<sub>${i+1}</sub>`+acc_unit,`acc_graph${i}`);
+        }
+      }
+    }
+  }
+
+  // Copy of 2D array: returns a copy of "base"
+  function copyMatrix(base){
+    const result=[];
+    for(const line of base)result.push([...line]);
+    return result;
+  }
+
+  // Adding 2D arrays: array2 is added to array1 and array1 is returned.
+  function pushTwoDimensionalArray(array1,array2,axis){
+    let i;
+    if(axis!=1)axis=0;
+    if(axis==0){  //　Longitudinal adding
+      for(i=0;i<array2.length;i++){
+        array1.push(array2[i]);
+      }
+    }
+    else{  //　Lateral adding
+      for(i=0;i<array1.length;i++){
+        Array.prototype.push.apply(array1[i],array2[i]);
+      }
+    }
+  }
+
+  // Combining 2D arrays: a new array that combines array1 and array2 is returned.
+  function concatTwoDimensionalArray(array1,array2,axis){
+    let i;
+    if(axis!=1)axis=0;
+    let array3=[];
+    if(axis==0){  //　Longitudinal combining
+      array3=array1.slice();
+      for(i=0;i<array2.length;i++){
+        array3.push(array2[i]);
+      }
+    }
+    else{  //　Lateral combining
+      for(i=0;i<array1.length;i++){
+        array3[i]=array1[i].concat(array2[i]);
+      }
+    }
+    return array3;
+  }
+
+  // Smoothing process by least squares approximation
+  function least_square_smoothing(xdata,ny,ydata,nd,str){
+    let i,j,flag=0;
+    let fwidth=Number(document.getElementById(`${str}_filter_width_value`).value);
+    let norder=Number(document.getElementById(`${str}_polynomial_order`).value);
+    let nfilter;
+    let xw;
+    let iyv=[];
+    let diff_data=[];
+
+    if(document.getElementById(`check_${str}_flag`).checked==true)flag=1;
+
+    if(fwidth>0.0)document.getElementById(`${str}_filter_width`).value=fwidth;
+    else{
+      fwidth=document.getElementById(`${str}_filter_width`).value;
+      document.getElementById(`${str}_filter_width_value`).value=fwidth;
+    } 
+
+    i=1;
+    xw=0.0;
+    while(xw<fwidth&&i<nd)xw=xdata[++i]-xdata[1];
+    if(i%2)nfilter=i;else nfilter=i-1;
+
+    document.getElementById(`message_${str}_least_square_smoothing`).innerHTML='data width: '+nfilter;
+
+    if(norder<0)norder=0;
+    for(i=0;i<ny;i++)iyv[i]=i;
+
+    let smth_data=general_least_squares_smoothing(xdata,ydata,1,nd,ny,iyv,nfilter,norder,0,flag,'smth_');
+
+    for(i=0;i<ny;i++){
+      diff_data[i]=[];
+      diff_data[i][0]='diff_'+ydata[i][0];
+      for(j=1;j<=nd;j++)diff_data[i][j]=ydata[i][j]-smth_data[i][j];
+    }
+
+    let unif_data=concatTwoDimensionalArray(ydata,smth_data);
+    pushTwoDimensionalArray(unif_data,diff_data);
+
+    let insertElement=make_table(xdata,unif_data,ny*3);
+    document.getElementById(`${str}_table`).innerHTML=insertElement;
+
+    return unif_data;
+  }
+
+  // Insert Selection Option
+  function insert_item_select(ydata,ny,idstr){
+    let i;
+    let insertElement='';
+    for(i=0;i<ny;i++){
+      insertElement+=`<option value="${i}">${ydata[i][0]}</option>`;
+    }
+    document.getElementById(idstr).innerHTML=insertElement;
+  }
+
+  // Change smoothing filter width
+  function filter_width_change(str){
+    document.getElementById(`${str}_filter_width_value`).value=document.getElementById(`${str}_filter_width`).value;
+  }
+
+  // Numerical integration
+  function numerical_integration(xdata,ypdata,ny,iyv,nd,str,unitstr){
+    let i,w;
+    let inival=[];
+
+    for(i=0;i<ny;i++){
+      inival[i]=Number(document.getElementById(`ini${str}${i+1}`).value);
+    }
+    let ydata=integration_by_trapezoidal_rule(xdata,ypdata,ny,iyv,nd,inival);
+    for(i=0;i<ny;i++)ydata[i][0]=`${str}${i+1}${unitstr}`;
+
+    let insertElement=make_table(xdata,ydata,ny);
+    document.getElementById(`${str}_table`).innerHTML=insertElement;
+    document.getElementById(`${str}_details`).style.display='block';
+
+    set_fft_zero_adjust(ydata,ny,str);
+
+    const acc_fileter_width=document.getElementById('acc_filter_width');
+    const filter_width=document.getElementById(`${str}_filter_width`);
+    filter_width.min=acc_filter_width.min;
+    filter_width.max=acc_filter_width.max;
+    filter_width.step='any';
+    filter_width.value=acc_filter_width.value;
+    filter_width.addEventListener('input',function(){filter_width_change(str);});
+    filter_width_change(str);
+    document.getElementById(`${str}_polynomial_order`).value=document.getElementById('acc_polynomial_order').value;
+    if(document.getElementById('check_acc_flag').checked==true)document.getElementById(`check_${str}_flag`).checked=true;
+    else document.getElementById(`check_${str}_flag`).checked=false;
+    document.getElementById(`${str}_smoothing`).style.display='block';
+
+    return ydata;
+  }
+
+  // Preprocessing of Zero adjustment and Fourier transform
+  function set_fft_zero_adjust(ydata,ny,str){
+    let i;
+
+    insertElement='';
+    for(i=0;i<ny;i++){
+      //w=calc_average(ydata[i]);
+      w=0.0;
+      insertElement+=`<label><input type="checkbox" id="${str}_zero_adjust_check${i}" />Zero adjustment of ${cstr[i]} component</label>`;
+      insertElement+=`：Value&nbsp;<input type="number" id="${str}_zero_adjust_value${i}" value="${w}" step="0.1" />`;
+      insertElement+=`&nbsp;&nbsp;<button onclick='calc_zero_adjust_average("${str}",${i})'>Average</button><br />`;
+      zero_adjust_val[str][i]=0.0;
+    }
+    insertElement+=`<button onclick="${str}_zero_adjust();">Zero adjustment</button>&nbsp;&nbsp;`;
+    insertElement+=`<button onclick="cancel_${str}_zero_adjust();">Clear</button>&nbsp;&nbsp;<span id="message_${str}_zero_adjust"></span>`;
+    document.getElementById(`${str}_zero_adjust_area`).innerHTML=insertElement;
+
+    const fft_div=document.getElementById(`${str}_fft_div`);
+    if(ntwidth<20)fft_div.min=ntwidth;else fft_div.min=20;
+    fft_div.max=ntwidth*2;
+    fft_div.step='1';
+    fft_div.value=ntwidth;
+    fft_div.addEventListener('input',function(){show_fft_ndiv(str);});
+    document.getElementById(`${str}_fft_ndiv_value`).innerHTML=fft_div.value;
+
+  }
+
+  // Numerical integration by trapezoidal rule
+  function integration_by_trapezoidal_rule(xv,yv,ny,idx,n,iniv){
+    let i,j;
+    let niv=[];
+
+    for(j=0;j<ny;j++){
+      niv[j]=[];
+      niv[j][0]=`item${j+1}`;
+      niv[j][1]=iniv[j];
+    }
+    for(i=2;i<=n;i++)for(j=0;j<ny;j++)niv[j][i]=niv[j][i-1]+0.5*(yv[idx[j]][i]+yv[idx[j]][i-1])*(xv[i]-xv[i-1]);
+
+    return niv;
+  }
+
+  // Fourier transform
+  function fourier_transformation(xdata,ydata,ny,nd,ndiv,dflg){
+    let i,j,k,nx;
+    let xw;
+    let dx=xdata[2]-xdata[1];
+    let yp=[],ffty=[];
+
+    for(j=0;j<ny;j++){
+      yp[j]=[];
+      yp[j][0]=ydata[j][1];
+    }
+
+    if(dflg){
+      if(ndiv>20){
+        dx=(xdata[nd]-xdata[1])/ndiv;
+      }else{
+        for(i=3;i<=nd;i++){
+          xw=xdata[i]-xdata[i-1];
+          if(xw<dx)dx=xw;
+        }
+      }
+      nx=math.floor((xdata[nd]-xdata[1])/dx)+1;
+      nk=1;
+      k=1;
+      xw=xdata[1];
+      while(xdata[++k]<xw+0.5*dx&&k<=nd){
+        nk++;
+        for(j=0;j<ny;j++)yp[j][0]+=ydata[j][k];
+      }
+      for(j=0;j<ny;j++)yp[j][0]/=nk;
+      for(i=1;i<nx;i++){
+        xw+=dx;
+        nk=0;
+        for(j=0;j<ny;j++)yp[j][i]=0.0;
+        while(xdata[k]<xw+0.5*dx){
+          if(k==nd)break;
+          for(j=0;j<ny;j++)yp[j][i]+=ydata[j][k];
+          k++;
+          nk++;
+        }
+        if(nk>1)for(j=0;j<ny;j++)yp[j][i]/=nk;
+        else for(j=0;j<ny;j++)yp[j][i]=dx*(ydata[j][k]-yp[j][i-1])/(xdata[k]-xw+dx)+yp[j][i-1];
+        if(k==nd)break;
+      }
+    }else{
+      for(j=0;j<ny;j++)for(i=2;i<=nd;i++)yp[j][i-1]=ydata[j][i];
+    }
+
+    for(j=0;j<ny;j++)ffty[j]=math.fft(yp[j]);
+    return ffty;
+  }
+
+  // Setting of horizontal axis (frequency) for Fourier transformed data
+  function make_frequency(n,df){
+    let i;
+    let x=[];
+    if(n%2==0){
+      for(i=0;i<n/2;i++)x[i]=i*df;
+      for(i=n/2;i<n;i++)x[i]=(i-n)*df;
+    }else{
+      for(i=0;i<(n+1)/2;i++)x[i]=i*df;
+      for(i=(n+1)/2;i<n;i++)x[i]=(i-n)*df;
+    }
+    return x;
+  }
+
+  // Inverse Fourier transform
+  function inverse_fourier_transformation(xdata,ydata,fft_data,ny,nf,idx,str){
+    let i,j,k;
+    let nd=xdata.length-1;
+    let dn=2*((nf+nf%2)/2-idx);
+    let dx=(xdata[nd]-xdata[1])/(nf-1);
+    let ifft_data=[];
+    let re=[],diff_data=[];;
+
+    for(i=0;i<ny;i++){
+      j=idx;
+      k=dn;
+      while(k>0){
+        fft_data[i][j].re=fft_data[i][j].im=0.0;
+        j++;
+        k--;
+      }
+      ifft_data[i]=math.ifft(fft_data[i]);
+      re[i]=[];
+      re[i][0]='smth_'+ydata[i][0];
+      re[i][1]=ifft_data[i][0].re;
+      k=2;
+      for(j=1;j<nf;j++){
+        x=xdata[1]+j*dx;
+        while(x>xdata[k]&&k<=nd){
+          re[i][k]=ifft_data[i][j-1].re+(ifft_data[i][j].re-ifft_data[i][j-1].re)*(dx-x+xdata[k])/dx;
+          k++;
+        }
+      }
+      for(j=k;j<=nd;j++)re[i][j]=ydata[i][j];
+    }
+
+    for(i=0;i<ny;i++){
+      diff_data[i]=[];
+      diff_data[i][0]='diff_'+ydata[i][0];
+      for(j=1;j<=nd;j++)diff_data[i][j]=ydata[i][j]-re[i][j];
+    }
+
+    let unif_data=concatTwoDimensionalArray(ydata,re);
+    pushTwoDimensionalArray(unif_data,diff_data);
+
+    let insertElement=make_table(xdata,unif_data,ny*3);
+    document.getElementById(`${str}_table`).innerHTML=insertElement;
+
+    return unif_data;
+  }
+
+  // Merging of acceleration, velocity, and position data
+  function merge_acc_vel_pos_data(){
+    let i,j,nt=nacc*3;
+
+    pos_rv=Number(document.getElementById('pos_for_output_radio_select').pos_radio.value);
+
+    for(i=0;i<nt;i++)acc_vel_pos_data[i]=[];
+    for(i=0;i<nacc;i++){
+      for(j=0;j<=ntwidth;j++){
+        acc_vel_pos_data[i][j]=unif_acc_data[i+acc_rv*nacc][j];
+        acc_vel_pos_data[i+nacc][j]=unif_vel_data[i+vel_rv*nacc][j];
+        acc_vel_pos_data[i+nacc*2][j]=unif_pos_data[i+pos_rv*nacc][j];
+      }
+    }
+
+    document.getElementById('acc_vel_pos_area').style.height='300px';
+    let insertElement=make_table(time_data,acc_vel_pos_data,nt);
+    document.getElementById('acc_vel_pos_table').innerHTML=insertElement;
+
+    if(!document.getElementById('tacc_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('tacc_graph').style.width=`${width2}px`;
+      document.getElementById('tacc_graph').style.height=`${height2}px`;
+    }
+    plot_graph(time_data,acc_vel_pos_data,0,nacc-1,'Acceleration','a'+acc_unit,'tacc_graph');
+    if(!document.getElementById('tvel_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('tvel_graph').style.width=`${width2}px`;
+      document.getElementById('tvel_graph').style.height=`${height2}px`;
+    }
+    plot_graph(time_data,acc_vel_pos_data,nacc,2*nacc-1,'Velocity','v'+vel_unit,'tvel_graph');
+    if(!document.getElementById('tpos_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('tpos_graph').style.width=`${width2}px`;
+      document.getElementById('tpos_graph').style.height=`${height2}px`;
+    }
+    plot_graph(time_data,acc_vel_pos_data,2*nacc,3*nacc-1,'Position','r'+pos_unit,'tpos_graph');
+    document.getElementById('acc_vel_pos_graph').style.display='block';
+
+    insertElement='&nbsp;&nbsp;<button onclick="download_acc_vel_pos_data();">Download</button>';
+    insertElement+='&nbsp;&nbsp;<span style="color:red;font-size:smaller">as CSV file</span>';
+    document.getElementById('data_download').innerHTML=insertElement;
+    document.getElementById('acc_vel_pos_area').style.display='block';
+    if(nacc>1)document.getElementById('trajectory').style.display='block';
+  }
+
+  // Plotting of trajectory
+  function plot_trajectory(){
+    let i;
+    let layout,resp,width=width1;
+    trjc_start_time_index=Number(document.getElementById('trjc_start_time_select').value);
+    const trjc_end_time_index=Number(document.getElementById('trjc_end_time_select').value);
+    const ntw=trjc_end_time_index-trjc_start_time_index+1;
+    const ts=time_data[trjc_start_time_index];
+    const te=time_data[trjc_end_time_index];
+    let mp=[],hwd=0.0,vrt,w1,w2;
+
+    if(aid)cancelAnimationFrame(aid);
+
+    step=0;
+    dstep=1;
+    stopflag=0;
+
+    if(!nupos){
+      document.getElementById('message_trjc_time_range').innerHTML='There is no position data!';
+      return;
+    }
+
+    if(te-ts<=0){
+      document.getElementById('message_trjc_time_range').innerHTML='End time should be set to a time later than start time!';
+      return;
+    }
+    document.getElementById('message_trjc_time_range').innerHTML='';
+
+    dtt=(te-ts)/(trjc_end_time_index-trjc_start_time_index);
+    vrt=dtt*vec_len;
+    for(i=0;i<nacc;i++){
+      trjc_acc[i]=acc_vel_pos_data[i].slice(trjc_start_time_index,trjc_end_time_index+1);
+      trjc_vel[i]=acc_vel_pos_data[i+nacc].slice(trjc_start_time_index,trjc_end_time_index+1);
+      trjc_data[i]=acc_vel_pos_data[i+nacc*2].slice(trjc_start_time_index,trjc_end_time_index+1);
+    }
+
+    let insertElement='&nbsp;&nbsp;<input type="button" value="Start" onclick="motion_start(this)" />';
+    insertElement+='&nbsp;&nbsp;&nbsp;&nbsp;Slow&nbsp;<input type="range" value="1" min="1" max="10" onchange="change_step_width(this)" />&nbsp;Fast';
+    if(dev_type==="phone")insertElement+="<br />";
+    insertElement+=`&nbsp;&nbsp;&nbsp;&nbsp;time = <span id="trajectory_time">${ts.toFixed(3)}</span> s<br />`;
+    insertElement+='&nbsp;&nbsp;<label><input type="checkbox" id="check_vel_vec" checked onchange="change_vel_vec_check(this)" /><span style="color:blue;">Velocity vector</span></label>';
+    insertElement+='&nbsp;&nbsp;<label><input type="checkbox" id="check_acc_vec" checked onchange="change_acc_vec_check(this)" /><span style="color:green;">Acceleration vector</span></label>';
+    insertElement+='&nbsp;&nbsp;&nbsp;&nbsp;Short&nbsp;<input type="range" value="10" min="1" max="20" onchange="change_vector_length(this)" />&nbsp;Long';
+    document.getElementById('message_trajectory').innerHTML=insertElement;
+    if(nacc==2){
+      if(!trjc_elem.classList.contains('js-plotly-plot')){
+        trjc_elem.style.width=`${width}px`;
+        trjc_elem.style.height=`${width}px`;
+      }
+      for(i=0;i<2;i++){
+        w1=math.max(trjc_data[i]);
+        w2=math.min(trjc_data[i]);
+        mp[i]=0.5*(w1+w2);
+        w1=0.5*(w1-w2);
+        if(hwd<w1)hwd=w1;
+      }
+      hwd*=1.05;
+      tpdata={type: 'scatter', mode: 'lines', x: trjc_data[0], y: trjc_data[1], line: {width: line_width, color: 'red'}};
+      pdata={
+        type: 'scatter', mode: 'markers',
+        x: [trjc_data[0][0]], y: [trjc_data[1][0]],
+        marker: {size: marker_size+3, color: 'black'}
+      };
+      vel_arw={
+        x: trjc_data[0][0]+trjc_vel[0][0]*vrt,
+        y: trjc_data[1][0]+trjc_vel[1][0]*vrt,
+        xref: 'x',
+        yref: 'y',
+        ax: trjc_data[0][0],
+        ay: trjc_data[1][0],
+        axref: 'x',
+        ayref: 'y',
+        text: '',
+        showarrow: true,
+        arrowcolor: 'blue',
+        arrowhead: 2,
+        arrowsize: 1,
+        arrowwidth: 2
+      };
+      acc_arw={
+        x: trjc_data[0][0]+trjc_acc[0][0]*vrt*vrt,
+        y: trjc_data[1][0]+trjc_acc[1][0]*vrt*vrt,
+        xref: 'x',
+        yref: 'y',
+        ax: trjc_data[0][0],
+        ay: trjc_data[1][0],
+        axref: 'x',
+        ayref: 'y',
+        text: '',
+        showarrow: true,
+        arrowcolor: 'green',
+        arrowhead: 2,
+        arrowsize: 1,
+        arrowwidth: 2
+      }
+      layout={
+        title: 'Trajectory',
+        xaxis: {range: [mp[0]-hwd,mp[0]+hwd], title: acc_vel_pos_data[nacc*2][0]},
+        yaxis: {range: [mp[1]-hwd,mp[1]+hwd], title: acc_vel_pos_data[nacc*2+1][0]},
+        showlegend: false,
+        autosize: true,
+        annotations: [vel_arw,acc_arw]
+      };
+      Plotly.newPlot(trjc_elem,[tpdata,pdata],layout);
+      trjc_elem.style.display='block';
+    }else if(nacc==3){
+      if(dev_type!=='phone')width+=200;
+      if(!trjc_elem.classList.contains('js-plotly-plot')){
+        trjc_elem.style.width=`${width}px`;
+        trjc_elem.style.height=`${width}px`;
+      }
+      for(i=0;i<3;i++){
+        w1=math.max(trjc_data[i]);
+        w2=math.min(trjc_data[i]);
+        mp[i]=0.5*(w1+w2);
+        w1=0.5*(w1-w2);
+        if(hwd<w1)hwd=w1;
+      }
+      hwd*=1.05;
+      tpdata={
+        type: 'scatter3d',
+        mode: 'lines',
+        x: trjc_data[0],
+        y: trjc_data[1],
+        z: trjc_data[2],
+        opacity: 1,
+        line: {width: line_width+1, color: 'red'}
+      };
+      layout = {
+        title: 'Trajectory',
+        scene: {
+          aspectmode: 'cube',
+          xaxis: {range: [mp[0]-hwd,mp[0]+hwd], title: acc_vel_pos_data[nacc*2][0]},
+          yaxis: {range: [mp[1]-hwd,mp[1]+hwd], title: acc_vel_pos_data[nacc*2+1][0]},
+          zaxis: {range: [mp[2]-hwd,mp[2]+hwd], title: acc_vel_pos_data[nacc*2+2][0]}
+        },
+        showlegend: false,
+        autosize: true
+      };
+      pdata={
+        type: 'scatter3d', mode: 'markers',
+        x: [trjc_data[0][0]], y: [trjc_data[1][0]], z: [trjc_data[2][0]],
+        marker: {size: marker_size, color: 'black'}
+      };
+      vel_arw={
+        type: 'scatter3d', mode: 'lines',
+        x: [trjc_data[0][0], trjc_data[0][0]+trjc_vel[0][0]*vrt],
+        y: [trjc_data[1][0], trjc_data[1][0]+trjc_vel[1][0]*vrt],
+        z: [trjc_data[2][0], trjc_data[2][0]+trjc_vel[2][0]*vrt],
+        line: {width: 5, color: 'blue'},
+        visible: true
+      };
+      acc_arw={
+        type: 'scatter3d', mode: 'lines',
+        x: [trjc_data[0][0], trjc_data[0][0]+trjc_acc[0][0]*vrt*vrt],
+        y: [trjc_data[1][0], trjc_data[1][0]+trjc_acc[1][0]*vrt*vrt],
+        z: [trjc_data[2][0], trjc_data[2][0]+trjc_acc[2][0]*vrt*vrt],
+        line: {width: 5, color: 'green'},
+        visible: true
+      };
+      w1=math.norm([trjc_vel[0][0],trjc_vel[1][0],trjc_vel[2][0]]);
+      if(w1==0)w1=1;
+      vel_cone={
+        type: 'cone',
+        x: [trjc_data[0][0]+trjc_vel[0][0]*vrt],
+        y: [trjc_data[1][0]+trjc_vel[1][0]*vrt],
+        z: [trjc_data[2][0]+trjc_vel[2][0]*vrt],
+        u: [trjc_vel[0][0]/w1],
+        v: [trjc_vel[1][0]/w1],
+        w: [trjc_vel[2][0]/w1],
+        sizemode: 'absolute',
+        sizeref: conescale*hwd,
+        showscale: false,
+        colorscale: [[0, 'blue'], [1, 'blue']],
+        visible: true
+      };
+      w1=math.norm([trjc_acc[0][0],trjc_acc[1][0],trjc_acc[2][0]]);
+      if(w1==0)w1=1;
+      acc_cone={
+        type: 'cone',
+        x: [trjc_data[0][0]+trjc_acc[0][0]*vrt*vrt],
+        y: [trjc_data[1][0]+trjc_acc[1][0]*vrt*vrt],
+        z: [trjc_data[2][0]+trjc_acc[2][0]*vrt*vrt],
+        u: [trjc_acc[0][0]/w1],
+        v: [trjc_acc[1][0]/w1],
+        w: [trjc_acc[2][0]/w1],
+        sizemode: 'absolute',
+        sizeref: conescale*hwd,
+        showscale: false,
+        colorscale: [[0, 'green'], [1, 'green']],
+        visible: true
+      };
+      Plotly.newPlot(trjc_elem,[tpdata,pdata,vel_arw,vel_cone,acc_arw,acc_cone],layout);
+      trjc_elem.style.display='block';
+    }else document.getElementById('message_trajectory').innerHTML='Trajectory cannot be plotted with 1D data.'
+  }
+
+  // Trajectory animation processing
+  function trajectory_animation(){
+    let vrt=dtt*vec_len,w;
+    step+=dstep;
+    if(step>=trjc_data[0].length)step-=trjc_data[0].length;
+    if(nacc==2){
+      // update coordinates of a point
+      pdata.x=[trjc_data[0][step]];
+      pdata.y=[trjc_data[1][step]];
+      Plotly.deleteTraces(trjc_elem,1);
+      Plotly.addTraces(trjc_elem,pdata);
+      // update velocity vector
+      vel_arw.x=trjc_data[0][step]+trjc_vel[0][step]*vrt;
+      vel_arw.y=trjc_data[1][step]+trjc_vel[1][step]*vrt;
+      vel_arw.ax=trjc_data[0][step];
+      vel_arw.ay=trjc_data[1][step];
+      // update acceleration vector
+      acc_arw.x=trjc_data[0][step]+trjc_acc[0][step]*vrt*vrt;
+      acc_arw.y=trjc_data[1][step]+trjc_acc[1][step]*vrt*vrt;
+      acc_arw.ax=trjc_data[0][step];
+      acc_arw.ay=trjc_data[1][step];
+      Plotly.relayout(trjc_elem,{annotations: [vel_arw,acc_arw]});
+    }else{
+      // update coordinates of a point
+      pdata.x=[trjc_data[0][step]];
+      pdata.y=[trjc_data[1][step]];
+      pdata.z=[trjc_data[2][step]];
+      // update velocity vector
+      vel_arw.x=[trjc_data[0][step],trjc_data[0][step]+trjc_vel[0][step]*vrt];
+      vel_arw.y=[trjc_data[1][step],trjc_data[1][step]+trjc_vel[1][step]*vrt];
+      vel_arw.z=[trjc_data[2][step],trjc_data[2][step]+trjc_vel[2][step]*vrt];
+      // update velocity cone
+      vel_cone.x=[trjc_data[0][step]+trjc_vel[0][step]*vrt];
+      vel_cone.y=[trjc_data[1][step]+trjc_vel[1][step]*vrt];
+      vel_cone.z=[trjc_data[2][step]+trjc_vel[2][step]*vrt];
+      w=math.norm([trjc_vel[0][step],trjc_vel[1][step],trjc_vel[2][step]]);
+      if(w==0)w=1;
+      vel_cone.u=[trjc_vel[0][step]/w];
+      vel_cone.v=[trjc_vel[1][step]/w];
+      vel_cone.w=[trjc_vel[2][step]/w];
+      // update acceleration vector
+      acc_arw.x=[trjc_data[0][step],trjc_data[0][step]+trjc_acc[0][step]*vrt*vrt];
+      acc_arw.y=[trjc_data[1][step],trjc_data[1][step]+trjc_acc[1][step]*vrt*vrt];
+      acc_arw.z=[trjc_data[2][step],trjc_data[2][step]+trjc_acc[2][step]*vrt*vrt];
+      // update acceleration cone
+      acc_cone.x=[trjc_data[0][step]+trjc_acc[0][step]*vrt*vrt];
+      acc_cone.y=[trjc_data[1][step]+trjc_acc[1][step]*vrt*vrt];
+      acc_cone.z=[trjc_data[2][step]+trjc_acc[2][step]*vrt*vrt];
+      w=math.norm([trjc_acc[0][step],trjc_acc[1][step],trjc_acc[2][step]]);
+      if(w==0)w=1;
+      acc_cone.u=[trjc_acc[0][step]/w];
+      acc_cone.v=[trjc_acc[1][step]/w];
+      acc_cone.w=[trjc_acc[2][step]/w];
+      // update plots
+      Plotly.deleteTraces(trjc_elem,[1,2,3,4,5]);
+      Plotly.addTraces(trjc_elem,[pdata,vel_arw,vel_cone,acc_arw,acc_cone]);
+    }  
+    document.getElementById('trajectory_time').innerHTML=time_data[step+trjc_start_time_index].toFixed(3);
+
+    aid=requestAnimationFrame(trajectory_animation);
+  }
+
+  // Animation start/stop processing
+  function motion_start(button){
+    stopflag=1-stopflag;
+    if(stopflag){
+      button.value='Stop';
+      trajectory_animation();
+    }else{
+      button.value='Start';
+      cancelAnimationFrame(aid);
+    }
+  }
+
+  // Change animation step width
+  function change_step_width(slider){
+    dstep=Number(slider.value);
+  }
+
+  // Show or hide velocity vector
+  function change_vel_vec_check(checkbox){
+    if(nacc==2){
+      vel_arw.showarrow=checkbox.checked;
+      Plotly.relayout(trjc_elem,{annotations: [vel_arw,acc_arw]});
+    }else{
+      let update={
+        visible: checkbox.checked
+      }
+      Plotly.restyle(trjc_elem,update,[2,3]);
+      vel_arw.visible=checkbox.checked;
+      vel_cone.visible=checkbox.checked;
+    }
+  }
+
+  // Show or hide acceleration vector
+  function change_acc_vec_check(checkbox){
+    if(nacc==2){
+      acc_arw.showarrow=checkbox.checked;
+      Plotly.relayout(trjc_elem,{annotations: [vel_arw,acc_arw]});
+    }else{
+      let update={
+        visible: checkbox.checked
+      }
+      Plotly.restyle(trjc_elem,update,[4,5]);
+      acc_arw.visible=checkbox.checked;
+      acc_cone.visible=checkbox.checked;
+    }
+  }
+
+  // Change velocity and acceleration vector length
+  function change_vector_length(slider){
+    let vrt;
+    vec_len=Number(slider.value);
+    vrt=dtt*vec_len;
+    if(nacc==2){
+      vel_arw.x=trjc_data[0][step]+trjc_vel[0][step]*vrt;
+      vel_arw.y=trjc_data[1][step]+trjc_vel[1][step]*vrt;
+      acc_arw.x=trjc_data[0][step]+trjc_acc[0][step]*vrt*vrt;
+      acc_arw.y=trjc_data[1][step]+trjc_acc[1][step]*vrt*vrt;
+      Plotly.relayout(trjc_elem,{annotations: [vel_arw,acc_arw]});
+    }else{
+      // update velocity vector
+      vel_arw.x=[trjc_data[0][step],trjc_data[0][step]+trjc_vel[0][step]*vrt];
+      vel_arw.y=[trjc_data[1][step],trjc_data[1][step]+trjc_vel[1][step]*vrt];
+      vel_arw.z=[trjc_data[2][step],trjc_data[2][step]+trjc_vel[2][step]*vrt];
+      // update velocity cone
+      vel_cone.x=[trjc_data[0][step]+trjc_vel[0][step]*vrt];
+      vel_cone.y=[trjc_data[1][step]+trjc_vel[1][step]*vrt];
+      vel_cone.z=[trjc_data[2][step]+trjc_vel[2][step]*vrt];
+      // update acceleration vector
+      acc_arw.x=[trjc_data[0][step],trjc_data[0][step]+trjc_acc[0][step]*vrt*vrt];
+      acc_arw.y=[trjc_data[1][step],trjc_data[1][step]+trjc_acc[1][step]*vrt*vrt];
+      acc_arw.z=[trjc_data[2][step],trjc_data[2][step]+trjc_acc[2][step]*vrt*vrt];
+      // update acceleration cone
+      acc_cone.x=[trjc_data[0][step]+trjc_acc[0][step]*vrt*vrt];
+      acc_cone.y=[trjc_data[1][step]+trjc_acc[1][step]*vrt*vrt];
+      acc_cone.z=[trjc_data[2][step]+trjc_acc[2][step]*vrt*vrt];
+
+      Plotly.deleteTraces(trjc_elem,[2,3,4,5]);
+      Plotly.addTraces(trjc_elem,[vel_arw,vel_cone,acc_arw,acc_cone]);
+    }
+  }
+
+  // Processing changes to target data in principal component analysis
+  function pca_check_button_change(str){
+    let i;
+    let insertElement='';
+
+    if(str==='vel'){
+      if(nuvel)for(i=0;i<nuvel;i++)insertElement+=`<option value="${i}">${unif_vel_data[i][0]}</option>`;
+      else insertElement='<option value="">--No data--</option>'
+    }else if(str==='pos'){
+      if(nupos)for(i=0;i<nupos;i++)insertElement+=`<option value="${i}">${unif_pos_data[i][0]}</option>`;
+      else insertElement='<option value="">--No data--</option>'
+    }else{
+      for(i=0;i<nuacc;i++)insertElement+=`<option value="${i}">${unif_acc_data[i][0]}</option>`;
+    }
+    document.getElementById('pca_data_select').innerHTML=insertElement;
+  }
+
+  // Calculation of principal component analysis
+  function calc_pca(){
+    let i,j,k;
+    let pca_data=[];
+    let graph_data;
+    let str,w;
+
+    const pca_mdtype=document.getElementById('pca_data_radio_select').motion_data.value;
+
+    pca_index.length=0;
+    npca=0;
+    for(let option of document.getElementById('pca_data_select').options){
+      if(option.selected){
+        pca_index.push(option.value);
+        npca++;
+      }
+    }
+    if(npca<2||npca>3){
+      document.getElementById('message_pca_data_select').innerHTML='Please select at least 2 and no more than 3 of any of the following!';
+      return;
+    }
+    document.getElementById('message_pca_data_select').innerHTML='';
+  
+    const start_time_index=Number(document.getElementById('pca_start_time_select').value);
+    const end_time_index=Number(document.getElementById('pca_end_time_select').value);
+    const npcatw=end_time_index-start_time_index+1;
+    const ts=time_data[start_time_index];
+    const te=time_data[end_time_index];
+    if(te-ts<0){
+      document.getElementById('message_pca_time_range').innerHTML='End time should be set to a time later than start time!';
+      return;
+    }
+    document.getElementById('message_pca_time_range').innerHTML='';
+
+    if(pca_mdtype==='vel'){
+      for(i=0;i<npcatw;i++){
+        pca_data[i]=[];
+        for(j=0;j<npca;j++)pca_data[i][j]=unif_vel_data[pca_index[j]][i+start_time_index];
+      }
+    }else if(pca_mdtype==='pos'){
+      for(i=0;i<npcatw;i++){
+        pca_data[i]=[];
+        for(j=0;j<npca;j++)pca_data[i][j]=unif_pos_data[pca_index[j]][i+start_time_index];
+      }
+    }else{
+      for(i=0;i<npcatw;i++){
+        pca_data[i]=[];
+        for(j=0;j<npca;j++)pca_data[i][j]=unif_acc_data[pca_index[j]][i+start_time_index];
+      }
+    }
+
+    pcares=PCA.getEigenVectors(pca_data);
+
+    let insertElement='';
+    for(i=0;i<npca;i++){
+      insertElement+=`<span style="font-weight:bold;">${cstr[i]} component</span>: eigenvalue ${pcares[i].eigenvalue.toFixed(5)}<br />&nbsp;&nbsp;&nbsp;&nbsp;principal component loading&nbsp;&nbsp;`;
+      for(j=0;j<npca;j++)insertElement+=`<input type="number" id="coef${i+1}_${j+1}" value="${pcares[i].vector[j]}" />&nbsp;`;
+      insertElement+='<br />';
+    }
+    document.getElementById('pca_coeff').innerHTML=insertElement;
+
+    if(pca_mdtype==='vel'){
+      graph_data=convert_axis(npca,pca_index,pcares,ntwidth,unif_vel_data);
+      str='Velocity'+vel_unit;
+    }else if(pca_mdtype==='pos'){
+      graph_data=convert_axis(npca,pca_index,pcares,ntwidth,unif_pos_data);
+      str='Position'+pos_unit;
+    }else{
+      graph_data=convert_axis(npca,pca_index,pcares,ntwidth,unif_acc_data);
+      str='Acceleration'+acc_unit;
+    }
+    graph_data[0][0]='first principal component';
+    graph_data[1][0]='second principal component';
+    if(npca>2)graph_data[2][0]='third principal component';
+
+    if(!document.getElementById('pca_graph').classList.contains('js-plotly-plot')){
+      document.getElementById('pca_graph').style.width=`${width1}px`;
+      document.getElementById('pca_graph').style.height=`${height1}px`;
+    }
+    plot_graph(time_data,graph_data,0,npca-1,'Graph in converted coordinate axes',str,'pca_graph');
+    document.getElementById('pca_result').style.display='block';
+  }
+
+  // conversion of each coordinate axis
+  function convert_axis(npca,index,pcares,nd,ydata){
+    let i,j,k,w;
+    let cdata=[];
+    for(i=0;i<npca;i++)cdata[i]=[];
+    for(i=0;i<npca;i++)for(j=1;j<=nd;j++){
+      w=0.0;
+      for(k=0;k<npca;k++)w+=pcares[i].vector[k]*ydata[index[k]][j];
+      cdata[i][j]=w;
+    }
+    return cdata;
+  }
+
+  // Conversion process for all coordinate axes
+  function all_axis_conversion(){
+    let i,j,k,n,nt=nacc;
+    let index=[];
+    let tmp;
+    let cnv=[];
+
+    for(i=0;i<npca;i++)cnv[i]={eigenvalue: pcares[i].eigenvalue,vector:[]};
+    for(i=0;i<npca;i++)for(j=0;j<npca;j++)cnv[i].vector.push(Number(document.getElementById(`coef${i+1}_${j+1}`).value));
+
+    acc_vel_pos_data.length=0;
+    for(i=0;i<nacc;i++)acc_vel_pos_data[i]=[];
+    for(i=0;i<npca;i++)index[i]=pca_index[i]%nacc;
+
+    // convert acceleration axes
+    if(acc_rv===undefined)acc_rv=Number(document.getElementById('acc_for_integral_radio_select').acc_radio.value);
+    n=acc_rv*nacc;
+    for(i=0;i<npca;i++)index[i]=pca_index[i]%nacc+n;
+    tmp=convert_axis(npca,index,cnv,ntwidth,unif_acc_data);
+    for(i=0,k=0;i<nacc;i++){
+      if(index[k]==i+n){
+        for(j=1;j<=ntwidth;j++)acc_vel_pos_data[i][j]=tmp[k][j];
+        acc_vel_pos_data[i][0]=`acc_pca${k+1}`
+        k++;
+      }else for(j=0;j<=ntwidth;j++)acc_vel_pos_data[i][j]=unif_acc_data[i+n][j];
+    }
+
+    // convert velocity axes
+    if(nuvel){
+      nt+=nacc;
+      for(i=nacc;i<nacc*2;i++)acc_vel_pos_data[i]=[];
+      if(vel_rv===undefined)vel_rv=Number(document.getElementById('vel_for_integral_radio_select').vel_radio.value);
+      n=vel_rv*nacc;
+      for(i=0;i<npca;i++)index[i]=pca_index[i]%nacc+n;
+      tmp=convert_axis(npca,index,cnv,ntwidth,unif_vel_data);
+      for(i=0,k=0;i<nacc;i++){
+        if(index[k]==i+n){
+          for(j=1;j<=ntwidth;j++)acc_vel_pos_data[i+nacc][j]=tmp[k][j];
+          acc_vel_pos_data[i+nacc][0]=`vel_pca${k+1}`
+          k++;
+        }else for(j=0;j<=ntwidth;j++)acc_vel_pos_data[i+nacc][j]=unif_vel_data[i+n][j];
+      }
+    }
+    if(nupos){
+      nt+=nacc;
+      for(i=nacc*2;i<nacc*3;i++)acc_vel_pos_data[i]=[];
+      if(pos_rv===undefined)pos_rv=Number(document.getElementById('pos_for_output_radio_select').pos_radio.value);
+      n=pos_rv*nacc;
+      for(i=0;i<npca;i++)index[i]=pca_index[i]%nacc+n;
+      tmp=convert_axis(npca,index,cnv,ntwidth,unif_pos_data);
+      for(i=0,k=0;i<nacc;i++){
+        if(index[k]==i+n){
+          for(j=1;j<=ntwidth;j++)acc_vel_pos_data[i+nacc*2][j]=tmp[k][j];
+          acc_vel_pos_data[i+nacc*2][0]=`pos_pca${k+1}`
+          k++;
+        }else for(j=0;j<=ntwidth;j++)acc_vel_pos_data[i+nacc*2][j]=unif_pos_data[i+n][j];
+      }
+    }
+
+    document.getElementById('acc_vel_pos_area').style.height='300px';
+    let insertElement=make_table(time_data,acc_vel_pos_data,nt);
+    document.getElementById('acc_vel_pos_table').innerHTML=insertElement;
+
+    plot_graph(time_data,acc_vel_pos_data,0,nacc-1,'Acceleration in converted coordinate axis','a'+acc_unit,'tacc_graph');
+    if(nuvel)plot_graph(time_data,acc_vel_pos_data,nacc,2*nacc-1,'Velocity in converted coordinate axis','v'+vel_unit,'tvel_graph');
+    if(nupos)plot_graph(time_data,acc_vel_pos_data,2*nacc,3*nacc-1,'Position in converted coordinate axis','r'+pos_unit,'tpos_graph');
+
+    insertElement='&nbsp;&nbsp;<button onclick="download_acc_vel_pos_data();">Download</button>';
+    insertElement+='&nbsp;&nbsp;<span style="color:red;font-size:smaller">as CSV file</span>';
+    document.getElementById('data_download').innerHTML=insertElement;
+
+    document.getElementById('acc_vel_pos_output').style.display='block';
+
+    if(document.getElementById('trajectory_plot').style.display==='block'){
+      document.getElementById('trajectory_plot').style.display='none';
+      if(stopflag)cancelAnimationFrame(aid);
+      Plotly.purge('trajectory_plot');
+      document.getElementById('message_trajectory').innerHTML='';
+    }
+  }
+
+  // Clear display area
+  function clear_area(level){
+    if(level<1)document.getElementById('time_range').style.display='none';
+    if(level<2){
+      document.getElementById('acc_details').style.display='none';
+      document.getElementById('acc_graph').style.display='none';
+      for(i=0;i<nacc;i++){
+        Plotly.purge(`acc_graph${i}`);
+        document.getElementById(`acc_graph${i}`).classList.remove('js-plotly-plot');
+        document.getElementById(`acc_graph${i}`).style.display='none';
+      }
+      document.getElementById('acc_smoothing').style.display='none';
+      document.getElementById('acc_zero_adjust').open=false;
+      document.getElementById('acc_fourier_transformation').open=false;
+      if(acc_fft_data.length!=0){
+        Plotly.purge('acc_fft_graph');
+        document.getElementById('acc_fft_graph').classList.remove('js-plotly-plot');
+        document.getElementById('acc_fft_graph').style.display='none';
+      }
+      document.getElementById('acc_inverse_fourier_transformation').style.display='none';
+      document.getElementById('acc_least_square_smoothing').open=false;
+      document.getElementById('acc_for_integral_items').style.display='none';
+      document.getElementById('set_initial_velocity').style.display='none';
+      document.getElementById('axis_conversion_with_pca').style.display='none';
+      document.getElementById('axis_conversion_with_pca').open=false;
+    }
+    if(level<3){
+      document.getElementById('vel_details').style.display='none';
+      document.getElementById('vel_graph').style.display='none';
+      for(i=0;i<nacc;i++){
+        Plotly.purge(`vel_graph${i}`);
+        document.getElementById(`vel_graph${i}`).classList.remove('js-plotly-plot');
+        document.getElementById(`vel_graph${i}`).style.display='none';
+      }
+      document.getElementById('vel_smoothing').style.display='none';
+      document.getElementById('vel_zero_adjust').open=false;
+      document.getElementById('vel_fourier_transformation').open=false;
+      if(vel_fft_data.length!=0){
+        Plotly.purge('vel_fft_graph');
+        document.getElementById('vel_fft_graph').classList.remove('js-plotly-plot');
+        document.getElementById('vel_fft_graph').style.display='none';
+      }
+      document.getElementById('vel_inverse_fourier_transformation').style.display='none';
+      document.getElementById('vel_least_square_smoothing').open=false;
+      document.getElementById('vel_for_integral_items').style.display='none';
+      document.getElementById('set_initial_position').style.display='none';
+    }
+    if(level<4){
+      document.getElementById('pos_details').style.display='none';
+      document.getElementById('pos_graph').style.display='none';
+      for(i=0;i<nacc;i++){
+        Plotly.purge(`pos_graph${i}`);
+        document.getElementById(`pos_graph${i}`).classList.remove('js-plotly-plot');
+        document.getElementById(`pos_graph${i}`).style.display='none';
+      }
+      document.getElementById('pos_smoothing').style.display='none';
+      document.getElementById('pos_zero_adjust').open=false;
+      document.getElementById('pos_fourier_transformation').open=false;
+      if(vel_fft_data.length!=0){
+        Plotly.purge('pos_fft_graph');
+        document.getElementById('pos_fft_graph').classList.remove('js-plotly-plot');
+        document.getElementById('pos_fft_graph').style.display='none';
+      }
+      document.getElementById('pos_inverse_fourier_transformation').style.display='none';
+      document.getElementById('pos_least_square_smoothing').open=false;
+      document.getElementById('pos_for_output_items').style.display='none';
+    }
+    if(level<5){
+      document.getElementById('acc_vel_pos_output').style.display='none';
+      document.getElementById('data_download').innerHTML='';
+      document.getElementById('acc_vel_pos_area').style.display='none';
+      if(document.getElementById('acc_vel_pos_graph').style.display==='block'){
+        document.getElementById('acc_vel_pos_graph').style.display='none';
+        Plotly.purge('tacc_graph');
+        Plotly.purge('tvel_graph');
+        Plotly.purge('tpos_graph');
+      }
+      document.getElementById('trajectory').style.display='none';
+      if(document.getElementById('trajectory_plot').style.display==='block'){
+        document.getElementById('trajectory_plot').style.display='none';
+        if(stopflag)cancelAnimationFrame(aid);
+        Plotly.purge('trajectory_plot');
+        document.getElementById('message_trajectory').innerHTML='';
+      }
+    }
+  }
+
+  // Download process of original data
+  function download_sensor_data(){
+      exportcsv('sensor',0,data_str);
+  }
+
+  // Download process of acceleration data
+  function download_acc_data(){
+      exportcsv('acc_data',1,time_data,unif_acc_data,);
+  }
+
+  // Download process of velocity data
+  function download_vel_data(){
+      exportcsv('vel_data',1,time_data,unif_vel_data);
+  }
+
+  // Download process of position data
+  function download_pos_data(){
+      exportcsv('pos_data',1,time_data,unif_pos_data);
+  }
+
+  // Export of data
+  function exportcsv(basename,flg,xdata,ydata){
+    let i,j;
+    let data_str;
+    const mimeType='text/csv';
+    const date=new Date();
+    const year=date.getFullYear();
+    const month=('0'+(date.getMonth()+1)).slice(-2);
+    const day=('0'+date.getDate()).slice(-2);
+    const hour=('0'+date.getHours()).slice(-2);
+    const min=('0'+date.getMinutes()).slice(-2);
+    const second=('0'+date.getSeconds()).slice(-2);
+    const filename=basename+year+month+day+hour+min+second+'.csv';
+
+    if(flg){
+      data_str=xdata[0];
+      for(j=0;j<ydata.length;j++)data_str+=','+ydata[j][0];
+      data_str+='\n';
+      for(i=1;i<xdata.length;i++){
+        data_str+=xdata[i].toFixed(5);
+        for(j=0;j<ydata.length;j++)data_str+=','+ydata[j][i].toFixed(5);
+        data_str+='\n';
+      }
+    }else{
+      data_str=xdata;
+    }
+
+    const bom=new Uint8Array([0xEF,0xBB,0xBF]);
+    const blob=new Blob([bom,data_str],{type:mimeType});
+
+    let element=document.createElement('a');
+    element.href=URL.createObjectURL(blob);
+    element.download=filename;
+    element.click();
+    URL.revokeObjectURL(element.href);
+  }
+</script>
+
+</body>
+</html>

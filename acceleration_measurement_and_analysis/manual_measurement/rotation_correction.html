@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Measurement App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_measurement_app.png" /></div><div id="title">Manual for Acceleration Measurement App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="screen_structure.html">Screen structure</a></li>
+      <li><a href="operation.html">Operating method</a></li>
+      <li><a href="measurement_examples.html">Measurement examples</a></li>
+      <li><a class="no_link">Rotation correction</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="screen_structure.html">Screen structure</a></li>
+        <li><a href="operation.html">Operating method</a></li>
+        <li><a href="measurement_examples.html">Measurement examples</a></li>
+        <li><a class="no_link">Rotation correction</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>&#9632; Rotaion correction</h2>
+  
+    <p>
+      Since most smartphones are equipped with a gravity acceleration sensor and a geomagnetic (orientation) sensor, these can be used to calculate the three angles (Euler angles) that represent the orientation (posture) of the terminal. The following explains how to convert acceleration in a coordinate system fixed to the terminal to acceleration in a stationary coordinate system using the measured Euler angles.
+    </p>
+  
+    <div class="lfig">
+      <img src="image/euler_angle1.png" width="280" /><br />
+      <span class="emph1">Rotation around the <span class="mathit">z</span> axis</span>
+    </div>
+    <div class="lfig">
+      <img src="image/euler_angle2.png" width="280" /><br />
+      <span class="emph1">Rotation around the <span class="mathit">x</span> axis</span>
+    </div>
+    <div class="lfig">
+      <img src="image/euler_angle3.png" width="280" /><br />
+      <span class="emph1">Rotation around the <span class="mathit">y</span> axis</span>
+    </div>
+  
+    <br style="clear:both;" /><br />
+  
+    <div class="rfig">
+      <img src="image/device_rotation.gif" width="400" />
+    </div>
+  
+    <p>
+      The acceleration measurement application on this site is a web application that runs in a web browser and is written in JavaScript. DeviceOrientationEvent and DeviceMotionEvent APIs are provided to detect device orientation information (Euler angle) and acceleration, respectively. The Euler angles <span class="mathit">&alpha;</span>, <span class="mathit">&beta;</span>, and <span class="mathit">&gamma;</span> obtained by DeviceOrientationEvent represent the angles of rotation around the <span class="mathit">z</span>, <span class="mathit">x</span>, and <span class="mathit">y</span> axes of the coordinate system fixed to the device in this order (<span class="mathit">z</span>-<span class="mathit">x</span>-<span class="mathit">y</span> Euler angles). <span style="color:red;">Note that these Euler angles are different from the roll-pitch-yaw angles (<span class="mathit">z</span>-<span class="mathit">y</span>-<span class="mathit">x</span> Euler angles) commonly used in vehicles and robots.</span>
+    </p>
+  
+    <p>
+      Measuring the Euler angles from time to time, along with the acceleration measurements, gives an indication of how much the device has rotated relative to the stationary coordinate system at the start of the measurement. The rotation matrices <span class="mathit">R<sub>z</sub></span>(<span class="mathit">&alpha;</span>), <span class="mathit">R<sub>x</sub></span>(<span class="mathit">&beta;</span>), <span class="mathit">R<sub>y</sub></span>(<span class="mathit">&gamma;</span>) for the Euler angles <span class="mathit">&alpha;</span>, <span class="mathit">&beta;</span>, <span class="mathit">&gamma;</span> are given by
+    </p>
+  
+    <br style="clear:both;" />
+  
+    $$
+    \tag{1}
+    R_z(\alpha)=\begin{pmatrix}
+    \cos\alpha & -\sin\alpha & 0 \\
+    \sin\alpha & \cos\alpha & 0 \\
+    0 & 0 & 1
+    \end{pmatrix},
+    $$
+    
+    $$
+    \tag{2}
+    R_x(\beta)=\begin{pmatrix}
+    1 & 0 & 0 \\
+    0 & \cos\beta & -\sin\beta \\
+    0 & \sin\beta & \cos\beta    
+    \end{pmatrix},
+    $$
+    
+    $$
+    \tag{3}
+    R_y(\gamma)=\begin{pmatrix}
+    \cos\gamma & 0 & \sin\gamma \\
+    0 & 1 & 0 \\
+    -\sin\gamma & 0 & \cos\gamma \\
+    \end{pmatrix}.
+    $$
+  
+    <p>
+      Let us consider converting $\boldsymbol{a}_0=\left(a_{0x},\,a_{0y},\,a_{0z}\right)$ displayed in component representation in the stationary coordinate system to $\boldsymbol{a}=\left(a_{x},\,a_{y},\,a_{z}\right)$ in component representation in the coordinate system rotated by the <span class="mathit">z</span>-<span class="mathit">x</span>-<span class="mathit">y</span> Euler angles. In this case, $\boldsymbol{a}$ is obtained by rotating $\boldsymbol{a}_0$ backward around the <span class="mathit">z</span> axis by an angle <span class="mathit">&alpha;</span>, then backward around the <span class="mathit">x</span> axis by an angle <span class="mathit">&beta;</span>, and then backward around the <span class="mathit">y</span> axis by an angle <span class="mathit">&gamma;</span>, such as
+    </p>
+  
+    $$
+    \tag{4}
+    \begin{aligned}
+    \boldsymbol{a}&=R_y^{-1}(\gamma)R_x^{-1}(\beta)R_z^{-1}(\alpha)\boldsymbol{a}_0 \\
+    &=\left\lbrace R_z(\alpha)R_x(\beta)R_y(\gamma)\right\rbrace^{-1}\boldsymbol{a}_0\ .
+    \end{aligned}
+    $$
+  
+    <p>
+      Therefore, $\boldsymbol{a}_0$ is obtained from $\boldsymbol{a}$ by the inverse transformation of equation (4). That is, 
+      by using the transformation matrix
+    </p>
+  
+    $$
+    \tag{5}
+    M=R_z(\alpha)R_x(\beta)R_y(\gamma)\,,
+    $$
+  
+    $$
+    \tag{6}
+    \boldsymbol{a}_0=M\boldsymbol{a}\,.
+    $$
+  
+    <p>
+      
+    </p>
+  
+    <div class="cfig">
+      <img src="image/conversion.png" width="420" /><br />
+      <span class="emph1">Conversion from device-fixed system to stationary system</span>
+    </div>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operation Guide ]</p>
+
+    <h2>&#9632; Numerical Integration</h2>
+
+    <p style="margin-left:1rem;">
+      In this application, <a href="trapezoidal_rule.html">numerical integration using the trapezoidal rule</a> is used to calculate velocity data from acceleration data and position data from velocity data.
+    </p>
+
+    <p style="margin-left:1rem;">
+      As an example, after loading acceleration data and setting the <a href="setting_time_domain.html">time domain for analysis</a>, an acceleration graph for each component, as shown below, is obtained (<span class="mathit">x</span>, <span class="mathit">y</span>, and <span class="mathit">z</span> components of the acceleration of projectile motion). Clicking "&#9654; Acceleration data" just above the graph displays a table of acceleration data for the specified time domain (clicking again closes the table).
+    </p>
+
+    <div class="cfig">
+      <img src="image/projectile_motion_acceleration.png" style="width:100%;max-width:920px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      The equation to calculate velocity $\vec{\bm{v}}$ from acceleration $\vec{\bm{a}}$ is 
+      $$\vec{\bm{v}}(t)=\int_{t_0}^{t}\!\vec{\bm{a}}\,dt+\vec{\bm{v}}_0,$$
+      so the initial velocity $\vec{\bm{v}}_0$ (velocity $\vec{\bm{v}}(t_0)$ at time $t=t_0$) must be set before performing numerical integration.
+    </p>
+
+    <p style="margin-left:1rem;">
+      When smoothing acceleration data (e.g., <a href="fourier_smoothing.html">Smoothing by Fourier transform</a>, <a href="least-square_smoothing.html">Smoothing by least-squares approximation</a>), you can choose from "Original data," "Smoothed data," or "Difference data" as the acceleration data for numerical integration.
+    </p>
+
+    <div class="lfig">
+      <img src="image/integral_of_acceleration1.png" style="width:90%;max-width:320px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      In the initial velocity setting field, input the initial velocity $\vec{\bm{v}}(t_0)$ for each component at the starting time set in the time domain for analysis. Generally, initial velocity values are rarely known beforehand, so measurements can start from rest, and the initial velocity can be set to zero (default is 0.0).
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      After setting the initial velocity, clicking the "Calculate velocity (numerical integration)" button performs numerical integration of the acceleration data over the specified time domain to calculate velocity data. The velocity graph for each component is displayed as shown below. Clicking "&#9654; Velocity data" just above the graph displays a table of velocity data obtained through numerical integration (clicking again closes the table).
+    </p>
+
+    <div class="cfig">
+      <img src="image/projectile_motion_velocity.png" style="width:100%;max-width:920px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      Similarly, the equation to calculate position $\vec{\bm{r}}$ from velocity $\vec{\bm{v}}$ is
+      $$\vec{\bm{r}}(t)=\int_{t_0}^{t}\!\vec{\bm{v}}\,dt+\vec{\bm{r}}_0,$$
+      so the initial position $\vec{\bm{r}}_0$ (position $\vec{\bm{r}}(t_0)$ at time $t=t_0$) must be set before performing numerical integration.
+    </p>
+
+    <p style="margin-left:1rem;">
+      When smoothing velocity data (e.g., <a href="fourier_smoothing.html">Smoothing by Fourier transform</a>, <a href="least-square_smoothing.html">Smoothing by least-squares approximation</a>), you can choose from "Original data," "Smoothed data," or "Difference data" as the velocity data for numerical integration.
+    </p>
+
+    <div class="lfig">
+      <img src="image/integral_of_velocity1.png" style="width:90%;max-width:320px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      In the initial position setting field, input the initial position $\vec{\bm{r}}(t_0)$ for each component at the starting time set in the time domain for analysis (default is 0.0, setting the initial position at the origin at the starting time). In the example, the initial position is set such that the moment of throwing a smartphone in projectile motion (time = 3.37 seconds) corresponds to the origin.
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      After setting the initial position, clicking the "Calculate position (numerical integration)" button performs numerical integration of the velocity data over the specified time domain to calculate position data. The position graph for each component is displayed as shown below. Clicking "&#9654; Position data" just above the graph displays a table of position data obtained through numerical integration (clicking again closes the table).
+    </p>
+
+    <div class="cfig">
+      <img src="image/projectile_motion_position.png" style="width:100%;max-width:840px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      Once position data is obtained through numerical integration, proceed to <a href="output_data.html">outputting acceleration, velocity, and position data</a>. If multiple components are analyzed (by selecting multiple columns in acceleration selection), proceeding to data output generates graphs of acceleration, velocity, and position with overlaid plots of multiple components.
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page Top</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

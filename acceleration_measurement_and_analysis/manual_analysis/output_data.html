@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operation Guide ]</p>
+
+    <h2>&#9632; Output Acceleration, Velocity, and Position Data</h2>
+
+    <p style="margin-left:1rem;">
+      After obtaining position data through numerical integration, a row labeled "&#9679; Acceleration, velocity, and position data output" will appear. By clicking the "Output" button on the right, acceleration, velocity, and position data are displayed together in a table, and below it, their corresponding graphs are shown. If multiple components were selected in the acceleration column selection, the data for these components will be overlaid on the graphs.
+    </p>
+
+    <div class="cfig">
+      <img src="image/output_data.png" style="width:100%;max-width:920px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      If data smoothing (e.g., <a href="fourier_smoothing.html">Smoothing by Fourier transform</a>, <a href="least-square_smoothing.html">Smoothing by least-squares approximation</a>) was performed, the selected data among "Original data," "Smoothed data," or "Difference data" will be outputted here.
+    </p>
+
+    <p style="margin-left:1rem;">
+      After outputting acceleration, velocity, and position data, a "Download" button will appear next to the "Output" button. Clicking this button allows the data to be downloaded as a CSV file. Additionally, the outputted position data can be used to <a href="trajectory_plot.html">plot the motion trajectory</a>. However, if only one component is selected in the acceleration column selection, it is treated as one-dimensional motion, and trajectory plotting is not possible.
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

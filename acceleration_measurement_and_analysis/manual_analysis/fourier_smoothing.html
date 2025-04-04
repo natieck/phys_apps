@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operation Guide ]</p>
+
+    <h2>&#9632; Data Smoothing by Fourier Transform</h2>
+
+    <p style="margin-left:1rem;">
+      This application offers two methods for data smoothing (noise removal): one using Fourier Transform and another based on <a href="least-square_smoothing.html">Least Squares Approximation</a>.
+    </p>
+
+    <p style="margin-left:1rem;">
+      Here, as an example, we will explain how to smooth data using Fourier Transform, assuming acceleration data as shown below has been obtained.
+    </p>
+
+    <div class="cfig">
+      <img src="image/pre-smoothed_data.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      After loading the acceleration data and setting the <a href="setting_time_domain.html">time domain for analysis</a>, a graph of the acceleration data will be displayed, along with an area labeled "Smoothing of acceleration data" below it. Clicking the "&#9654; Smoothing by Fourier transform" row will display the Fourier transform settings. If the time interval of the measured data is not constant, leave the checkbox selected and adjust the number of time decompositions for the Discrete Fourier transform using the slider as needed. Press the "Fourier transform" button to perform the Fourier transform on the acceleration data, and the amplitude spectrum will be plotted as shown below.
+    </p>
+
+    <div class="cfig">
+      <img src="image/fourier_smoothing.png" style="width:80%;max-width:590px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      The amplitude spectrum indicates the frequency components of oscillations present in the acceleration data. In the above figure, signals near 4.46Hz are prominent.
+    </p>
+
+    <p style="margin-left:1rem;">
+      By observing the frequency of the oscillation components in the amplitude spectrum and setting the "Cutoff frequency" displayed below it, pressing the "Smoothing by inverse Fourier transform" button will remove signals with frequencies higher than the cutoff frequency through an inverse Fourier transform. That is, high-frequency components above the cutoff frequency are removed from the data. The smoothed acceleration graph from the inverse Fourier transform is overlaid on the original graph, as shown below (cutoff frequency set to 4.95Hz).
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">Smoothing with a Cutoff Frequency of 4.95Hz</span><br />
+      <img src="image/fourier_smoothing_cutoff_4.95Hz.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+    <p style="margin-left:1rem;">
+      Here, the orange line (smth_awx) represents the smoothed data, and the green line (diff_awx) shows the difference data (the original data minus the smoothed data). Observing the smoothed data graph (orange line), it is clear that fine high-frequency oscillations above 4.95Hz have been removed from the original data.
+    </p>
+
+    <p style="margin-left:1rem;">
+      The smoothed data with decreasing cutoff frequencies of 3.96Hz, 2.97Hz, and 1.98Hz are shown below. It demonstrates how the frequency of oscillation components in the smoothed data gradually decreases.
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">Smoothing with a cutoff frequency of 3.96Hz</span><br />
+      <img src="image/fourier_smoothing_cutoff_3.96Hz.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+      <br />
+      <span class="emph2">Smoothing with a cutoff frequency of 2.97Hz</span><br />
+      <img src="image/fourier_smoothing_cutoff_2.97Hz.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+      <br />
+      <span class="emph2">Smoothing with a cutoff frequency of 1.98Hz</span><br />
+      <img src="image/fourier_smoothing_cutoff_1.98Hz.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="lfig">
+      <br />
+      <img src="image/select_acceleration_for_integral.png" style="width:90%;max-width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      Once the acceleration data has been smoothed, an area for "Selection of acceleration data for numerical integration" will appear, allowing you to choose between "Original data," "Smoothed data," or "Difference data" for velocity calculation. Additionally, pressing the "Clear smoothing" button will remove the smoothed and difference data graphs.
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      The same smoothing process using Fourier Transform can also be applied to velocity and position data.
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page Top</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

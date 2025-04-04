@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; 軌跡のプロット</h2>
+
+    <p style="margin-left:1rem;">
+      <a href="output_data.html">加速度・速度・位置のデータ出力</a>後，位置のデータを用いて運動の軌跡をプロットすることができる．軌跡をプロットする時間領域（開始時刻と終了時刻）を選択し，「決定」ボタンを押すと，選択した開始時刻から終了時刻までの運動の軌跡が表示される．加速度の選択で2成分を選択した場合は平面における２次元の軌跡，3成分を選択した場合は空間における3次元の軌跡となる．ただし，加速度列の選択で1成分のみ選択した場合，軌跡は表示されない．
+    </p>
+
+    <p class="emph2">&#9679; 円運動（2次元）の軌跡</p>
+
+    <div class="lfig">
+      <img src="image/circular_motion_position2.png" style="width:90%;max-width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p>
+      円運動する物体の位置のグラフが図のように得られた場合（青線：位置の$x$成分，オレンジ線：位置の$y$成分），時刻10秒から15秒までの位置データに対して軌跡をプロットすると下図が得られる．軌跡（赤線）上の黒点が物体の位置であり，黒点を始点とした青い矢印と緑の矢印が，それぞれ速度ベクトルと加速度ベクトルを表している．
+    </p>
+
+    <br style="clear:both;" />
+    
+    <div class="cfig">
+      <img src="image/trajectory_plot1.png" style="width:80%;max-width:510px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="rfig">
+      <img src="image/trajectory_animation1.gif" style="width:90%;max-width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      軌跡のプロットの下にある「スタート」ボタンを押すと，軌跡上での運動の様子がアニメーションで表示される．ボタンの右にあるスライダーでアニメーションの速さを調節できる．「スタート」ボタンの下にある「速度ベクトル」と「加速度ベクトル」のチェックボックスで，ベクトルの表示・非表示を切り替えることができる．また，右側のスライダーでこれらのベクトルの長さを調整できる．
+    </p>
+    
+    <br style="clear:both;" />
+
+    <p class="emph2">&#9679; 放物運動（3次元）の軌跡</p>
+
+    <div class="lfig">
+      <img src="image/projectile_motion_position2.png" style="width:90%;max-width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p>
+      放物運動する物体の位置のグラフが図のように得られた場合（青線：位置の$x$成分，オレンジ線：位置の$y$成分，緑線：位置の$z$成分），時刻1.6秒から4.6秒までの位置データに対して軌跡をプロットすると下図が得られる．
+    </p>
+
+    <br style="clear:both;" />
+
+    <div class="cfig">
+      <img src="image/trajectory_plot2.png" style="width:80%;max-width:600px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="rfig">
+      <img src="image/trajectory_animation2.gif" style="width:90%;max-width:400px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      軌跡のプロットの下にある「スタート」ボタンを押すと，軌跡（赤線）上での運動の様子がアニメーションで表示される．ボタンの右にあるスライダーでアニメーションの速さを調節できる．軌跡上を移動する黒点を始点とした青い矢印と緑の矢印は，それぞれ速度ベクトルと加速度ベクトルを表しており，運動中の速度と加速度の時間変化を可視化している．「スタート」ボタンの下にある「速度ベクトル」と「加速度ベクトル」のチェックボックスで，ベクトルの表示・非表示を切り替えることができる．また，右側のスライダーでこれらのベクトルの長さを調整できる．
+    </p>
+
+    <br style="clear:both;" />
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+/* CSS for smart phone */	
+.main {
+	margin:0 auto;
+	width:100%;
+	text-align:left;
+}
+
+.appbox {
+    float: left;
+	padding: 2rem;
+	max-width:500px;
+}
+
+.icon {
+	float: left;
+	padding-right: 2rem;
+}
+
+.emph {
+	font-weight: bold;
+	color: #3ccdb8;
+}

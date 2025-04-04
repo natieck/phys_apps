@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度解析アプリの使い方：操作方法</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">【操作方法】</p>
+
+    <h2>&#9632; 加速度・速度・位置のデータ出力</h2>
+
+    <p style="margin-left:1rem;">
+      数値積分により位置データを取得後，「&#9679; 加速度・速度・位置のデータ出力」の行が表示されるので，右側にある「出力」ボタンを押すと，加速度・速度・位置のデータがまとめてテーブルとして表示され，その下に加速度・速度・位置のグラフが表示される．加速度列の選択で複数の成分を選択した場合，これらのグラフにおいて複数の成分のデータが重ねてプロットされる．
+    </p>
+
+    <div class="cfig">
+      <img src="image/output_data.png" style="width:100%;max-width:920px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      データの平滑化（<a href="fourier_smoothing.html">フーリエ変換による平滑化</a>，<a href="least-square_smoothing.html">最小二乗近似による平滑化</a>）を実行していた場合，「元のデータ」「平滑化データ」「差分データ」のうち選択したデータがここで出力される．
+    </p>
+
+    <p style="margin-left:1rem;">
+      加速度・速度・位置のデータ出力後，「出力」ボタンの右側に「ダウンロード」ボタンが現れるので，それを押すとCSVファイルとしてデータをダウンロード出来る．また，出力した位置データを用いて<a href="trajectory_plot.html">運動の軌跡をプロット</a>することができる．ただし，加速度列の選択で1成分しか選択していない場合，1次元運動とみなされ，軌跡のプロットはできない．
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">ページトップ</a></p>
+
+  </main>
+
+</body>
+</html>

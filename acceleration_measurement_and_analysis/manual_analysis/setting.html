@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a class="no_link">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a class="no_link">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operating guide ]</p>
+
+    <h2>&#9632; Settings</h2>
+
+    <ol>
+      <li><span class="emph1" id="unit_setting" style="padding-top:5rem;margin-top:-5rem;">Unit Settings</span>
+        <p>
+          When you open this app and load a CSV file, the data table is displayed, and a "Unit Settings" row appears below it. In the unit settings, you can specify the unit for length (default: meter) and time (default: second). Length units can be selected from mm (millimeter), cm (centimeter), m (meter), and km (kilometer), while time units can be chosen from ms (millisecond), s (second), min (minute), and h (hour). The units set here determine the labels for position, velocity, and acceleration on the graph. By default, these units are m, m/s, and m/s<sup>2</sup>, respectively.
+        </p>
+        <div class="cfig">
+          <img src="image/unit_setting.png" style="width:70%;max-width:440px;border:1px solid #444444;"/>
+        </div>
+      </li>
+      <br />
+      <li><span class="emph1" id="marker_line_setting" style="padding-top:5rem;margin-top:-5rem;">Graph Marker and Line Settings</span><br />
+        <p>
+          When you open this app and load a CSV file, the "&#9654; Graph Marker and Line Settings" row appears below the "Unit Settings" row. Clicking this row expands the settings area for mode and size/width adjustments (clicking it again will collapse the area).
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting.png" style="width:70%;max-width:410px;border:1px solid #444444;"/>
+        </div>
+        <p>
+          In the mode settings, you can choose from "Marker," "Line," or "Marker + Line," and the resulting graphs will look as shown below (in the order of "Marker," "Line," and "Marker + Line").
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting1.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting2.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting3.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+        </div>
+        <p>
+          The size/width adjustment slider allows you to set the marker size and line width. Below are examples of the smallest (slider at the far left) and largest (slider at the far right) marker sizes.
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting4.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting5.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+        </div>
+        <p>
+          Similarly, the examples below show the smallest (slider at the far left) and largest (slider at the far right) line widths.
+        </p>
+        <div class="cfig">
+          <img src="image/marker_line_setting6.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+          <img src="image/marker_line_setting7.png" style="width:70%;max-width:330px;border:1px solid #444444;"/>
+        </div>
+      </li>
+    </ol>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

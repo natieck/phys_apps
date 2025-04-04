@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p  id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operation Guide ]</p>
+
+    <h2>&#9632; Graph Adjustment and Output</h2>
+
+    <p style="margin-left:1rem;">
+      The graphs in this app are drawn using the free graphing JavaScript library <a href="https://plotly.com/javascript/">Plotly.js</a> (ver.2.35.2). If you open this app on a PC, moving the mouse cursor over a displayed graph will reveal menu bar buttons in the upper right corner of the graph, as shown below (on a smartphone, the menu bar is always visible).
+    </p>
+    
+    <div class="cfig">
+      <img src="image/graph_adjust_output1.png" style="width:90%;max-width:500px;"/><br />
+      <span class="emph2">Menu bar buttons</span><br />
+      <img src="image/graph_menu_buttons.png" style="width:80%;max-width:400px;border:1px solid #444444;"/>
+    </div>
+    
+    <br />
+    <style>
+      td {
+        padding:10px;
+        vertical-align: top;
+      }
+    </style>
+    <table style="margin:0 auto;width:90%;">
+      <tr><th colspan="2">【Button Functions】</th></tr>
+      <tr>
+        <td><img src="image/graph_menu_button1.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【Camera Button】</span> Save the graph as a PNG image. Clicking the camera button will save the graph as a file named "newplot.png" in the browser's default download folder.
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button2.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【Zoom Mode Button】</span> Switch to zoom mode (there are two modes: zoom mode and pan mode, with zoom mode being the default). In zoom mode, selecting a specific area of the graph, as shown below, will enlarge that area and display it across the entire graph area.<br />
+          <div class="cfig">
+            <div style="text-align:center;float:left;margin-right:1rem;">
+              <span class="emph2">Select the range to zoom</span><br />
+              <img src="image/graph_zoom1.png" style="border:1px solid #444444;"/>
+            </div>
+            <div style="text-align:center;float:left;">
+              <span class="emph2">The selected range is zoomed in</span><br />
+              <img src="image/graph_zoom2.png" style="border:1px solid #444444;"/>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button3.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【Pan Mode Button】</span> Switch to pan mode (there are two modes: zoom mode and pan mode, with zoom mode being the default). In pan mode, as shown below, you can click and drag the mouse on the graph to move the visible area.<br />
+          <div class="cfig"><img src="image/graph_pan.gif" style="border:1px solid #444444;"/></div>
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button4.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【Zoom In Button】</span> Each click zooms in toward the center of the displayed graph.
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button5.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【Zoom Out Button】</span> Each click zooms out from the center of the displayed graph.
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button6.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【Autoscale Button】</span> Adjust the layout to display all data.
+        </td>
+      </tr>
+      <tr>
+        <td><img src="image/graph_menu_button7.png" style="border:1px solid #444444;"/></td>
+        <td>
+          <span class="emph1">【Reset Button】</span> Return to the initial layout. For graphs displayed in this app, the autoscale and reset buttons perform the same function.
+        </td>
+      </tr>
+    </table>
+    
+    <br />
+    
+    <h3>&#9679; Changing the Graph Area Size</h3>
+    
+    <p style="margin-left:1rem;">
+      As shown below, you can resize the graph area by clicking and dragging the bottom right corner of the graph's frame. When resizing, the width and height of the area are displayed in small red text in the bottom right corner.
+    </p>
+
+    <div class="cfig"><img src="image/change_graph_size.gif" style="border:1px solid #444444;"/></div>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual for Acceleration Data Analysis App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="font-family: Times;">
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">Manual for Acceleration Data Analysis App</div>
+    <ul id="pcNav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="analysis_flow.html">Analysis flow</a></li>
+      <li><a href="operating_guide.html">Operating guide</a></li>
+      <li><a href="analysis_examples.html">Analysis examples</a></li>
+      <li><a href="setting.html">Settings</a></li>
+      <li><a href="search.html">Search</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="analysis_flow.html">Analysis flow</a></li>
+        <li><a href="operating_guide.html">Operating guide</a></li>
+        <li><a href="analysis_examples.html">Analysis examples</a></li>
+        <li><a href="setting.html">Settings</a></li>
+        <li><a href="search.html">Search</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <p id="pagetop" style="padding-top:5rem;margin-top:-5rem;font-weight:bold;">[ Operation Guide ]</p>
+
+    <h2>&#9632; Data Smoothing by Least Squares Approximation</h2>
+
+    <p style="margin-left:1rem;">
+      This application offers two methods for data smoothing (noise removal): one using <a href="fourier_smoothing.html">Fourier Transform</a> and another based on Least Squares Approximation.
+    </p>
+
+    <p style="margin-left:1rem;">
+      Here, as an example, we will explain how to smooth data using least squares approximation<sup> <a href="#reference">1)</a> </sup>, assuming acceleration data as shown below has been obtained.
+    </p>
+
+    <div class="cfig">
+      <img src="image/pre-smoothed_data.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <br style="clear:both;" />
+
+    <div class="lfig">
+      <img src="image/least-squares_smoothing1.png" style="width:90%;max-width:250px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      In smoothing by least squares approximation, data within the smoothing filter window is fitted using a polynomial function through the least squares method. The function value at the center of the filter width is taken as the smoothed data value for that point. The filter window is shifted from the left end of the data to the right end, performing similar fitting at each step to obtain the smoothed data. If the time interval of the measurement data is always constant, this method is equivalent to Savitzky-Golay smoothing<sup> <a href="#reference">2)</a> </sup>.
+    </p>
+
+    <br style="clear:both;" />
+
+    <div class="rfig">
+      <br />
+      <img src="image/least-squares_smoothing2.png" style="width:90%;max-width:550px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      After loading the acceleration data and setting the <a href="setting_time_domain.html">time domain for analysis</a>, a graph of the acceleration data will be displayed, along with an area labeled "Smoothing of acceleration data" below it. Clicking on the "&#9654; Smoothing by least squares approximation" row will display the configuration options for least squares approximation. Set the filter width using the slider or by entering a value, and specify the order of the polynomial for the approximation. Since the filter width cannot be applied to the edges of the data, check the option for automatic adjustment (if unchecked, the edges will deviate from the original data). After configuration, click the "Smoothing by least squares approximation" button to overlay the smoothed acceleration graph on the original acceleration graph, as shown below (with filter width set to 0.2 and polynomial order to 3).
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">Smoothing with filter width 0.2 and polynomial order 3</span><br />
+      <img src="image/least-square_smoothing_width0.2_order3.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+    
+    <p style="margin-left:1rem;">
+      Here, the orange line (smth_awx) represents the smoothed data, while the green line (diff_awx) shows the difference data (original data minus smoothed data). Observing the graph of the smoothed data (orange line), it is evident that fine oscillations (noise) have been removed from the original data.
+    </p>
+
+    <p style="margin-left:1rem;">
+      The graphs below show results for the same polynomial order of 3, but with filter widths increased to 0.5 and 1.0, respectively. It becomes apparent that a lower-order polynomial cannot approximate data with rapid changes when the filter width is too large.
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">Smoothing with filter width 0.5 and polynomial order 3</span><br />
+      <img src="image/least-square_smoothing_width0.5_order3.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+      <br />
+      <span class="emph2">Smoothing with filter width 1.0 and polynomial order 3</span><br />
+      <img src="image/least-square_smoothing_width1.0_order3.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      The graph below shows results for a filter width of 0.2 and a polynomial order of 0. A polynomial of order 0 is equivalent to a constant, where the constant value is the average of the data within the filter window.
+    </p>
+
+    <div class="cfig">
+      <span class="emph2">Smoothing with filter width 0.2 and polynomial order 0</span><br />
+      <img src="image/least-square_smoothing_width0.2_order0.png" style="width:80%;max-width:560px;border:1px solid #444444;"/>
+    </div>
+
+    <div class="lfig">
+      <br />
+      <img src="image/select_acceleration_for_integral.png" style="width:90%;max-width:360px;border:1px solid #444444;"/>
+    </div>
+
+    <p style="margin-left:1rem;">
+      After smoothing the acceleration data, the "Selection of acceleration data for numerical integration" section will appear, allowing you to choose from "Original data", "Smoothed data", or "Difference data" for numerical integration to calculate velocity. Additionally, clicking the "Clear Smoothing" button will remove the smoothed data and difference data graphs.
+    </p>
+
+    <br style="clear:both;" />
+
+    <p style="margin-left:1rem;">
+      The same smoothing by least squares approximation can also be applied to velocity and position data.
+    </p>
+
+    <hr />
+
+    <p>
+      <span style="font-weight:bold;" id="reference">[ References ]</span>
+      <ol>
+        <li>
+          Peter A. Gorry, General Least-Squares Smoothing and Differentiation of Nonuniformly Spaced Data by the Convolution Method, Analytical Chemistry 63, 534-536 (1991).
+        </li>
+        <li>
+          Abraham. Savitzky and M. J. E. Golay, Smoothing And differentiation of Data by Simplified Least Squares Procedures, Analytical Chemistry 36, 1627-1639 (1964).
+        </li>
+      </ol>
+      
+    </p>
+
+    <hr />
+    <p style="text-align:center;"><a href="#pagetop">Page top</a></p>
+
+  </main>
+
+</body>
+</html>
+
+
+

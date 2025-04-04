@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Physics Education Apps</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link href="style.css" rel="stylesheet" type="text/css" />
+<script src="qrcode.min.js" charset="utf-8"></script>
+<style>
+	li {
+	  margin-bottom: 0.5rem;
+	}
+</style>
+</head>
+<body style="font-family: Times;">
+<div class="main">
+
+<div style="background-color:#3ccdb8;padding:1px 1rem;">
+    <h2 style="color:white;">Physics Education Apps</h2>
+</div>
+
+<div style="text-align:center;"><span class="emph">The applications on this page are free to use!</span></div>
+
+<div class="appbox">
+	<div class="icon">
+		<a href="acceleration_measurement_and_analysis/acceleration_measurement_app.html"><img src="image/icon_measurement_app.png" width="120" /></a>
+	</div>
+	<span style="font-weight:bold;"><a href="acceleration_measurement_and_analysis/acceleration_measurement_app.html">Acceleration Measurement App</a></span>
+	<p style="margin-left: 1rem;">
+		This is a web app for measuring acceleration using a smartphone. Simply access the above link to use this app (No installation required). Use it with a smartphone or other device equipped with an accelerometer.
+		<span style="color:red;font-size:small;">* Version 12.2 - 13 of iOS is not supported.</span>
+	</p>
+	<p style="margin-left: 1rem;">
+		<a href="acceleration_measurement_and_analysis/manual_measurement/">Manual</a>
+	</p>
+</div>
+
+<div class="appbox">
+	<div class="icon">
+		<a href="acceleration_measurement_and_analysis/acceleration_data_analysis_app.html"><img src="image/icon_analysis_app.png" width="120" /></a>
+	</div>
+	<span style="font-weight:bold;"><a href="acceleration_measurement_and_analysis/acceleration_data_analysis_app.html">Acceleration Analysis App</a></span>
+	<p style="margin-left: 1rem;">
+		This is a web app for analyzing acceleration data measured using the above Acceleration Measurement Web App (or CSV-format data from other acceleration measurement apps). It calculates velocity and position from acceleration data through numerical integration and visualizes the results as graphs. Simply access the above link to use this app (No installation required).
+	</p>
+	<p style="margin-left: 1rem;">
+		<a href="acceleration_measurement_and_analysis/manual_analysis/">Manual</a>
+	</p>
+</div>
+
+<div class="appbox">
+	<div class="icon">
+		<a href="digital_level/digital_level_app.html"><img src="image/icon_digital_level_app.png" width="120" /></a>
+	</div>
+	<span style="font-weight:bold;"><a href="digital_level/digital_level_app.html">Digital Level App</a></span>
+	<p style="margin-left: 1rem;">
+		This is a web app for measuring the tilt angle of the surface on which the smartphone is placed. Simply access the above link to use this app (No installation required).
+	</p>
+	<p style="margin-left: 1rem;">
+		<a href="digital_level/manual_digital_level/">Manual</a>
+	</p>
+</div>
+
+<br style="clear:both;"/><br />
+
+<div style="text-align:center;"><span class="emph">QR code of this page</span>
+	<table style="margin:0 auto;padding:10px;border:2px solid #3ccdb8;border-radius:10px;"><tr><td><div id="qrcode"></div></td></tr></table>
+	</div>
+	
+	<script>
+	const currentUrl = window.location.href;
+	let qrcode = new QRCode("qrcode",{width:160, height:160});
+	qrcode.makeCode(currentUrl);
+	</script>
+	
+	<hr />
+	<p style="text-align:center;"><a href="terms_of_service.html" target="_blank">Terms of service</a></p>
+	<p style="text-align:right"><span style="font-size:small;"><a href="index_jp.html">日本語版</a></span></p>
+	
+	</div>
+	</body>
+	</html>

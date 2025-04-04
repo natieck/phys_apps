@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加速度測定アプリ：回転補正</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_measurement_app.png" /></div><div id="title">加速度測定アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="screen_structure.html">画面構成</a></li>
+      <li><a href="operation">操作方法</a></li>
+      <li><a href="measurement_examples.html">測定例</a></li>
+      <li><a class="no_link">回転補正について</a></li>
+      <li><a href="search">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="screen_structure.html">画面構成</a></li>
+        <li><a href="operation">操作方法</a></li>
+        <li><a href="measurement_examples.html">測定例</a></li>
+        <li><a class="no_link">回転補正について</a></li>
+        <li><a href="search">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>&#9632; 回転補正について</h2>
+
+    <p>
+      多くのスマートフォンは重力加速度センサと地磁気（方位）センサを搭載しているため，それらを利用してデバイスの向き（姿勢）を表す3つの角度（オイラー角）を算出できる．以下では，測定したオイラー角を用いて，デバイスに固定された座標系での加速度を静止座標系での加速度に変換できることを説明する．
+    </p>
+
+    <div class="lfig">
+      <img src="image/euler_angle1.png" width="280" /><br />
+      <span class="emph1">$z$軸周りの回転</span>
+    </div>
+    <div class="lfig">
+      <img src="image/euler_angle2.png" width="280" /><br />
+      <span class="emph1">$x$軸周りの回転</span>
+    </div>
+    <div class="lfig">
+      <img src="image/euler_angle3.png" width="280" /><br />
+      <span class="emph1">$y$軸周りの回転</span>
+    </div>
+
+    <br style="clear:both;" /><br />
+
+    <div class="rfig">
+      <img src="image/device_rotation.gif" width="400" />
+    </div>
+
+    <p>
+      本サイトの加速度測定アプリはWebブラウザ上で動作するWebアプリであり JavaScript で作られている．Webブラウザではデバイスの姿勢情報（オイラー角）と加速度を検出するために，それぞれ，DeviceOrientationEvent と DeviceMotionEvent というAPIが用意されている．このAPIで取得できるオイラー角 $\alpha$, $\beta$, $\gamma$ は，この順番でデバイスに固定された座標系の$z$, $x$, $y$ 軸周りに回転する角度（$z$-$x$-$y$系のオイラー角）を表している（<span style="font-size:smaller;color:red;">乗り物やロボットなどでよく用いられるロール・ピッチ・ヨー角（$z$-$y$-$x$系のオイラー角）とは異なる</span>）．
+    </p>
+
+    <p>
+      加速度の測定と共に時々刻々のオイラー角を測定すると，測定開始時の静止座標系を基準として，デバイスがどれだけ回転しているかが分かる．オイラー角 $\alpha$, $\beta$, $\gamma$ についての回転行列 $R_z(\alpha)$, $R_x(\beta)$, $R_y(\gamma)$ は次式で与えられる：
+    </p>
+
+    <br style="clear:both;" />
+
+    $$
+    \tag{1}
+    R_z(\alpha)=\begin{pmatrix}
+    \cos\alpha & -\sin\alpha & 0 \\
+    \sin\alpha & \cos\alpha & 0 \\
+    0 & 0 & 1
+    \end{pmatrix}
+    $$
+    
+    $$
+    \tag{2}
+    R_x(\beta)=\begin{pmatrix}
+    1 & 0 & 0 \\
+    0 & \cos\beta & -\sin\beta \\
+    0 & \sin\beta & \cos\beta    
+    \end{pmatrix}
+    $$
+    
+    $$
+    \tag{3}
+    R_y(\gamma)=\begin{pmatrix}
+    \cos\gamma & 0 & \sin\gamma \\
+    0 & 1 & 0 \\
+    -\sin\gamma & 0 & \cos\gamma \\
+    \end{pmatrix}
+    $$
+
+    <p>
+      ここで，静止座標系で成分表示されたベクトル $\boldsymbol{a}_0=\left(a_{0x},\,a_{0y},\,a_{0z}\right)$ から，$z$-$x$-$y$系のオイラー角により回転変換された座標系での成分表示 $\boldsymbol{a}=\left(a_{x},\,a_{y},\,a_{z}\right)$ を得ること（座標変換）を考える．この場合，$\boldsymbol{a}_0$ を$z$軸周りに角$\alpha$だけ逆回転させ，次に$x$軸周りに角$\beta$だけ逆回転，さらに$y$軸周りに角$\gamma$だけ逆回転させればよいので
+    </p>
+
+    $$
+    \tag{4}
+    \begin{aligned}
+    \boldsymbol{a}&=R_y^{-1}(\gamma)R_x^{-1}(\beta)R_z^{-1}(\alpha)\boldsymbol{a}_0 \\
+    &=\left\lbrace R_z(\alpha)R_x(\beta)R_y(\gamma)\right\rbrace^{-1}\boldsymbol{a}_0
+    \end{aligned}
+    $$
+
+    <p>
+      と表せる．よって，$\boldsymbol{a}$ から $\boldsymbol{a}_0$ を得るには式(4)の逆変換を考えればよく，デバイス固定の座標系で測定された加速度 $\boldsymbol{a}$ は変換行列
+    </p>
+
+    $$
+    \tag{5}
+    M=R_z(\alpha)R_x(\beta)R_y(\gamma)
+    $$
+
+    <p>
+      を用いて，静止座標系での加速度
+    </p>
+
+    $$
+    \tag{6}
+    \boldsymbol{a}_0=M\boldsymbol{a}
+    $$
+
+    <p>
+      に変換できるというわけである．
+    </p>
+
+    <div class="cfig">
+      <img src="image/conversion.png" width="420" /><br />
+      <span class="emph1">デバイス固定の座標系から静止座標系への変換</span>
+    </div>
+
+  </main>
+
+</body>
+</html>

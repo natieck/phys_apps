@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台形公式による数値積分</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="../katex.min.css" />
+  <script defer src="../katex.min.js"></script>
+  <script defer src="../auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <div id="logo"><img src="image/icon_analysis_app.png" /></div><div id="title">加速度解析アプリの使い方</div>
+    <ul id="pcNav">
+      <li><a href="index.html">トップページ</a></li>
+      <li><a href="analysis_flow.html">解析の流れ</a></li>
+      <li><a href="operating_guide.html">操作方法</a></li>
+      <li><a href="analysis_examples.html">解析例</a></li>
+      <li><a href="setting.html">各種設定</a></li>
+      <li><a href="search.html">検索</a></li>
+    </ul>
+    <input id="checkbox" type="checkbox">
+    <label id="HumbergerMenu" class="menu-check" for="checkbox">
+      <span></span><span></span><span></span>
+    </label>
+    <nav id="globalNav">
+      <ul>
+        <li><a href="index.html">トップページ</a></li>
+        <li><a href="analysis_flow.html">解析の流れ</a></li>
+        <li><a href="operating_guide.html">操作方法</a></li>
+        <li><a href="analysis_examples.html">解析例</a></li>
+        <li><a href="setting.html">各種設定</a></li>
+        <li><a href="search.html">検索</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+  
+    <h3>【台形公式による数値積分】</h3>
+    <div class="rfig">
+      <img src="image/trapezoidal_rule.png" width="320" /><br />
+      台形公式
+    </div>
+    <p style="margin-left:1rem;">
+      加速度が数値データとして得られている場合，速度は数値積分で近似的に計算することになる．本解析アプリでは，台形公式による数値積分を採用している．$x$の関数$y=f(x)$について，区間$[a,b]$における$n+1$個の点$(x_i,\ f(x_i))$が与えられている場合（$i=0\sim n,\ x_0=a,\ x_n=b$），台形公式によって数値積分を行うと以下のようになる．区間$[a,b]$を$n$分割した$i$番目の小区間$[x_{i-1},x_i]$の面積は，台形の面積の公式より
+      $$S_i=\frac{1}{2}\left\lbrace f(x_{i-1})+f(x_i)\right\rbrace\Delta x_i\ \ (i=1\sim n)$$
+      となる．ここで，小区間幅$\Delta x_i=x_i-x_{i-1}$である．よって，小区間幅$\Delta x_i$が十分小さければ，区間$[a,b]$の積分は
+      $$\int_{a}^{b}f(x)dx\approx S_1+S_2+\cdots+S_n=\sum_{i=1}^{n}S_i$$
+      と近似できる．
+    </p>
+
+  </main>
+
+</body>
+</html>

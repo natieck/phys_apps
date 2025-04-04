@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sensor (Orientation & Acceleration)</title>
+    <link rel="stylesheet" href="katex.min.css" />
+    <script defer src="katex.min.js"></script>
+    <script defer src="auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+  </head>
+  <body>
+    <div style="line-height:200%;">
+      <span id="str1"></span>
+      <button id="sensor_button" onclick="sensor_start(this);"></button>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <span id="str2"></span>
+      <button id="measure_start" disabled></button>&nbsp;&nbsp;<button id="measure_stop" disabled></button>
+      <br />
+      <span id="str3"></span>
+      <input type="range" id="slider" value="50" step="1" min="10" max="100" oninput="set_value(this);" onchange="set_value(this);" />
+      <span id="slider_value">50</span><span style="font-size:small;"> $\rm Hz$</span>
+      &nbsp;&nbsp;&nbsp;
+      <select id="lang_select">
+        <option value=0>EN</option>
+        <option value=1>JP</option>
+      </select>
+      <br />
+      <span id="str4"></span> $t=$ <span id="current_time">0</span><span style="font-size:small;"> $\rm ms$</span>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <span id="str5"></span> $\Delta t=$ <span id="interval_time">20</span><span style="font-size:small;"> $\rm ms$</span>
+    </div>
+    <div style="margin-top:5px;">
+      <span id="str6"></span>&nbsp;<span id="str7" style="font-size:small;"></span>
+      <div id="ori_chart" style="border:solid;"></div>
+    </div>
+    <div style="margin-top:5px;">
+      <span id="str8"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str9" style="font-size:small;"></span>
+      <div id="ac1_chart" style="border:solid;"></div>
+    </div>
+    <div style="margin-top:5px;">
+      <span id="str10"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str11" style="font-size:small;"></span>
+      <div style="line-height:80%;"><span id="str12" style="font-size:small;"></span></div>
+      <div id="ac2_chart" style="border:solid;"></div>
+    </div>
+    <div style="margin-top:5px;">
+    <button id="DL_button" onclick="exportcsv();" disabled></button>&nbsp;&nbsp;<button id="Anal_button" onclick="goto_analysis();" disabled></button>
+    </div>
+    <span id="log_area"></span>
+
+    <script type="text/javascript">
+
+const analysis_app=[
+  'acceleration_data_analysis_app.html',
+  'acceleration_data_analysis_app_jp.html'
+]; // File name of analysis web app
+let ax = 0, ay = 0, az = 0; // acceleration
+let ar = 0, br = 0, gr = 0; // Euler angle (z-x-y system)
+let ini_smprt = 50;         // initial sampling rate
+let dt = 1000/ini_smprt;    // time step
+let cdt = 50;               // chart update interval
+let t, t0;                  // time, initial time
+let sensorflag = 0;         // sensor flag
+let measureflag = 0;        // measurement flag
+let id;                     // ID for setInterval
+let data_str;               // data string
+let iosflg = 0;             // iOS flag
+let item;                   // variable for character display
+let cwidth;                 // display width
+const clr = ["#1F77B4", "#FF7F0E", "#2CA02C"];  // Chart colors
+let ini_lang,lang;          // language index (0:English, 1:Japanese)
+const term=[
+  ['Sensor','センサ'],
+  ['Measurement','測定'],
+  ['Sampling','ｻﾝﾌﾟﾘﾝｸﾞﾚｰﾄ'],
+  ['Time','時刻'],
+  ['Time step','時間刻み幅'],
+  ['Euler angle','オイラー角'],
+  ['($\\alpha=0$ at sensor activation)','(センサ起動時の角$\\alpha=0$)'],
+  ['Acceleration','加速度'],
+  ['(Coordinate system fixed to device)','(デバイスに固定された座標系)[右手系]'],
+  ['Acceleration','加速度'],
+  ['(Stationary coordinate system)','(静止座標系)[右手系]'],
+  ['$z$-axis: Vertical upward, $y$-axis: Direction of projection of $y$-axis fixed to device at sensor activation onto horizontal plane','$z$軸：鉛直上方向，$y$軸：センサ起動時のデバイス固定の$y$軸を水平面へ射影した方向']
+];
+const ntrm = term.length;
+const bterm = [
+  ['sensor_button','On','オン','Off','オフ'],
+  ['measure_start','Start','開始'],
+  ['measure_stop','Stop','終了'],
+  ['DL_button','Download data as CSV','データのダウンロード'],
+  ['Anal_button','Analyze data','データの解析']
+];
+const nbt = bterm.length;
+
+const katex_option = {
+  delimiters: [
+    {left: '$$', right: '$$', display: true},
+    {left: '$', right: '$', display: false},
+    {left: '\\(', right: '\\)', display: false},
+    {left: '\\[', right: '\\]', display: true}
+  ],
+  throwOnError : false
+};
+
+document.addEventListener("DOMContentLoaded", function() {
+  lang_select_change();
+});
+
+const params = new URLSearchParams(location.search);
+lang = ini_lang = Number(params.get("lang"));
+
+document.getElementById("lang_select").options[lang].selected = true;
+document.getElementById("lang_select").addEventListener("change",lang_select_change);
+
+function show_terms(){
+  let i;
+  for(i = 0; i < ntrm; i++)document.getElementById(`str${i+1}`).innerHTML = term[i][lang];
+  document.getElementById(`${bterm[0][0]}`).innerHTML = bterm[0][sensorflag*2+lang+1]; // sensor button
+  for(i = 1; i < nbt; i++)document.getElementById(`${bterm[i][0]}`).innerHTML = bterm[i][lang+1];
+  renderMathInElement(document.body, katex_option);
+}
+
+function lang_select_change(){
+  lang = Number(document.getElementById("lang_select").value);
+  show_terms();
+}
+
+cwidth = Math.round(0.95*document.documentElement.clientWidth);
+if(cwidth === undefined)cwidth = 300;
+else if(cwidth > document.documentElement.clientHeight)cwidth = document.documentElement.clientHeight;
+
+window.addEventListener('unload', () => {
+  document.getElementById("lang_select").options[ini_lang].selected = true;
+  document.getElementById('slider').value = ini_smprt;
+});
+
+let div_ori = document.getElementById('ori_chart');
+div_ori.style.width = `${cwidth}px`;
+let ori_chart = {
+  alpha:{},beta:{},gamma:{},
+  init:function(){
+    for(let i = 0; i < cwidth; i++){
+      this.alpha.addValue(0);
+      this.beta.addValue(0);
+      this.gamma.addValue(0);
+    }
+  },
+  update:function(va,vb,vg){
+    this.alpha.addValue(va);
+    this.beta.addValue(vb);
+    this.gamma.addValue(vg);
+  }
+};
+ori_chart.alpha = createChart(clr[0]);
+ori_chart.beta = createChart(clr[1]);
+ori_chart.gamma = createChart(clr[2]);
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$\\alpha$ $\\small [0,360]$:';
+item.innerHTML = '\u00a0$\\alpha$ $\\small [0,360]$:\u00a0<span id="angle_alpha"></span>';
+item.style.color = clr[0];
+div_ori.appendChild(item);
+div_ori.appendChild(document.createElement("br"));
+div_ori.appendChild(ori_chart.alpha);
+div_ori.appendChild(document.createElement("br"));
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$\\beta$ $\\small [-180,180]$:';
+item.innerHTML = '\u00a0$\\beta$ $\\small [-180,180]$:\u00a0<span id="angle_beta"></span>';
+item.style.color = clr[1];
+div_ori.appendChild(item);
+div_ori.appendChild(document.createElement("br"));
+div_ori.appendChild(ori_chart.beta);
+div_ori.appendChild(document.createElement("br"));
+
+item=document.createElement("span");
+//item.textContent = '\u00a0$\\gamma$ $\\small [-90,90]$:';
+item.innerHTML = '\u00a0$\\gamma$ $\\small [-90,90]$:\u00a0<span id="angle_gamma"></span>';
+item.style.color = clr[2];
+div_ori.appendChild(item);
+div_ori.appendChild(document.createElement("br"));
+div_ori.appendChild(ori_chart.gamma);
+ori_chart.init();
+
+let div_ac1 = document.getElementById('ac1_chart');
+div_ac1.style.width = `${cwidth}px`;
+let ac1_chart = {
+  ax:{}, ay:{}, az:{},
+  init:function(){
+    for(let i = 0; i < cwidth; i++){
+      this.ax.addValue(0);
+      this.ay.addValue(0);
+      this.az.addValue(0);
+    }
+  },
+  update:function(ax,ay,az){
+    this.ax.addValue(ax);
+    this.ay.addValue(ay);
+    this.az.addValue(az);
+  }
+};
+ac1_chart.ax = createChart(clr[0]);
+ac1_chart.ay = createChart(clr[1]);
+ac1_chart.az = createChart(clr[2]);
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$a_x$:';
+item.innerHTML = '\u00a0$a_x$:\u00a0<span id="acc_x"></span>';
+item.style.color = clr[0];
+div_ac1.appendChild(item);
+div_ac1.appendChild(document.createElement("br"));
+div_ac1.appendChild(ac1_chart.ax);
+div_ac1.appendChild(document.createElement("br"));
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$a_y$:';
+item.innerHTML = '\u00a0$a_y$:\u00a0<span id="acc_y"></span>';
+item.style.color = clr[1];
+div_ac1.appendChild(item);
+div_ac1.appendChild(document.createElement("br"));
+div_ac1.appendChild(ac1_chart.ay);
+div_ac1.appendChild(document.createElement("br"));
+
+item=document.createElement("span");
+//item.textContent = '\u00a0$a_z$:';
+item.innerHTML = '\u00a0$a_z$:\u00a0<span id="acc_z"></span>';
+item.style.color = clr[2];
+div_ac1.appendChild(item);
+div_ac1.appendChild(document.createElement("br"));
+div_ac1.appendChild(ac1_chart.az);
+ac1_chart.init();
+
+let div_ac2 = document.getElementById('ac2_chart');
+div_ac2.style.width = `${cwidth}px`;
+let ac2_chart = {
+  ax:{}, ay:{}, az:{},
+  init:function(){
+    for(let i = 0; i < cwidth; i++){
+      this.ax.addValue(0);
+      this.ay.addValue(0);
+      this.az.addValue(0);
+    }
+  },
+  update:function(ax,ay,az){
+    this.ax.addValue(ax);
+    this.ay.addValue(ay);
+    this.az.addValue(az);
+  }
+};
+ac2_chart.ax = createChart(clr[0]);
+ac2_chart.ay = createChart(clr[1]);
+ac2_chart.az = createChart(clr[2]);
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$a_x$:';
+item.innerHTML = '\u00a0$a_x$:\u00a0<span id="acc_wx"></span>';
+item.style.color = clr[0];
+div_ac2.appendChild(item);
+div_ac2.appendChild(document.createElement("br"));
+div_ac2.appendChild(ac2_chart.ax);
+div_ac2.appendChild(document.createElement("br"));
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$a_y$:';
+item.innerHTML = '\u00a0$a_y$:\u00a0<span id="acc_wy"></span>';
+item.style.color = clr[1];
+div_ac2.appendChild(item);
+div_ac2.appendChild(document.createElement("br"));
+div_ac2.appendChild(ac2_chart.ay);
+div_ac2.appendChild(document.createElement("br"));
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$a_z$:';
+item.innerHTML = '\u00a0$a_z$:\u00a0<span id="acc_wz"></span>';
+item.style.color = clr[2];
+div_ac2.appendChild(item);
+div_ac2.appendChild(document.createElement("br"));
+div_ac2.appendChild(ac2_chart.az);
+ac2_chart.init();
+
+function createChart(strclr)
+{
+  let canvas = document.createElement("canvas");
+  let width = cwidth;
+  let height = 50;
+  canvas.width = width;
+  canvas.height = height;
+  let ctx = canvas.getContext("2d");
+  let min = 0;
+  let max = 0;
+  let data = [];
+  canvas.addValue = function(v){
+    if(typeof(v) != "number"){
+      return;
+    }
+    if(data.length >= width){
+      data.splice(0,data.length-width+1);
+    }
+    data.push(v);
+    if(v < min){min = v;}
+    if(v > max){max = v;}
+
+    function toCanvasY(v){
+      if(max === undefined || min === undefined || max == min){
+        return 0;
+      }
+      return height-height*(v-min)/(max-min);
+    }
+    ctx.fillStyle = "white";
+    ctx.fillRect(0,0,width,height);
+
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(0,toCanvasY(0));
+    ctx.lineTo(width,toCanvasY(0));
+    ctx.stroke();
+
+    ctx.strokeStyle = strclr;
+    ctx.beginPath();
+    ctx.moveTo(0,toCanvasY(data[0]));
+    for(let i = 1; i < data.length; i++){
+      ctx.lineTo(i,toCanvasY(data[i]));
+    }
+    ctx.stroke();
+  }
+  return canvas;
+}
+
+function set_value(slider){
+  document.getElementById('slider_value').innerHTML = slider.value;
+  dt = Math.round(1000/slider.value);
+  document.getElementById('interval_time').innerHTML = dt;
+};
+
+const sensor_button = document.getElementById('sensor_button');
+const start_button = document.getElementById('measure_start');
+const stop_button = document.getElementById('measure_stop');
+const sampling_slider = document.getElementById('slider');
+const dl_button = document.getElementById('DL_button');
+const anal_button = document.getElementById('Anal_button');
+
+start_button.addEventListener('click', (e) => {
+  if(!sensorflag)return;
+  measureflag = 1;
+  e.currentTarget.setAttribute('disabled', true); // Change Start button to disabled
+  stop_button.removeAttribute('disabled'); // Release disabled state of Stop button
+  sensor_button.setAttribute('disabled', true); // Change Sensor button to disabled
+    
+  data_str="time[s],ar[rad],br[rad],gr[rad],ax[m/s^2],ay[m/s^2],az[m/s^2],awx[m/s^2],awy[m/s^2],awz[m/s^2]\n";
+  t0 = Date.now();
+  t = 0;
+  [awx,awy,awz] = transform_acc(ax,ay,az,ar,br,gr);
+  data_str += t.toFixed(3)+","+ar.toFixed(5)+","+br.toFixed(5)+","+gr.toFixed(5)+","
+              +ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
+              +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+"\n";
+});
+
+stop_button.addEventListener('click', (e) => {
+  measureflag = 0;
+  e.currentTarget.setAttribute('disabled', true); // Change Stop button to disabled
+  start_button.removeAttribute('disabled'); // Release disabled state of Start button
+  sensor_button.removeAttribute('disabled', true); // Release disabled state of Sensor button
+  if(data_str !== undefined){
+    dl_button.removeAttribute('disabled'); // Release disabled state of Download button
+    anal_button.removeAttribute('disabled'); // Release disabled state of Analysis button
+  }
+});
+
+function sensor_start(button){
+  let awx,awy,awz;
+  let xx,xy,xz;
+  let yx,yy,yz;
+  let zx,zy,zz;
+  let lasttime;
+
+  if(measureflag)return;
+
+  function measure(){
+    t = Date.now();
+    [awx,awy,awz] = transform_acc(ax,ay,az,ar,br,gr);
+    if(t >= lasttime+cdt){
+      ori_chart.update(ar,br,gr);
+      document.getElementById('angle_alpha').innerHTML = (ar*180/Math.PI).toFixed(3);
+      document.getElementById('angle_beta').innerHTML = (br*180/Math.PI).toFixed(3);
+      document.getElementById('angle_gamma').innerHTML = (gr*180/Math.PI).toFixed(3);
+      ac1_chart.update(ax,ay,az);
+      document.getElementById('acc_x').innerHTML = ax.toFixed(3);
+      document.getElementById('acc_y').innerHTML = ay.toFixed(3);
+      document.getElementById('acc_z').innerHTML = az.toFixed(3);
+      ac2_chart.update(awx,awy,awz);
+      document.getElementById('acc_wx').innerHTML = awx.toFixed(3);
+      document.getElementById('acc_wy').innerHTML = awy.toFixed(3);
+      document.getElementById('acc_wz').innerHTML = awz.toFixed(3);
+      lasttime = t;
+    }
+    if(!measureflag)return;
+    t -= t0;
+    document.getElementById('current_time').innerHTML = t;
+    data_str += (t/1000).toFixed(3)+","+ar.toFixed(5)+","+br.toFixed(5)+","+gr.toFixed(5)+","
+                +ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
+                +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+"\n";
+  }
+
+  sensorflag = 1-sensorflag;
+  if(sensorflag){
+    button.innerHTML = bterm[0][lang+3];
+    start_button.removeAttribute('disabled'); // Release disabled state of Start button
+    sampling_slider.setAttribute('disabled', true); // Change Sampling slider to disabled
+    ori_chart.init();
+    ac1_chart.init();
+    ac2_chart.init();
+    if(DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      // for iOS 13 or later
+      // Get permission
+      DeviceOrientationEvent.requestPermission()
+      .then(permissionState => {
+        if (permissionState === 'granted') {
+          // Add devicemotion to event listeners if permission is granted
+          window.addEventListener("deviceorientation",ori_sensor,false);
+        }else{
+          // Processing if a permit is not granted
+          alert('DeviceOrientationEvent is not permitted.');
+        }
+      })
+      .catch(console.error) // Case that permission could not be obtained due to non-https communication, etc
+    }else{
+      // Browsers other than the above
+      window.addEventListener("deviceorientation",ori_sensor,false);
+    }
+    if(DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function'){
+      // for iOS 13 or later
+      // Get permission
+      DeviceMotionEvent.requestPermission()
+      .then(permissionState => {
+        if (permissionState === 'granted') {
+          // Add devicemotion to event listeners if permission is granted
+          iosflg = 1;
+          window.addEventListener("devicemotion",acc_sensor,false);
+        }else{
+          // Processing if a permit is not granted
+          alert('DeviceMotionEvent is not permitted.');
+        }
+      })
+      .catch(console.error) // Case that permission could not be obtained due to non-https communication, etc
+    }else{
+      // Browsers other than the above
+      window.addEventListener("devicemotion",acc_sensor,false);
+    }
+    lasttime = Date.now();
+    id = setInterval(measure,dt);
+  }else{
+    clearInterval(id);
+    button.innerHTML = bterm[0][lang+1];
+    start_button.setAttribute('disabled', true); // Change Start button to disabled
+    sampling_slider.removeAttribute('disabled'); // Release disabled state of Sampling slider
+    window.removeEventListener("deviceorientation",ori_sensor,false);
+    window.removeEventListener("devicemotion",acc_sensor,false);
+  }
+}
+
+function ori_sensor(ev){
+  ar = (ev.alpha || 0)*Math.PI/180;
+  br = (ev.beta || 0)*Math.PI/180;
+  gr = (ev.gamma || 0)*Math.PI/180;
+}
+function acc_sensor(ev){
+  let acc=ev.acceleration;
+  if(iosflg){
+    // Reverse the sign for iOS
+    ax = -acc.x || 0;
+    ay = -acc.y || 0;
+    az = -acc.z || 0;
+  }else{
+    ax = acc.x || 0;
+    ay = acc.y || 0;
+    az = acc.z || 0;
+  }
+}
+
+// Order of Euler angles : Rz(alpha)*Rx(beta)*Ry(gamma)
+function transform_acc(acx,acy,acz,ear,ebr,egr){
+  let csa = Math.cos(ear);
+  let sna = Math.sin(ear);
+  let csb = Math.cos(ebr);
+  let snb = Math.sin(ebr);
+  let csg = Math.cos(egr);
+  let sng = Math.sin(egr);
+  let awx = (csa*csg-sna*snb*sng)*acx-csb*sna*acy+(csa*sng+csg*sna*snb)*acz;
+  let awy = (csg*sna+csa*snb*sng)*acx+csa*csb*acy+(sna*sng-csa*csg*snb)*acz;
+  let awz = -csb*sng*acx+snb*acy+csb*csg*acz;
+  return [awx,awy,awz];
+}
+
+function exportcsv(){
+  if(measureflag || data_str === undefined)return;
+  //document.getElementById('log_data').innerHTML=data_str;
+  let mimeType = 'text/csv';
+
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = ("0"+(date.getMonth()+1)).slice(-2);
+  let day = ("0"+date.getDate()).slice(-2);
+  let hour = ("0"+date.getHours()).slice(-2);
+  let min = ("0"+date.getMinutes()).slice(-2);
+  let second = ("0"+date.getSeconds()).slice(-2);
+  let filename = 'sensor'+year+month+day+hour+min+second+'.csv';
+
+  let bom = new Uint8Array([0xEF,0xBB,0xBF]);
+  let blob = new Blob([bom,data_str],{type:mimeType});
+
+  let element = document.createElement('a');
+  element.href = URL.createObjectURL(blob);
+  element.download = filename;
+  element.click();
+  URL.revokeObjectURL(element.href);
+}
+
+function goto_analysis(){
+  if(measureflag || data_str === undefined)return;
+  sessionStorage.setItem('acceleration_data',data_str);
+  window.location.pathname = window.location.pathname.replace(/[^/]*$/,'')+analysis_app[lang];
+}
+
+    </script>
+  </body>
+</html>
