@@ -65,6 +65,9 @@
       const ncnt = 10;  // maximum number of counter (Angle information is updated every ncnt counts)
       const radius = 20.5;  // radius of a bubble
       const degtorad = Math.PI/180, radtodeg = 180/Math.PI;  // for angular unit conversion
+      const bblclr = ["#99bb44","#ffffdd"]; // stroke line color and fill color of a bubble
+      const cpclr = '#22aa44'; // center point color
+      const vplclr = "#88aaff"; // vertical projection line color
       const bgclr = ["#88ff44","#4488ff","#ff8844"];  // background colors
 
       let lang;          // language index (0:English, 1:Japanese)
@@ -190,9 +193,9 @@
           }
 
           let w, x, y, x0, y0, x1, y1;
-          let flg;
-          let grad;
-          let theta = Math.acos(az/Math.sqrt(ax*ax+ay*ay+az*az))*radtodeg;
+          let flg; // flag for determining contact between a bubble and a center point
+          let grad; // gradient of vertical projection line
+          let theta = Math.acos(az/Math.sqrt(ax*ax+ay*ay+az*az))*radtodeg; // device angle from horizontal plane
 	        if(theta>90)theta = 180-theta;
 
           if(orientation === "portrait-primary"){
@@ -374,8 +377,9 @@
         ctx.fillStyle = bgclr[(!flg?2:zaflg)];
         ctx.fillRect(0,0,canvas.width-1,canvas.height-1);
 
-        ctx.strokeStyle = "#99bb44";
-        ctx.fillStyle = "#ffffdd";
+        // drawing a bubble
+        ctx.strokeStyle = bblclr[0];
+        ctx.fillStyle = bblclr[1];
         ctx.beginPath();
         ctx.setLineDash([]);
         ctx.arc(x, y, radius, 0, Math.PI*2);
@@ -387,7 +391,8 @@
         ctx.stroke();
 
         if(flg){
-          ctx.strokeStyle = "#88aaff";
+          // draw a vertical projection line on device screen
+          ctx.strokeStyle = vplclr;
           ctx.beginPath();
           ctx.setLineDash([5, 5]);
           ctx.moveTo(x0,y0);
@@ -395,12 +400,14 @@
           ctx.stroke();
         }
 
-        ctx.fillStyle = '#22aa44';
+        // draw a center point on device screen
+        ctx.fillStyle = cpclr;
         ctx.beginPath();
         ctx.arc(cx, cy, 5, 0, Math.PI*2);
         ctx.fill();
       }
 
+      // zero adjustment setting
       function za_click(button){
         zaflg = 1-zaflg;
         if(zaflg){

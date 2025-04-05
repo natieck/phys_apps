@@ -17,7 +17,7 @@
       <li><a href="operation.html">操作方法</a></li>
       <li><a href="measurement_examples.html">測定例</a></li>
       <li><a href="rotation_correction.html">回転補正について</a></li>
-      <li><a href="search">検索</a></li>
+      <li><a href="search.html">検索</a></li>
     </ul>
     <input id="checkbox" type="checkbox">
     <label id="HumbergerMenu" class="menu-check" for="checkbox">
@@ -30,7 +30,7 @@
         <li><a href="operation.html">操作方法</a></li>
         <li><a href="measurement_examples.html">測定例</a></li>
         <li><a href="rotation_correction.html">回転補正について</a></li>
-        <li><a href="search">検索</a></li>
+        <li><a href="search.html">検索</a></li>
       </ul>
     </nav>
   </header>
@@ -49,7 +49,7 @@
     </div>
 
     <script>
-      const appUrl = "https://w3e.kanazawa-it.ac.jp/math/physics/category/experiment/mobile_device/acceleration_measurement_and_analysis/acceleration_measurement_app.html?lang=1";
+      const appUrl = "https://natieck.github.io/phys_apps/acceleration_measurement_and_analysis/acceleration_measurement_app.html?lang=1";
       let qrcode = new QRCode("qrcode",{width:160, height:160});
       qrcode.makeCode(appUrl);
     </script>
@@ -77,7 +77,7 @@
       <li>
         <span style="font-weight:bold;">スマートフォン・タブレット</span><br />
         <dl>
-          <dt>&#9670; Android：どのバージョンでも利用可能（できるだけ新しい方が良い）．</dt>
+          <dt>&#9670; Android：加速度センサと方位角センサを搭載したAndroid端末であれば利用可能（Androidのバージョンはできるだけ新しい方が良い）．</dt>
           <dd>動作確認済みのブラウザ：Chrome, Edge, Firefox</dd>
         </dl>
         <dl>
@@ -87,12 +87,12 @@
             <span style="color:red;">iOS 12.2 ～ 13 のバージョンではブラウザから加速度センサへのアクセス不可</span>
           </dd>
         </dl>
-        <span style="color:#247b6e;">※ 上記以外でも，JavaScriptが有効で加速度センサにアクセス可能なブラウザ搭載の端末であれば動作する．</span>
+        <span style="color:#247b6e;">※ 上記以外でも，JavaScriptが有効で加速度センサと方位角センサにアクセス可能なブラウザ搭載の端末であれば動作する．</span>
       </li>
       <br />
       <li>
           <span style="font-weight:bold;">加速度センサ搭載ノートパソコン</span><br />
-          加速度センサが搭載されている 2-in-1 などのノートPCで，Javascriptを有効にしたブラウザがインストールされていれば利用可能．<br />
+          加速度センサと方位角センサが搭載されている 2-in-1 などのノートPCで，Javascriptを有効にしたブラウザがインストールされていれば利用可能．<br />
           OS は Windows, MacOS, Linux のいずれでも可．
       </li>
     </ul>
