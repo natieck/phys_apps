@@ -1,4 +1,5 @@
-# Apps for Physics Education
+# Web Apps for Physics Education
 
 https://natieck.github.io/phys_apps/
-The applications on this page are free to use!
+
+The web applications on the above linked page are free to use!
