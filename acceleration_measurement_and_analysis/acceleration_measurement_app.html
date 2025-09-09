@@ -541,9 +541,9 @@ function acc_sensor(ev){
     az = acc.z || 0;
   }
   let rotrate=ev.rotationRate;
-  arr = (rotrate.alpha || 0)*Math.PI/180;
-  brr = (rotrate.beta || 0)*Math.PI/180;
-  grr = (rotrate.gamma || 0)*Math.PI/180;
+  arr = (rotrate.gamma || 0)*Math.PI/180;
+  brr = (rotrate.alpha || 0)*Math.PI/180;
+  grr = (rotrate.beta || 0)*Math.PI/180;
 }
 
 // Order of Euler angles : Rz(alpha)*Rx(beta)*Ry(gamma)
