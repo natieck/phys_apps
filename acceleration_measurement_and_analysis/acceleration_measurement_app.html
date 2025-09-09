@@ -31,8 +31,10 @@
       <span id="str5"></span> $\Delta t=$ <span id="interval_time">20</span><span style="font-size:small;"> $\rm ms$</span>
     </div>
     <div style="margin-top:5px;">
-      <span id="str6"></span>&nbsp;<span id="str7" style="font-size:small;"></span>
-      <div id="ori_chart" style="border:solid;"></div>
+      <details>
+        <summary><span id="str6"></span>&nbsp;<span id="str7" style="font-size:small;"></span></summary>
+        <div id="ori_chart" style="border:solid;"></div>
+      </details>
     </div>
     <div style="margin-top:5px;">
       <span id="str8"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str9" style="font-size:small;"></span>
@@ -348,14 +350,14 @@ start_button.addEventListener('click', (e) => {
   stop_button.removeAttribute('disabled'); // Release disabled state of Stop button
   sensor_button.setAttribute('disabled', true); // Change Sensor button to disabled
     
-  data_str="time[s],ar[rad],br[rad],gr[rad],ax[m/s^2],ay[m/s^2],az[m/s^2],awx[m/s^2],awy[m/s^2],awz[m/s^2],arr[rad/s],brr[rad/s],grr[rad/s]\n";
+  data_str="time[s],ar[rad],br[rad],gr[rad],arr[rad/s],brr[rad/s],grr[rad/s],ax[m/s^2],ay[m/s^2],az[m/s^2],awx[m/s^2],awy[m/s^2],awz[m/s^2]\n";
   t0 = Date.now();
   t = 0;
   [awx,awy,awz] = transform_acc(ax,ay,az,ar,br,gr);
   data_str += t.toFixed(3)+","+ar.toFixed(5)+","+br.toFixed(5)+","+gr.toFixed(5)+","
+              +arr.toFixed(5)+","+brr.toFixed(5)+","+grr.toFixed(5)+","
               +ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
-              +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+","
-              +arr.toFixed(5)+","+brr.toFixed(5)+","+grr.toFixed(5)+"\n";
+              +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+"\n";
 });
 
 stop_button.addEventListener('click', (e) => {
