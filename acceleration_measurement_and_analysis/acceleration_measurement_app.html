@@ -32,16 +32,22 @@
     </div>
     <div style="margin-top:5px;">
       <details>
-        <summary><span id="str6"></span>&nbsp;<span id="str7" style="font-size:small;"></span></summary>
+        <summary><span id="str6"></span><span style="font-size:small;">&nbsp;[deg]</span>&nbsp;<span id="str7" style="font-size:small;"></span></summary>
         <div id="ori_chart" style="border:solid;"></div>
       </details>
     </div>
     <div style="margin-top:5px;">
-      <span id="str8"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str9" style="font-size:small;"></span>
+      <details>
+        <summary><span id="str8"></span><span style="font-size:small;">&nbsp;[deg/s]</span></summary>
+        <div id="rotrt_chart" style="border:solid;"></div>
+      </details>
+    </div>
+    <div style="margin-top:5px;">
+      <span id="str9"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str10" style="font-size:small;"></span>
       <div id="ac1_chart" style="border:solid;"></div>
     </div>
     <div style="margin-top:5px;">
-      <span id="str10"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str11" style="font-size:small;"></span>
+      <span id="str11"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str12" style="font-size:small;"></span>
       <div style="line-height:80%;"><span id="str12" style="font-size:small;"></span></div>
       <div id="ac2_chart" style="border:solid;"></div>
     </div>
@@ -80,6 +86,7 @@ const term=[
   ['Time step','時間刻み幅'],
   ['Euler angle','オイラー角'],
   ['($\\alpha=0$ at sensor activation)','(センサ起動時の角$\\alpha=0$)'],
+  ['Rotation Rate','回転速度'],
   ['Acceleration','加速度'],
   ['(Coordinate system fixed to device)','(デバイスに固定された座標系)[右手系]'],
   ['Acceleration','加速度'],
@@ -149,10 +156,10 @@ let ori_chart = {
       this.gamma.addValue(0);
     }
   },
-  update:function(va,vb,vg){
-    this.alpha.addValue(va);
-    this.beta.addValue(vb);
-    this.gamma.addValue(vg);
+  update:function(ar,br,gr){
+    this.alpha.addValue(ar);
+    this.beta.addValue(br);
+    this.gamma.addValue(gr);
   }
 };
 ori_chart.alpha = createChart(clr[0]);
@@ -185,6 +192,54 @@ div_ori.appendChild(item);
 div_ori.appendChild(document.createElement("br"));
 div_ori.appendChild(ori_chart.gamma);
 ori_chart.init();
+
+let div_rotrt = document.getElementById('rotrt_chart');
+div_rotrt.style.width = `${cwidth}px`;
+let rotrt_chart = {
+  alpha:{},beta:{},gamma:{},
+  init:function(){
+    for(let i = 0; i < cwidth; i++){
+      this.alpha.addValue(0);
+      this.beta.addValue(0);
+      this.gamma.addValue(0);
+    }
+  },
+  update:function(arr,brr,grr){
+    this.alpha.addValue(arr);
+    this.beta.addValue(brr);
+    this.gamma.addValue(grr);
+  }
+};
+rotrt_chart.alpha = createChart(clr[0]);
+rotrt_chart.beta = createChart(clr[1]);
+rotrt_chart.gamma = createChart(clr[2]);
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$\\alpha$ $\\small [0,360]$:';
+item.innerHTML = '\u00a0$\\dot{\\alpha}$:\u00a0<span id="rotrt_alpha"></span>';
+item.style.color = clr[0];
+div_rotrt.appendChild(item);
+div_rotrt.appendChild(document.createElement("br"));
+div_rotrt.appendChild(rotrt_chart.alpha);
+div_rotrt.appendChild(document.createElement("br"));
+
+item = document.createElement("span");
+//item.textContent = '\u00a0$\\beta$ $\\small [-180,180]$:';
+item.innerHTML = '\u00a0$\\dot{\\beta}$:\u00a0<span id="rotrt_beta"></span>';
+item.style.color = clr[1];
+div_rotrt.appendChild(item);
+div_rotrt.appendChild(document.createElement("br"));
+div_rotrt.appendChild(rotrt_chart.beta);
+div_rotrt.appendChild(document.createElement("br"));
+
+item=document.createElement("span");
+//item.textContent = '\u00a0$\\gamma$ $\\small [-90,90]$:';
+item.innerHTML = '\u00a0$\\dot{\\gamma}$:\u00a0<span id="rotrt_gamma"></span>';
+item.style.color = clr[2];
+div_rotrt.appendChild(item);
+div_rotrt.appendChild(document.createElement("br"));
+div_rotrt.appendChild(rotrt_chart.gamma);
+rotrt_chart.init();
 
 let div_ac1 = document.getElementById('ac1_chart');
 div_ac1.style.width = `${cwidth}px`;
@@ -388,6 +443,10 @@ function sensor_start(button){
       document.getElementById('angle_alpha').innerHTML = (ar*180/Math.PI).toFixed(3);
       document.getElementById('angle_beta').innerHTML = (br*180/Math.PI).toFixed(3);
       document.getElementById('angle_gamma').innerHTML = (gr*180/Math.PI).toFixed(3);
+      rotrt_chart.update(arr,brr,grr);
+      document.getElementById('rotrt_alpha').innerHTML = (arr*180/Math.PI).toFixed(3);
+      document.getElementById('rotrt_beta').innerHTML = (brr*180/Math.PI).toFixed(3);
+      document.getElementById('rotrt_gamma').innerHTML = (grr*180/Math.PI).toFixed(3);
       ac1_chart.update(ax,ay,az);
       document.getElementById('acc_x').innerHTML = ax.toFixed(3);
       document.getElementById('acc_y').innerHTML = ay.toFixed(3);
