@@ -43,6 +43,7 @@ jobs:
           npx -y pagefind --site acceleration_measurement_and_analysis/manual_measurement_jp
           npx -y pagefind --site acceleration_measurement_and_analysis/manual_analysis
           npx -y pagefind --site acceleration_measurement_and_analysis/manual_analysis_jp
+          npx -y pagefind --site digital_level/manual_digital_level
           npx -y pagefind --site digital_level/manual_digital_level_jp
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
