@@ -49,13 +49,13 @@ div.cfig {
 div.lfig {
   margin: 0 auto;
   text-align: center;
-  padding-right: 1rem;
+  padding-right: 2rem;
 }
 
 div.rfig {
   margin: 0 auto;
   text-align: center;
-  padding-left: 1rem;
+  padding-left: 2rem;
 }
 
 div.sfig {
