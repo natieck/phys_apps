@@ -7,7 +7,7 @@
     <title>Acceleration Data Analysis App</title>
     <script src="math.min.js" charset="utf-8"></script>
     <script src="pca.min.js" charset="utf-8"></script>
-    <script src="plotly-2.35.2.min.js" charset="utf-8"></script>
+    <script src="plotly-3.1.0.min.js" charset="utf-8"></script>
     <script src="general_least-squares_smoothing.js" charset="utf-8"></script>
   </head>
 <body>
@@ -1219,17 +1219,17 @@
     }
     if(width===undefined||height===undefined){
       layout={
-        title: title,
-        xaxis: {title: xdata[0]},
-        yaxis: {title: ylabel},
+        title: {text: title},
+        xaxis: {title: {text: xdata[0]}},
+        yaxis: {title: {text: ylabel}},
         autosize: true
       };
       resp={responsive: true};
     }else{
       layout={
-        title: title,
-        xaxis: {title: xdata[0]},
-        yaxis: {title: ylabel},
+        title: {text: title},
+        xaxis: {title: {text: xdata[0]}},
+        yaxis: {title: {text: ylabel}},
         autosize: false,
         width: width,
         height: height
@@ -1753,9 +1753,9 @@
         arrowwidth: 2
       }
       layout={
-        title: 'Trajectory',
-        xaxis: {range: [mp[0]-hwd,mp[0]+hwd], title: acc_vel_pos_data[nacc*2][0]},
-        yaxis: {range: [mp[1]-hwd,mp[1]+hwd], title: acc_vel_pos_data[nacc*2+1][0]},
+        title: {text: 'Trajectory'},
+        xaxis: {range: [mp[0]-hwd,mp[0]+hwd], title: {text: acc_vel_pos_data[nacc*2][0]}},
+        yaxis: {range: [mp[1]-hwd,mp[1]+hwd], title: {text: acc_vel_pos_data[nacc*2+1][0]}},
         showlegend: false,
         autosize: true,
         annotations: [vel_arw,acc_arw]
@@ -1786,12 +1786,12 @@
         line: {width: line_width+1, color: 'red'}
       };
       layout = {
-        title: 'Trajectory',
+        title: {text: 'Trajectory'},
         scene: {
           aspectmode: 'cube',
-          xaxis: {range: [mp[0]-hwd,mp[0]+hwd], title: acc_vel_pos_data[nacc*2][0]},
-          yaxis: {range: [mp[1]-hwd,mp[1]+hwd], title: acc_vel_pos_data[nacc*2+1][0]},
-          zaxis: {range: [mp[2]-hwd,mp[2]+hwd], title: acc_vel_pos_data[nacc*2+2][0]}
+          xaxis: {range: [mp[0]-hwd,mp[0]+hwd], title: {text: acc_vel_pos_data[nacc*2][0]}},
+          yaxis: {range: [mp[1]-hwd,mp[1]+hwd], title: {text: acc_vel_pos_data[nacc*2+1][0]}},
+          zaxis: {range: [mp[2]-hwd,mp[2]+hwd], title: {text: acc_vel_pos_data[nacc*2+2][0]}}
         },
         showlegend: false,
         autosize: true
@@ -2285,7 +2285,7 @@
 
   // Download process of acceleration data
   function download_acc_data(){
-      exportcsv('acc_data',1,time_data,unif_acc_data,);
+      exportcsv('acc_data',1,time_data,unif_acc_data);
   }
 
   // Download process of velocity data
@@ -2296,6 +2296,11 @@
   // Download process of position data
   function download_pos_data(){
       exportcsv('pos_data',1,time_data,unif_pos_data);
+  }
+
+  // Download process of output data
+  function download_acc_vel_pos_data(){
+      exportcsv('acc_vel_pos_data',1,time_data,acc_vel_pos_data);
   }
 
   // Export of data
