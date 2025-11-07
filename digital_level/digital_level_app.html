@@ -108,9 +108,9 @@
       const radius = 20.5;  // radius of a bubble
       const degtorad = Math.PI/180, radtodeg = 180/Math.PI;  // for angular unit conversion
       const bgclr = ["#88ff44","#4488ff","#ff8844"];  // background colors
-      const hacc_threshold = 0.5;  // threshold of horizontal acceleration
-      const az_threshold = 0.5;  // threshold of z-component of acceleration
-      const sd_duration = 2;  // duration when the horizontal acceleration is exceeded consecutively
+      const hacc_threshold = 0.2;  // threshold of horizontal acceleration
+      const azr_threshold = 0.4;  // threshold of z-component of acceleration
+      const sd_duration = 30;  // duration when the horizontal acceleration is exceeded consecutively
       let sd_start = null;  // slip detection start time
       let sdcnt = 0;  // slip detection counter
 
@@ -236,7 +236,7 @@
             if(az<0)az = -az;
             const hacc = Math.hypot(ax,ay);
             const now = performance.now();
-            if(hacc>hacc_threshold && az<az_threshold){
+            if(hacc>hacc_threshold && az<azr_threshold*hacc){
               if(!sd_start){
                 sd_start = now;
                 theta_stock = theta;
