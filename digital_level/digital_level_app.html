@@ -27,6 +27,45 @@
           flex-direction: column;
         }
       }
+
+      .toggle-switch {
+        border: 1px solid #0d0c0c6e;
+        display: inline-block;
+        margin: 0 4px;
+        appearance: none;
+        background-color: #0d0c0c1a;
+        border-radius: 8px;
+        height: 16px;
+        width: 25px;
+        cursor: pointer;
+        transition: background-color .3s;
+      }
+      .toggle-switch:checked {
+        background-color: #ee4488;
+      }
+      .toggle-switch::before {
+        background-color: #0d0c0c6e;
+        border-radius: 6px;
+        content: "";
+        display: inline-block;
+        height: 12px;
+        margin-left: 1px;
+        margin-top: 1px;
+        transition: background-color .3s;
+        width: 12px;
+      }
+      .toggle-switch:checked::before {
+        background-color: #ffffff;
+        margin-left: 10px;
+      }
+
+      @keyframes blinking {
+        0%   { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      .blink {
+        animation: blinking 1s ease-in-out infinite alternate;
+      }
     </style>
   </head>
   <body>
@@ -49,14 +88,17 @@
           <div class="cellbox"><button id="zero_adjustment" onclick="za_click(this)" disabled></button></div>
         </div>
       </div>
-      <div id="level_div" style="border: 1px solid #aaa; border-radius: 10px; overflow: hidden; margin: 0 auto;">
+      <div id="level_div" style="border: 1px solid #aaa; border-radius: 10px; overflow: hidden; margin: 0 auto; position: relative;">
         <canvas id="level_canvas"></canvas>
+        <input type="checkbox" id="slip_detection_switch" class="toggle-switch" style="position: absolute; bottom: 4px; right: 8px;" disabled />
+        <span id="str3" class="blink" style="position: absolute; bottom: 20px; right: 5px; color: #ee4488; font-size: x-small; visibility: hidden;"></span>
       </div>
     </div>
 
     <script>
       let br, gr, br0 = 0, gr0 = 0;  // Euler angles : beta around x axis and gamma around y axis 
       let ax, ay, az, awx, awy, awz;  // x, y, z components of acceleration including gravity
+      let theta = 0, theta_stock;  // angle of inclination
       let iosflg = 0;  // iOS flag (0: not iOS, 1: iOS)
       let sensorflg = 0;  // Sensor flag (0: sensor is not running, 1: sensor is running)
       let zaflg = 0;  // Zero adjustment flag (0: zero unlock, 1: zero lock)
@@ -65,15 +107,18 @@
       const ncnt = 10;  // maximum number of counter (Angle information is updated every ncnt counts)
       const radius = 20.5;  // radius of a bubble
       const degtorad = Math.PI/180, radtodeg = 180/Math.PI;  // for angular unit conversion
-      const bblclr = ["#99bb44","#ffffdd"]; // stroke line color and fill color of a bubble
-      const cpclr = '#22aa44'; // center point color
-      const vplclr = "#88aaff"; // vertical projection line color
       const bgclr = ["#88ff44","#4488ff","#ff8844"];  // background colors
+      const hacc_threshold = 0.5;  // threshold of horizontal acceleration
+      const az_threshold = 0.5;  // threshold of z-component of acceleration
+      const sd_duration = 2;  // duration when the horizontal acceleration is exceeded consecutively
+      let sd_start = null;  // slip detection start time
+      let sdcnt = 0;  // slip detection counter
 
-      let lang;          // language index (0:English, 1:Japanese)
+      let lang;  // language index (0:English, 1:Japanese)
       const term=[
         ['Digital Level','デジタル水準器（角度計）'],
-        ['Angle','角度']
+        ['Angle','角度'],
+        ['Slip Detection','滑り検出']
       ];
       const ntrm = term.length;
       const bterm = [
@@ -111,6 +156,20 @@
       let cx = (canvas.width-1)/2, cy = (canvas.height-1)/2;
       let ctx = canvas.getContext('2d');
       level_draw(cx,cy,0,0,0,0,1);
+
+      const slip_detection = document.getElementById('slip_detection_switch');
+      let sd_flag = 0;
+      slip_detection.addEventListener('change', slip_detection_change);
+
+      function slip_detection_change(){
+        if(slip_detection.checked){
+          sd_flag = 1;
+          document.getElementById("str3").style.visibility = "visible";
+        }else{
+          sd_flag = 0;
+          document.getElementById("str3").style.visibility = "hidden";
+        }
+      }
 
       function sensor_click(button){
         sensorflg = 1-sensorflg;
@@ -152,11 +211,13 @@
             window.addEventListener("devicemotion",acc_sensor,false);
           }
           za_button.removeAttribute('disabled'); // Release disabled state of Zero adjustment button
+          slip_detection.removeAttribute('disabled'); // Release disabled state of slip detection
         }else{
           button.innerHTML = bterm[0][lang+1];
           window.removeEventListener("deviceorientation",ori_sensor,false);
           window.removeEventListener("devicemotion",acc_sensor,false);
           za_button.setAttribute('disabled', true); // Change Zero adjustment to disabled
+          slip_detection.setAttribute('disabled', true); // Change slip detection to disabled
         }
       }
 
@@ -167,6 +228,36 @@
       function acc_sensor(ev){
         if(++cnt > ncnt){
           cnt = 0;
+          if(sd_flag){
+            const acc=ev.acceleration;
+            ax = acc.x || 0;
+            ay = acc.y || 0;
+            az = acc.z || 0;
+            if(az<0)az = -az;
+            const hacc = Math.hypot(ax,ay);
+            const now = performance.now();
+            if(hacc>hacc_threshold && az<az_threshold){
+              if(!sd_start){
+                sd_start = now;
+                theta_stock = theta;
+              }
+              sdcnt++;
+            }else{
+              sd_start = null;
+              sdcnt = 0;
+            }
+            if(sd_start && (now-sd_start) > sd_duration){
+              sd_start = null;
+              sdcnt = 0;
+              sd_flag = 0;
+              document.getElementById("str3").style.visibility = "hidden";
+              slip_detection.checked = false;
+              slip_detection_change();
+              sensor_click(document.getElementById("sensor_button"));
+              document.getElementById('angle_from_horizontal').innerHTML=`${theta_stock.toFixed(2)}&#0176;`;
+              return;
+            }
+          }
           const acc=ev.accelerationIncludingGravity;
           if(iosflg){
             // Reverse the sign for iOS
@@ -193,9 +284,9 @@
           }
 
           let w, x, y, x0, y0, x1, y1;
-          let flg; // flag for determining contact between a bubble and a center point
-          let grad; // gradient of vertical projection line
-          let theta = Math.acos(az/Math.sqrt(ax*ax+ay*ay+az*az))*radtodeg; // device angle from horizontal plane
+          let flg;
+          let grad;
+          theta = Math.acos(az/Math.hypot(ax,ay,az))*radtodeg;
 	        if(theta>90)theta = 180-theta;
 
           if(orientation === "portrait-primary"){
@@ -352,7 +443,7 @@
 
           }
 
-          if(Math.sqrt(x*x+y*y) > radius+5)flg = 1;else flg = 0;
+          if(Math.hypot(x,y) > radius+5)flg = 1;else flg = 0;
           x += cx;
           y += cy;
 
@@ -377,9 +468,8 @@
         ctx.fillStyle = bgclr[(!flg?2:zaflg)];
         ctx.fillRect(0,0,canvas.width-1,canvas.height-1);
 
-        // drawing a bubble
-        ctx.strokeStyle = bblclr[0];
-        ctx.fillStyle = bblclr[1];
+        ctx.strokeStyle = "#99bb44";
+        ctx.fillStyle = "#ffffdd";
         ctx.beginPath();
         ctx.setLineDash([]);
         ctx.arc(x, y, radius, 0, Math.PI*2);
@@ -391,8 +481,7 @@
         ctx.stroke();
 
         if(flg){
-          // draw a vertical projection line on device screen
-          ctx.strokeStyle = vplclr;
+          ctx.strokeStyle = "#88aaff";
           ctx.beginPath();
           ctx.setLineDash([5, 5]);
           ctx.moveTo(x0,y0);
@@ -400,14 +489,12 @@
           ctx.stroke();
         }
 
-        // draw a center point on device screen
-        ctx.fillStyle = cpclr;
+        ctx.fillStyle = '#22aa44';
         ctx.beginPath();
         ctx.arc(cx, cy, 5, 0, Math.PI*2);
         ctx.fill();
       }
 
-      // zero adjustment setting
       function za_click(button){
         zaflg = 1-zaflg;
         if(zaflg){

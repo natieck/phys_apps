@@ -31,27 +31,27 @@
       <span id="str5"></span> $\Delta t=$ <span id="interval_time">20</span><span style="font-size:small;"> $\rm ms$</span>
     </div>
     <div style="margin-top:5px;">
+      <span id="str6"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str7" style="font-size:small;"></span>
+      <div id="ac1_chart" style="border:solid;"></div>
+    </div>
+    <div style="margin-top:5px;">
+      <span id="str8"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str9" style="font-size:small;"></span>
+      <div style="line-height:80%;"><span id="str10" style="font-size:small;"></span></div>
+      <div id="ac2_chart" style="border:solid;"></div>
+    </div>
+    <div style="margin-top:5px;">
       <details>
-        <summary><span id="str6"></span><span style="font-size:small;">&nbsp;[deg]</span>&nbsp;<span id="str7" style="font-size:small;"></span></summary>
+        <summary><span id="str11"></span><span style="font-size:small;">&nbsp;[deg]</span>&nbsp;<span id="str12" style="font-size:small;"></span></summary>
         <div id="ori_chart" style="border:solid;"></div>
       </details>
     </div>
     <div style="margin-top:5px;">
       <details>
-        <summary><span id="str8"></span><span style="font-size:small;">&nbsp;[deg/s]</span></summary>
+        <summary><span id="str13"></span><span style="font-size:small;">&nbsp;[deg/s]</span></summary>
         <div id="rotrt_chart" style="border:solid;"></div>
       </details>
     </div>
-    <div style="margin-top:5px;">
-      <span id="str9"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str10" style="font-size:small;"></span>
-      <div id="ac1_chart" style="border:solid;"></div>
-    </div>
-    <div style="margin-top:5px;">
-      <span id="str11"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str12" style="font-size:small;"></span>
-      <div style="line-height:80%;"><span id="str13" style="font-size:small;"></span></div>
-      <div id="ac2_chart" style="border:solid;"></div>
-    </div>
-    <div style="margin-top:5px;">
+    <div style="margin-top:10px;">
     <button id="DL_button" onclick="exportcsv();" disabled></button>&nbsp;&nbsp;<button id="Anal_button" onclick="goto_analysis();" disabled></button>
     </div>
     <span id="log_area"></span>
@@ -84,14 +84,14 @@ const term=[
   ['Sampling','ｻﾝﾌﾟﾘﾝｸﾞﾚｰﾄ'],
   ['Time','時刻'],
   ['Time step','時間刻み幅'],
-  ['Euler angle','オイラー角'],
-  ['($\\alpha=0$ at sensor activation)','(センサ起動時の角$\\alpha=0$)'],
-  ['Rotation Rate','回転速度'],
   ['Acceleration','加速度'],
   ['(Coordinate system fixed to device)','(デバイスに固定された座標系)[右手系]'],
   ['Acceleration','加速度'],
   ['(Stationary coordinate system)','(静止座標系)[右手系]'],
-  ['$z$-axis: Vertical upward, $y$-axis: Direction of projection of $y$-axis fixed to device at sensor activation onto horizontal plane','$z$軸：鉛直上方向，$y$軸：センサ起動時のデバイス固定の$y$軸を水平面へ射影した方向']
+  ['$z$-axis: Vertical upward, $y$-axis: Direction of projection of $y$-axis fixed to device at sensor activation onto horizontal plane','$z$軸：鉛直上方向，$y$軸：センサ起動時のデバイス固定の$y$軸を水平面へ射影した方向'],
+  ['Euler angle','オイラー角'],
+  ['($\\alpha=0$ at sensor activation)','(センサ起動時の角$\\alpha=0$)'],
+  ['Rotation Rate','回転速度']
 ];
 const ntrm = term.length;
 const bterm = [
@@ -405,14 +405,14 @@ start_button.addEventListener('click', (e) => {
   stop_button.removeAttribute('disabled'); // Release disabled state of Stop button
   sensor_button.setAttribute('disabled', true); // Change Sensor button to disabled
     
-  data_str="time[s],ar[rad],br[rad],gr[rad],arr[rad/s],brr[rad/s],grr[rad/s],ax[m/s^2],ay[m/s^2],az[m/s^2],awx[m/s^2],awy[m/s^2],awz[m/s^2]\n";
+  data_str="time[s],ax[m/s^2],ay[m/s^2],az[m/s^2],awx[m/s^2],awy[m/s^2],awz[m/s^2],ar[rad],br[rad],gr[rad],arr[rad/s],brr[rad/s],grr[rad/s]\n";
   t0 = Date.now();
   t = 0;
   [awx,awy,awz] = transform_acc(ax,ay,az,ar,br,gr);
-  data_str += t.toFixed(3)+","+ar.toFixed(5)+","+br.toFixed(5)+","+gr.toFixed(5)+","
-              +arr.toFixed(5)+","+brr.toFixed(5)+","+grr.toFixed(5)+","
-              +ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
-              +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+"\n";
+  data_str += t.toFixed(3)+","+ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
+              +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+","
+              +ar.toFixed(5)+","+br.toFixed(5)+","+gr.toFixed(5)+","
+              +arr.toFixed(5)+","+brr.toFixed(5)+","+grr.toFixed(5)+"\n";
 });
 
 stop_button.addEventListener('click', (e) => {
@@ -460,10 +460,10 @@ function sensor_start(button){
     if(!measureflag)return;
     t -= t0;
     document.getElementById('current_time').innerHTML = t;
-    data_str += (t/1000).toFixed(3)+","+ar.toFixed(5)+","+br.toFixed(5)+","+gr.toFixed(5)+","
-                +ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
-                +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+","
-                +arr.toFixed(5)+","+brr.toFixed(5)+","+grr.toFixed(5)+"\n";
+    data_str += (t/1000).toFixed(3)+","+ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
+              +awx.toFixed(5)+","+awy.toFixed(5)+","+awz.toFixed(5)+","
+              +ar.toFixed(5)+","+br.toFixed(5)+","+gr.toFixed(5)+","
+              +arr.toFixed(5)+","+brr.toFixed(5)+","+grr.toFixed(5)+"\n";
   }
 
   sensorflag = 1-sensorflag;
@@ -472,6 +472,7 @@ function sensor_start(button){
     start_button.removeAttribute('disabled'); // Release disabled state of Start button
     sampling_slider.setAttribute('disabled', true); // Change Sampling slider to disabled
     ori_chart.init();
+    rotrt_chart.init();
     ac1_chart.init();
     ac2_chart.init();
     if(DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function'){
