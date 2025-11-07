@@ -4,20 +4,21 @@
     <meta charset="UTF-8">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sensor Measurement App.</title>
+    <title>Acceleration Measurement App.</title>
     <link rel="stylesheet" href="katex.min.css" />
     <script defer src="katex.min.js"></script>
     <script defer src="auto-render.min.js" onload="renderMathInElement(document.body);"></script>
   </head>
   <body>
+    <h3 id="str1"></h3>
     <div style="line-height:200%;">
-      <span id="str1"></span>
+      <span id="str2"></span>
       <button id="sensor_button" onclick="sensor_start(this);"></button>
       &nbsp;&nbsp;&nbsp;&nbsp;
-      <span id="str2"></span>
+      <span id="str3"></span>
       <button id="measure_start" disabled></button>&nbsp;&nbsp;<button id="measure_stop" disabled></button>
       <br />
-      <span id="str3"></span>
+      <span id="str4"></span>
       <input type="range" id="slider" value="50" step="1" min="10" max="100" oninput="set_value(this);" onchange="set_value(this);" />
       <span id="slider_value">50</span><span style="font-size:small;"> $\rm Hz$</span>
       &nbsp;&nbsp;&nbsp;
@@ -26,28 +27,28 @@
         <option value=1>JP</option>
       </select>
       <br />
-      <span id="str4"></span> $t=$ <span id="current_time">0</span><span style="font-size:small;"> $\rm ms$</span>
+      <span id="str5"></span> $t=$ <span id="current_time">0</span><span style="font-size:small;"> $\rm ms$</span>
       &nbsp;&nbsp;&nbsp;&nbsp;
-      <span id="str5"></span> $\Delta t=$ <span id="interval_time">20</span><span style="font-size:small;"> $\rm ms$</span>
+      <span id="str6"></span> $\Delta t=$ <span id="interval_time">20</span><span style="font-size:small;"> $\rm ms$</span>
     </div>
     <div style="margin-top:5px;">
-      <span id="str6"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str7" style="font-size:small;"></span>
+      <span id="str7"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str8" style="font-size:small;"></span>
       <div id="ac1_chart" style="border:solid;"></div>
     </div>
     <div style="margin-top:5px;">
-      <span id="str8"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str9" style="font-size:small;"></span>
-      <div style="line-height:80%;"><span id="str10" style="font-size:small;"></span></div>
+      <span id="str9"></span><span style="font-size:small;">&nbsp;[m/s<sup>2</sup>]</span>&nbsp;<span id="str10" style="font-size:small;"></span>
+      <div style="line-height:80%;"><span id="str11" style="font-size:small;"></span></div>
       <div id="ac2_chart" style="border:solid;"></div>
     </div>
     <div style="margin-top:5px;">
       <details>
-        <summary><span id="str11"></span><span style="font-size:small;">&nbsp;[deg]</span>&nbsp;<span id="str12" style="font-size:small;"></span></summary>
+        <summary><span id="str12"></span><span style="font-size:small;">&nbsp;[deg]</span>&nbsp;<span id="str13" style="font-size:small;"></span></summary>
         <div id="ori_chart" style="border:solid;"></div>
       </details>
     </div>
     <div style="margin-top:5px;">
       <details>
-        <summary><span id="str13"></span><span style="font-size:small;">&nbsp;[deg/s]</span></summary>
+        <summary><span id="str14"></span><span style="font-size:small;">&nbsp;[deg/s]</span></summary>
         <div id="rotrt_chart" style="border:solid;"></div>
       </details>
     </div>
@@ -79,6 +80,7 @@ let cwidth;                    // display width
 const clr = ["#1F77B4", "#FF7F0E", "#2CA02C"];  // Chart colors
 let ini_lang,lang;             // language index (0:English, 1:Japanese)
 const term=[
+  ['Acceleration Measurement App.','加速度測定アプリ']
   ['Sensor','センサ'],
   ['Measurement','測定'],
   ['Sampling','ｻﾝﾌﾟﾘﾝｸﾞﾚｰﾄ'],
