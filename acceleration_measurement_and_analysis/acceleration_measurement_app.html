@@ -408,7 +408,8 @@ start_button.addEventListener('click', (e) => {
   sensor_button.setAttribute('disabled', true); // Change Sensor button to disabled
     
   data_str="time[s],ax[m/s^2],ay[m/s^2],az[m/s^2],awx[m/s^2],awy[m/s^2],awz[m/s^2],ar[rad],br[rad],gr[rad],arr[rad/s],brr[rad/s],grr[rad/s]\n";
-  t0 = Date.now();
+  // t0 = Date.now();
+  t0 = performance.now();
   t = 0;
   [awx,awy,awz] = transform_acc(ax,ay,az,ar,br,gr);
   data_str += t.toFixed(3)+","+ax.toFixed(5)+","+ay.toFixed(5)+","+az.toFixed(5)+","
@@ -438,7 +439,8 @@ function sensor_start(button){
   if(measureflag)return;
 
   function measure(){
-    t = Date.now();
+    //t = Date.now();
+    t = performance.now();
     [awx,awy,awz] = transform_acc(ax,ay,az,ar,br,gr);
     if(t >= lasttime+cdt){
       ori_chart.update(ar,br,gr);
@@ -514,7 +516,8 @@ function sensor_start(button){
       // Browsers other than the above
       window.addEventListener("devicemotion",acc_sensor,false);
     }
-    lasttime = Date.now();
+    // lasttime = Date.now();
+    lasttime = performance.now();
     id = setInterval(measure,dt);
   }else{
     clearInterval(id);
