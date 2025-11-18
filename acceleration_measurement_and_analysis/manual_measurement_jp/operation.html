@@ -74,7 +74,7 @@
           センサ「オン・オフ」ボタンの表示が「オン」のとき，センサは停止状態であり，測定開始・終了ボタンは無効（押せない状態）となっている．この状態でセンサ「オン」ボタンを押すとセンサが起動して，ボタンの表示が「オフ」に変わり，測定「開始」ボタンが有効となる．センサが起動すると，時々刻々変化するオイラー角と加速度のグラフが表示される（この状態ではまだデータは記録されない）．センサが起動している状態でセンサ「オフ」ボタンを押すと，センサが停止し，測定開始ボタンは無効となる．センサ起動中はサンプリングレートの設定を変更できない．
         </div>
         <div class="cfig" style="clear:both;">
-          <span class="emph2">センサ起動中の画面</span><br />
+          <p class="emph2">センサ起動中の画面</p>
           <img src="image/operation3.png" width="340" />
         </div>
       </li>
@@ -84,7 +84,7 @@
           センサが起動した状態で測定「開始」ボタンを押すと，測定を開始してデータが記録される．この状態では，測定「開始」ボタン及びセンサ「オフ」ボタンが無効になり，測定「終了」ボタンが有効になる．測定を開始すると，時間の経過とともに時刻$t$の値が増加する．時刻はおおよそ時間刻み幅$\Delta t$ずつ増加していくが，センサの精度に応じて誤差を伴う．
         </div>
         <div class="cfig">
-          <span class="emph2">データ測定中の画面</span><br />
+          <p class="emph2">データ測定中の画面</p>
           <img src="image/operation4.png" width="340" />
         </div>
       </li>
@@ -100,21 +100,33 @@
           測定アプリ画面を下にスクロールすると最下部に「データのダウンロード」ボタンと「データの解析」ボタンがあり，測定を終了するとこれらのボタンが有効になる．
         </div>
         <div class="cfig">
-          <span class="emph2">画面下部</span><br />
+          <p class="emph2">画面下部</p>
           <img src="image/operation5.png" width="330" />
         </div>
         <div>
         「データのダウンロード」ボタンを押すと，保存先の選択ダイアログが現れるので，ファイル名と保存先を指定して測定データをCSV形式で保存することができる（デフォルトのファイル名は「sensor + 年月日時刻.csv」となる）．
         </div>
         <div class="cfig">
-          <span class="emph2">保存先の選択ダイアログ</span><br />
-          <img src="image/operation6.png" width="300" />
+          <p class="emph2">保存先の選択ダイアログ</p>
+          <span>iPhoneの場合</span><br />
+          <img src="image/operation6_iphone.png" width="300" /><br />
+          <span>Androidの場合</span><br />
+          <img src="image/operation6_android.png" width="300" />
         </div>
+        <br />
         <div>
-          CSV形式で保存されたデータの1行目はラベル行となっている．データの各列は，1列目が時刻列（ラベル：time[s]），2～4列目がオイラー角$\alpha,\ \beta,\ \gamma$（ラベル：ar[rad], br[rad], gr[rad]），5～7列目がデバイスに固定された座標系での加速度の$x,\ y,\ z$成分（ラベル：ax[m/s^2], ay[m/s^2], az[m/s^2]），8～10列目が静止座標系での加速度の$x,\ y,\ z$成分（ラベル：awx[m/s^2], awy[m/s^2], awz[m/s^2]）である．
+          CSV形式で保存されたデータの1行目はラベル行となっている．データの各列は
+          <ul>
+            <li>1列目が時刻列（ラベル：time[s]）</li>
+            <li>2～4列目がデバイスに固定された座標系での加速度の$x,\ y,\ z$成分（ラベル：ax[m/s^2], ay[m/s^2], az[m/s^2]）</li>
+            <li>5～7列目が静止座標系での加速度の$x,\ y,\ z$成分（ラベル：awx[m/s^2], awy[m/s^2], awz[m/s^2]）</li>
+            <li>8～10列目がオイラー角$\alpha,\ \beta,\ \gamma$（ラベル：ar[rad], br[rad], gr[rad]）</li>
+            <li>11～13列目が回転速度$\dot{\alpha},\ \dot{\beta},\ \dot{\gamma}$（ラベル：arr[rad/s], brr[rad/s], grr[rad/s]）</li>
+          </ul>
+          である．
         </div>
         <div class="sfig">
-          <span class="emph2">測定データの例</span><br />
+          <p class="emph2">測定データの例</p>
           <img src="image/csv_data.png" />
         </div>
         <div>
@@ -127,19 +139,19 @@
           測定終了後に測定アプリ画面最下部の「データの解析」ボタンを押すと，<a href="../manual_analysis_jp/index.html">加速度解析Webアプリ</a>に移動し，測定データを即座に解析することができる．
         </div>
         <div class="cfig">
-          <span class="emph2">加速度解析アプリ（PC画面）</span><br />
+          <p class="emph2">加速度解析アプリ（PC画面）</p>
           <img src="image/analysis_app_screen.png" style="width: 80%;border:1px solid #666;"/>
         </div>
       </li>
       <li>
         <span class="emph1">言語の選択</span>
-        <div class="rfig">
-          <img src="image/operation7.png" width="300" />
-        </div>
         <div>
           測定アプリ画面上部にある言語選択メニューで英語(EN)か日本語(JP)を選択して，アプリの表示言語を切り替えることができる（現時点では英語と日本語のみ）．
         </div>
-        <br style="clear:both;" />
+        <div class="cfig">
+          <img src="image/operation7.png" width="300" />
+        </div>
+      </li>
     </ol>
 
   </main>

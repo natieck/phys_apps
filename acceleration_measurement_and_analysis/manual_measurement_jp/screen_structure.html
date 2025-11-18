@@ -55,7 +55,7 @@
     <h2>&#9632; 画面構成</h2>
 
     <div class="lfig">
-      <span class="emph1">測定アプリの画面(1)</span><br />
+      <span class="emph1">測定アプリの画面(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
       <img src="image/smartphone_screen1.png" width="360"/>
     </div>
     <div style="float:left;padding:1rem;max-width:420px;">
@@ -74,30 +74,30 @@
         &nbsp;&nbsp;EN：英語，JP：日本語
         </li>
       </ul>
-      <div class="tbl"><div class="tcl"><span class="emph3">&#9313;&nbsp;</span></div><div class="tcl"><span class="emph3">方位角のグラフ（$z$-$x$-$y$系オイラー角）</span></div></div>
-      <div style="margin-left:2rem;">
-        下図のデバイスに固定された座標軸に対して，$\alpha$, $\beta$, $\gamma$ はそれぞれ $z$, $x$, $y$軸周りのオイラー角である．縦軸のスケールは各成分のグラフがはみ出さないように自動調整されるため，各成分ごとでスケールが異なる．<br />
-        <img src="image/device-fixed_coordinate.png" width="180" />
-      </div>
-      <div class="tbl"><div class="tcl"><span class="emph3">&#9314;&nbsp;</span></div><div class="tcl"><span class="emph3">デバイスに固定された座標系での加速度のグラフ</span></div></div>
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9313;&nbsp;</span></div><div class="tcl"><span class="emph3">デバイスに固定された座標系での加速度のグラフ領域</span></div></div>
       <div style="margin-left:1.5rem;">
         $a_x$，$a_y$，$a_z$ はそれぞれ，デバイスに固定された座標系での加速度の$x$, $y$, $z$成分である．縦軸のスケールは各成分のグラフがはみ出さないように自動調整されるため，各成分ごとでスケールが異なる．
+      </div>
+      <br />
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9314;&nbsp;</span></div><div class="tcl"><span class="emph3">静止座標系での加速度のグラフ領域</span></div></div>
+      <div style="margin-left:1.5rem;">
+        静止座標系の$z$軸の方向は鉛直方向（鉛直上向きが正）であり，静止座標系での$y$軸の方向は，加速度センサ起動時においてデバイスに固定された座標系における$y$軸を水平面に射影した方向である．<br />
+        $a_x$，$a_y$，$a_z$ はそれぞれ，静止座標系での加速度の$x$, $y$, $z$成分である．縦軸のスケールは各成分のグラフがはみ出さないように自動調整される．
       </div>
     </div>
 
     <br style="clear:both;" />
 
-    <p><span style="color:#0a5c88;">測定アプリ画面をさらに下方へスクロールすると回転補正により得られる静止座標系での加速度のグラフ領域が現れる．</span></p>
+    <p><span style="color:#0a5c88;">測定アプリ画面を下方までスクロールするとデータのダウンロード・解析ボタンが現れる．</span></p>
 
     <div class="lfig">
-      <span class="emph1">測定アプリの画面(2)</span><br />
+      <span class="emph1">測定アプリの画面(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
       <img src="image/smartphone_screen2.png" width="360"/>
     </div>
     <div style="float:left;padding:1rem;max-width:420px;">
-      <div class="tbl"><div class="tcl"><span class="emph3">&#9315;&nbsp;</span></div><div class="tcl"><span class="emph3">静止座標系での加速度のグラフ</span></div></div>
-      <div style="margin-left:1.5rem;">
-        静止座標系の$z$軸の方向は鉛直方向（鉛直上向きが正）であり，静止座標系での$y$軸の方向は，加速度センサ起動時においてデバイスに固定された座標系における$y$軸を水平面に射影した方向である．<br />
-        $a_x$，$a_y$，$a_z$ はそれぞれ，静止座標系での加速度の$x$, $y$, $z$成分である．縦軸のスケールは各成分のグラフがはみ出さないように自動調整されるため，各成分ごとでスケールが異なる．
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9315;&nbsp;</span></div><div class="tcl"><span class="emph3">オイラー角・回転速度</span></div></div>
+      <div style="margin-left:2rem;">
+        オイラー角（方位角）と回転速度のグラフ領域（最初は表示されないようになっているが，クリックすると表示される．）
       </div>
       <br />
       <div class="tbl"><div class="tcl"><span class="emph3">&#9316;&nbsp;</span></div><div class="tcl"><span class="emph3">ダウンロード・解析</span></div></div>
@@ -105,9 +105,10 @@
         <li style="padding-bottom:5px;"><span class="emph1">「データのダウンロード」ボタン</span><br />
         測定で得られたデータをCSV形式ファイルとしてダウンロードする．CSVファイルのデータ列は<br />
         <span style="font-weight:bold;">1列目：</span>時刻 $t$<br />
-        <span style="font-weight:bold;">2-4列目：</span>オイラー角 $\alpha$, $\beta$, $\gamma$<br />
-        <span style="font-weight:bold;">5-7列目：</span>デバイス固定の加速度の$x$, $y$, $z$成分<br />
-        <span style="font-weight:bold;">8-10列目：</span>静止座標系での加速度の$x$, $y$, $z$成分<br />
+        <span style="font-weight:bold;">2-4列目：</span>デバイス固定の加速度の$x$, $y$, $z$成分<br />
+        <span style="font-weight:bold;">5-7列目：</span>静止座標系での加速度の$x$, $y$, $z$成分<br />
+        <span style="font-weight:bold;">8-10列目：</span>オイラー角 $\alpha$, $\beta$, $\gamma$<br />
+        <span style="font-weight:bold;">11-13列目：</span>回転速度 $\dot{\alpha}$, $\dot{\beta}$, $\dot{\gamma}$<br />
         となっている．ダウンロードしたデータは，<a href="../manual_analysis_jp">加速度解析Webアプリ</a>や Microsoft Excel，Googleスプレッドシートなどの表計算ソフトで読み込める．
         </li>
         <li style="padding-bottom:5px;"><span class="emph1">「データの解析」ボタン</span><br />
@@ -117,6 +118,25 @@
     </div>
 
     <br style="clear:both;" />
+
+    <p><span style="color:#0a5c88;">「&#9654; オイラー角」や「&#9654; 回転速度」をクリックすると，それらのグラフが表示される．</span></p>
+
+    <div class="lfig">
+      <span class="emph1">測定アプリの画面(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+      <img src="image/smartphone_screen3.png" width="360"/>
+    </div>
+    <div style="float:left;padding:1rem;max-width:420px;">
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9317;&nbsp;</span></div><div class="tcl"><span class="emph3">方位角のグラフ領域（$z$-$x$-$y$系オイラー角）</span></div></div>
+      <div style="margin-left:2rem;">
+        下図のデバイスに固定された座標軸に対して，$\alpha$, $\beta$, $\gamma$ はそれぞれ $z$, $x$, $y$軸周りのオイラー角である．縦軸のスケールは各成分のグラフがはみ出さないように自動調整されるため，各成分ごとでスケールが異なる．<br />
+        <img src="image/device-fixed_coordinate.png" width="180" />
+      </div>
+      <br />
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9318;&nbsp;</span></div><div class="tcl"><span class="emph3">回転速度のグラフ領域</span></div></div>
+      <div style="margin-left:2rem;">
+        各オイラー角 $\alpha$, $\beta$, $\gamma$ に対応する角速度 $\dot{\alpha}$, $\dot{\beta}$, $\dot{\gamma}$ を表す．縦軸のスケールは各成分のグラフがはみ出さないように自動調整される．
+      </div>
+    </div>
 
   </main>
 
