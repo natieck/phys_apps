@@ -32,7 +32,6 @@
       <li><a class="no_link">Operating method</a></li>
       <li><a href="measurement_examples.html">Measurement examples</a></li>
       <li><a href="rotation_correction.html">Rotation correction</a></li>
-      <li><a href="search.html">Search</a></li>
     </ul>
     <input id="checkbox" type="checkbox">
     <label id="HumbergerMenu" class="menu-check" for="checkbox">
@@ -45,7 +44,6 @@
         <li><a class="no_link">Operating method</a></li>
         <li><a href="measurement_examples.html">Measurement examples</a></li>
         <li><a href="rotation_correction.html">Rotation correction</a></li>
-        <li><a href="search.html">Search</a></li>
       </ul>
     </nav>
   </header>
@@ -111,7 +109,13 @@
           <img src="image/operation6.png" width="300" />
         </div>
         <div>
-          The first row of the data saved in CSV format is the label row. The columns of the data are as follows: the first column is the time column (label: time[s]), the 2nd to 4th columns are the Euler angles <span class="mathit">&alpha;</span>, <span class="mathit">&beta;</span>, and <span class="mathit">&gamma;</span> (labels: ar[rad], br[rad], gr[rad]), the 5th to 7th columns are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of the acceleration in the device-fixed coordinate system (labels: ax[m/s^2], ay[m/s^2], az[m/s^2]), and the 8th to 10th columns are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of the acceleration in the stationary coordinate system (labels: awx[m/s^2], awy[m/s^2], awz[m/s^2]).
+          The first row of the data saved in CSV format is the label row. The columns of the data are as follows:
+          <ul>
+            <li>the first column is the time column (label: time[s]),</li>
+            <li>the 2nd to 4th columns are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of the acceleration in the device-fixed coordinate system (labels: ax[m/s^2], ay[m/s^2], az[m/s^2]),</li>
+            <li>5th to 7th columns are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of the acceleration in the stationary coordinate system (labels: awx[m/s^2], awy[m/s^2], awz[m/s^2]),</li>
+            <li>the 8nd to 10th columns are the Euler angles $\alpha$, $\beta$, and $\gamma$ (labels: ar[rad], br[rad], gr[rad]), </li>
+            <li>the 11nd to 13th columns are the Euler angles $\dot{\alpha}$, $\dot{\beta}$, and $\dot{\gamma}$ (labels: arr[rad/s], brr[rad/s], grr[rad/s]).</li>
         </div>
         <div class="sfig" style="padding: 0.5rem 0;">
           <span class="emph2">Example of measurement data</span><br />

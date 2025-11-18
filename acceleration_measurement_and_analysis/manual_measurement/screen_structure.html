@@ -32,7 +32,6 @@
       <li><a href="operation.html">Operating method</a></li>
       <li><a href="measurement_examples.html">Measurement examples</a></li>
       <li><a href="rotation_correction.html">Rotation correction</a></li>
-      <li><a href="search.html">Search</a></li>
     </ul>
     <input id="checkbox" type="checkbox">
     <label id="HumbergerMenu" class="menu-check" for="checkbox">
@@ -45,7 +44,6 @@
         <li><a href="operation.html">Operating method</a></li>
         <li><a href="measurement_examples.html">Measurement examples</a></li>
         <li><a href="rotation_correction.html">Rotation correction</a></li>
-        <li><a href="search.html">Search</a></li>
       </ul>
     </nav>
   </header>
@@ -55,7 +53,7 @@
     <h2>&#9632; Screen structure</h2>
 
     <div class="lfig">
-      <span class="emph1">App screen (1)</span><br />
+      <span class="emph1">App screen (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
       <img src="image/smartphone_screen1.png" width="360"/>
     </div>
     <div style="float:left;padding:1rem;max-width:420px;">
@@ -74,14 +72,16 @@
         &nbsp;&nbsp;EN: English, JP: Japanese
         </li>
       </ul>
-      <div class="tbl"><div class="tcl"><span class="emph3">&#9313;&nbsp;</span></div><div class="tcl"><span class="emph3">Graph area of Euler angles in <span class="mathit">z</span>-<span class="mathit">x</span>-<span class="mathit">y</span> order</span></div></div>
-      <div style="margin-left:1.5rem;">
-        For the coordinate axes fixed to the device in the figure below, <span class="mathit">&alpha;</span>, <span class="mathit">&beta;</span>, and <span class="mathit">&gamma;</span> are Euler angles around the <span class="mathit">z</span>, <span class="mathit">x</span>, and <span class="mathit">y</span> axes, respectively. The scale of the vertical axis is automatically adjusted so that the graph of each component does not overflow, so the scale is different for each component.<br />
-        <img src="image/device-fixed_coordinate.png" width="180" />
-      </div>
-      <div class="tbl"><div class="tcl"><span class="emph3">&#9314;&nbsp;</span></div><div class="tcl"><span class="emph3">Graph area of acceleration in device-fixed coordinate system</span></div></div>
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9313;&nbsp;</span></div><div class="tcl"><span class="emph3">Graph area of acceleration in device-fixed coordinate system</span></div></div>
       <div style="margin-left:1.5rem;">
         <span class="mathit">a</span><sub class="mathit">x</sub>, <span class="mathit">a</span><sub class="mathit">y</sub>, <span class="mathit">a</span><sub class="mathit">z</sub> are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of acceleration in the coordinate system fixed to the device, respectively. The scale of the vertical axis is automatically adjusted so that the graph of each component does not overflow, so the scale is different for each component.
+      </div>
+      <br />
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9314;&nbsp;</span></div><div class="tcl"><span class="emph3">Graph area of acceleration in stationary coordinate system</span></div></div>
+      <div style="margin-left:1.5rem;">
+        The direction of the <span class="mathit">z</span> axis in the stationary coordinate system is the vertical direction (vertical upward is positive), and the direction of the <span class="mathit">y</span> axis in the stationary coordinate system is the direction in which the <span class="mathit">y</span> axis in the coordinate system fixed to the device at the time of acceleration sensor activation is projected onto the horizontal plane. 
+        <br />
+        <span class="mathit">a</span><sub class="mathit">x</sub>, <span class="mathit">a</span><sub class="mathit">y</sub>, <span class="mathit">a</span><sub class="mathit">z</sub> are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of acceleration in the stationary coordinate system, respectively. The scale of the vertical axis is automatically adjusted so that the graph of each component does not overflow, so the scale is different for each component.
       </div>
     </div>
 
@@ -90,15 +90,13 @@
     <p><span style="color:#0a5c88;">When you scroll further down on the measurement app screen, a graph area displaying the acceleration in a stationary coordinate system, obtained through rotation correction, will appear.</span></p>
 
     <div class="lfig">
-      <span class="emph1">App screen (2)</span><br />
+      <span class="emph1">App screen (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
       <img src="image/smartphone_screen2.png" width="360"/>
     </div>
     <div style="float:left;padding:1rem;max-width:420px;">
-      <div class="tbl"><div class="tcl"><span class="emph3">&#9315;&nbsp;</span></div><div class="tcl"><span class="emph3">Graph area of acceleration in stationary coordinate system</span></div></div>
-      <div style="margin-left:1.5rem;">
-        The direction of the <span class="mathit">z</span> axis in the stationary coordinate system is the vertical direction (vertical upward is positive), and the direction of the <span class="mathit">y</span> axis in the stationary coordinate system is the direction in which the <span class="mathit">y</span> axis in the coordinate system fixed to the device at the time of acceleration sensor activation is projected onto the horizontal plane. 
-        <br />
-        <span class="mathit">a</span><sub class="mathit">x</sub>, <span class="mathit">a</span><sub class="mathit">y</sub>, <span class="mathit">a</span><sub class="mathit">z</sub> are the <span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of acceleration in the stationary coordinate system, respectively. The scale of the vertical axis is automatically adjusted so that the graph of each component does not overflow, so the scale is different for each component.
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9315;&nbsp;</span></div><div class="tcl"><span class="emph3">Euler angle, Rotation rate</span></div></div>
+      <div style="margin-left:2rem;">
+        Graph areas of Euler angle (azimuth) and rotation rate (initially hidden; click to display)
       </div>
       <br />
       <div class="tbl"><div class="tcl"><span class="emph3">&#9316;&nbsp;</span></div><div class="tcl"><span class="emph3">Download and analysis</span></div></div>
@@ -106,9 +104,10 @@
         <li style="padding-bottom:5px;"><span class="emph1">Download data as CSV button</span><br />
           Press this button to download the data obtained from measurement as a CSV format file. The columns of the CSV file indicate as follows:<br />
           <span style="font-weight:bold;">Column 1:&nbsp;</span>time <span class="mathit">t</span><br />
-          <span style="font-weight:bold;">Columns 2-4:&nbsp;</span>Euler angles <span class="mathit">&alpha;</span>, <span class="mathit">&beta;</span>, <span class="mathit">&gamma;</span><br />
-          <span style="font-weight:bold;">Columns 5-7:&nbsp;</span><span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of acceleration in device-fixed coordinate system<br />
-          <span style="font-weight:bold;">Columns 8-10:&nbsp;</span><span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of acceleration in stationary coordinate system<br />
+          <span style="font-weight:bold;">Columns 2-4:&nbsp;</span><span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of acceleration in device-fixed coordinate system<br />
+          <span style="font-weight:bold;">Columns 5-7:&nbsp;</span><span class="mathit">x</span>, <span class="mathit">y</span>, <span class="mathit">z</span> components of acceleration in stationary coordinate system<br />
+          <span style="font-weight:bold;">Columns 8-10:&nbsp;</span>Euler angles $\alpha$, $\beta$, $\gamma$<br />
+          <span style="font-weight:bold;">Columns 11-13:&nbsp;</span>Rotation rates $\dot{\alpha}$, $\dot{\beta}$, $\dot{\gamma}$<br />
           The downloaded data can be imported into <a href="../manual_analysis">Acceleration Analysis App</a>, spreadsheet software such as Microsoft Excel or Google Sheets.
         </li>
         <li style="padding-bottom:5px;"><span class="emph1">Analyze data button</span><br />
@@ -118,6 +117,25 @@
     </div>
 
     <br style="clear:both;" />
+
+    <p><span style="color:#0a5c88;">Clicking on "&#9654; Euler angle" or "&#9654; Rotation rate" will display their graphs.</span></p>
+
+    <div class="lfig">
+      <span class="emph1">App screen (3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br />
+      <img src="image/smartphone_screen3.png" width="360"/>
+    </div>
+    <div style="float:left;padding:1rem;max-width:420px;">
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9313;&nbsp;</span></div><div class="tcl"><span class="emph3">Graph area of Euler angles in <span class="mathit">z</span>-<span class="mathit">x</span>-<span class="mathit">y</span> order</span></div></div>
+      <div style="margin-left:1.5rem;">
+        For the coordinate axes fixed to the device in the figure below, $\alpha$, $\beta$, and $\gamma$ are Euler angles around the <span class="mathit">z</span>, <span class="mathit">x</span>, and <span class="mathit">y</span> axes, respectively. The scale of the vertical axis is automatically adjusted so that the graph of each component does not overflow, so the scale is different for each component.<br />
+        <img src="image/device-fixed_coordinate.png" width="180" />
+      </div>
+      <br />
+      <div class="tbl"><div class="tcl"><span class="emph3">&#9318;&nbsp;</span></div><div class="tcl"><span class="emph3">Graph area of Rotation rate</span></div></div>
+      <div style="margin-left:2rem;">
+        $\dot{\alpha}$, $\dot{\beta}$, $\dot{\gamma}$ represent rotation rates (angular speeds) corresponding to Euler angles $\alpha$, $\beta$, $\gamma$, respectively. The scale of the vertical axis is automatically adjusted so that the graph of each component does not overflow, so the scale is different for each component.
+      </div>
+    </div>
 
   </main>
 
